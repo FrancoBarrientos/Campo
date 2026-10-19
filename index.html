@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Campo App - Pesadas, Gastos e Ingresos</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABMklEQVR4nGNgGGDAiEtC10vnP7Utu7ztCoZ9GAK0sBifQ5jobTm6PUzYBOnpCCZCCmkNGBkY6O97ZDDgITDgDmAhpGBjVRYK379tGlXV4w0BdMNwiZGrHq8DCFlk+OUPCibVYQQdQC8w4A4gWA4gB19D1SSCBja05cHZhBIgUQ5gYGBgMPzyh4GBgYFh27U3DAwMDAxeWiJY1aHLn+chmMkGPgoIOxEJ4PI5sfIUOwAZ6KnJofAv3XpEljlERQF6XN579ZFhw5HLcP6GI5cZ7r36iFcPRQ5ANhDd58gAJkes5QwMZFTH8VJSeOUXPntGtOUMDGTkAnwWkGo5WQ7AZRE5ljMwUJALyLUQHQx4QTQ4HICtx0IPcHnbFcbBEQIMDPQPBZh9TNgE6WU5A8Mg6B0DABs2c0EkFZrIAAAAAElFTkSuQmCC">
+  <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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">
+  <link rel="apple-touch-icon" sizes="192x192" href="data:image/png;base64,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">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Pesadas Bubalas">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#2d4a2c">
+  <link rel="manifest" href="manifest.webmanifest">
+
+<style>
+  :root{
+    --verde-oscuro:#2f4f2f;
+    --verde:#3d6b35;
+    --verde-claro:#e8f0e3;
+    --marron:#7a5230;
+    --fondo:#f4f2ec;
+    --tarjeta:#ffffff;
+    --texto:#2a2a26;
+    --texto-suave:#6b6b63;
+    --borde:#e2ded3;
+    --rojo:#b0413e;
+    --verde-ok:#3d7a3d;
+    --sombra:0 2px 8px rgba(0,0,0,0.08);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--fondo);color:var(--texto);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  #app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--fondo);
+    display:flex;flex-direction:column;position:relative;}
+  header.topbar{background:var(--verde-oscuro);color:#fff;padding:16px 18px 14px;
+    position:sticky;top:0;z-index:20;}
+  header.topbar h1{margin:0;font-size:19px;font-weight:700;letter-spacing:.2px;}
+  header.topbar p{margin:2px 0 0;font-size:12.5px;opacity:.85;}
+  main{flex:1;padding:14px 14px 90px;}
+  .screen{display:none;}
+  .screen.active{display:block;animation:fadein .15s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+  nav.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+    width:100%;max-width:480px;background:#fff;border-top:1px solid var(--borde);
+    display:flex;z-index:30;padding-bottom:env(safe-area-inset-bottom);}
+  nav.tabbar button{flex:1;background:none;border:none;padding:9px 2px 8px;
+    display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--texto-suave);
+    font-size:11px;font-family:inherit;}
+  nav.tabbar button .ic{font-size:20px;line-height:1;}
+  nav.tabbar button.active{color:var(--verde-oscuro);font-weight:700;}
+
+  .card{background:var(--tarjeta);border-radius:14px;padding:14px;margin-bottom:12px;
+    box-shadow:var(--sombra);border:1px solid var(--borde);}
+  .card h2{margin:0 0 10px;font-size:15px;color:var(--verde-oscuro);}
+  .row{display:flex;gap:10px;}
+  .row > *{flex:1;}
+  label{display:block;font-size:12.5px;color:var(--texto-suave);margin:10px 0 4px;font-weight:600;}
+  label:first-child{margin-top:0;}
+  input,select,textarea{width:100%;padding:11px 12px;border-radius:10px;border:1.5px solid var(--borde);
+    font-size:16px;background:#fbfaf7;color:var(--texto);font-family:inherit;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--verde);background:#fff;}
+  input[type=number]{-moz-appearance:textfield;}
+  .btn{display:block;width:100%;padding:13px;border-radius:11px;border:none;
+    font-size:15.5px;font-weight:700;font-family:inherit;margin-top:14px;}
+  .btn-primary{background:var(--verde-oscuro);color:#fff;}
+  .btn-primary:active{background:var(--verde);}
+  .btn-secondary{background:var(--verde-claro);color:var(--verde-oscuro);}
+  .btn-outline{background:#fff;color:var(--texto-suave);border:1.5px solid var(--borde);}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+  .chip{padding:7px 14px;border-radius:20px;background:#fff;border:1.5px solid var(--borde);
+    font-size:13px;font-weight:600;color:var(--texto-suave);}
+  .chip.active{background:var(--verde-oscuro);color:#fff;border-color:var(--verde-oscuro);}
+  .search{position:relative;margin-bottom:12px;}
+  .search input{padding-left:36px;}
+  .search::before{content:"🔍";position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:14px;}
+
+  .animal{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--borde);
+    border-radius:12px;padding:11px 12px;margin-bottom:8px;transition:opacity .15s;}
+  .animal.pesado-hoy{background:#eef5ea;border-color:#d3e6c8;opacity:.72;}
+  .swatch{width:30px;height:30px;border-radius:50%;border:2px solid #d8d4c6;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#333;
+    position:relative;}
+  .swatch .check-ov{position:absolute;bottom:-4px;right:-4px;width:16px;height:16px;border-radius:50%;
+    background:var(--verde-ok);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;
+    border:2px solid #fff;font-weight:900;}
+  .animal-info{flex:1;min-width:0;}
+  .animal-info .car{font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px;}
+  .animal-info .meta{font-size:12px;color:var(--texto-suave);margin-top:1px;}
+  .animal-info .obs-note{font-size:11.5px;color:var(--marron);margin-top:3px;background:#f3ede4;padding:4px 7px;border-radius:6px;max-width:100%;white-space:pre-line;max-height:52px;overflow-y:auto;}
+  .obs-trail-box{display:none;font-size:12px;color:var(--marron);background:#f3ede4;padding:6px 8px;border-radius:8px;margin-bottom:8px;white-space:pre-line;max-height:110px;overflow-y:auto;}
+  textarea{resize:vertical;font-family:inherit;}
+  .animal-stats{text-align:right;}
+  .animal-stats .peso{font-size:15px;font-weight:700;}
+  .animal-stats .delta{font-size:11.5px;font-weight:700;margin-top:1px;}
+  .animal-stats .pesado-tag{font-size:11px;font-weight:700;color:var(--verde-ok);margin-top:1px;}
+  .delta.up{color:var(--verde-ok);}
+  .delta.down{color:var(--rojo);}
+  .delta.flat{color:var(--texto-suave);}
+  .sexo-badge{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;
+    border-radius:5px;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;}
+  .sexo-badge.macho{background:#3d6b8f;}
+  .sexo-badge.hembra{background:#b5548a;}
+  .sexo-badge.toro{background:#7a4a2b;}
+
+  .fab{position:fixed;right:calc(50% - 230px);bottom:78px;width:54px;height:54px;border-radius:50%;
+    background:var(--verde-oscuro);color:#fff;border:none;font-size:26px;box-shadow:0 4px 14px rgba(0,0,0,.25);
+    z-index:25;}
+  @media (max-width:520px){.fab{right:18px;}}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(20,20,15,.45);z-index:50;display:none;
+    align-items:flex-end;justify-content:center;}
+  .modal-bg.show{display:flex;}
+  .modal{background:#fff;width:100%;max-width:480px;border-radius:18px 18px 0 0;
+    padding:18px 18px calc(18px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto;
+    animation:slideup .18s ease;}
+  @keyframes slideup{from{transform:translateY(30px);opacity:0;}to{transform:none;opacity:1;}}
+  .modal h3{margin:0 0 12px;font-size:16px;color:var(--verde-oscuro);display:flex;align-items:center;justify-content:space-between;}
+  .modal h3 .x{font-size:20px;color:var(--texto-suave);font-weight:400;}
+  .color-grid{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:4px;}
+  .color-opt{width:38px;height:38px;border-radius:50%;border:2px solid #d8d4c6;position:relative;}
+  .color-opt.sel{border:3px solid var(--verde-oscuro);}
+  .color-opt.sel::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:15px;color:#000;text-shadow:0 0 3px #fff;}
+  .seg{display:flex;background:#f0efe9;border-radius:10px;padding:3px;margin-bottom:2px;}
+  .seg button{flex:1;padding:9px 4px;border:none;background:none;border-radius:8px;font-size:13.5px;
+    font-weight:600;color:var(--texto-suave);font-family:inherit;}
+  .seg button.active{background:#fff;color:var(--verde-oscuro);box-shadow:0 1px 3px rgba(0,0,0,.15);}
+  .kpi-row{display:flex;gap:10px;margin-bottom:12px;}
+  .kpi{flex:1;background:#fff;border:1px solid var(--borde);border-radius:12px;padding:10px 12px;}
+  .kpi .lab{font-size:11px;color:var(--texto-suave);font-weight:600;}
+  .kpi .val{font-size:18px;font-weight:800;margin-top:2px;}
+  .kpi.ingreso .val{color:var(--verde-ok);}
+  .kpi.gasto .val{color:var(--rojo);}
+  .list-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;
+    border-bottom:1px solid var(--borde);}
+  .list-item:last-child{border-bottom:none;}
+  .list-item .desc{font-size:14px;font-weight:600;}
+  .list-item .cat{font-size:11.5px;color:var(--texto-suave);margin-top:1px;}
+  .list-item .amt{font-size:14.5px;font-weight:700;white-space:nowrap;}
+  .amt.gasto{color:var(--rojo);}
+  .amt.ingreso{color:var(--verde-ok);}
+  .empty{text-align:center;color:var(--texto-suave);font-size:13px;padding:24px 8px;}
+  .helper{font-size:12px;color:var(--texto-suave);margin-top:8px;line-height:1.5;}
+  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#2a2a26;color:#fff;
+    padding:11px 20px;border-radius:30px;font-size:13.5px;font-weight:600;z-index:60;opacity:0;max-width:92%;text-align:center;
+    transition:opacity .25s, transform .25s;pointer-events:none;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+  .weigh-date-bar{background:var(--verde-claro);border-radius:12px;padding:10px 12px;margin-bottom:12px;}
+  .weigh-date-bar .fila1{display:flex;align-items:center;gap:10px;}
+  .weigh-date-bar label{margin:0;flex-shrink:0;}
+  .weigh-date-bar input{padding:8px 10px;font-size:14px;}
+  .count-pill{background:var(--verde-oscuro);color:#fff;border-radius:20px;padding:4px 11px;font-size:11.5px;font-weight:700;white-space:nowrap;}
+  .weigh-date-bar .sub{font-size:11.5px;color:var(--verde-oscuro);opacity:.8;margin-top:6px;}
+  .confirm-actions{display:flex;gap:10px;margin-top:16px;}
+  .confirm-actions .btn{margin-top:0;}
+
+  /* --- estado de sincronizacion en el encabezado --- */
+  header.topbar{display:flex;align-items:flex-start;gap:10px;}
+  header.topbar .tb-text{flex:1;min-width:0;}
+  .sync-line{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:11.5px;opacity:.95;}
+  .sync-dot{width:8px;height:8px;border-radius:50%;background:#9bc98f;flex-shrink:0;}
+  .sync-line.loading .sync-dot{background:#f1c75b;animation:pulso 1s infinite;}
+  .sync-line.error .sync-dot{background:#e8847f;}
+  @keyframes pulso{50%{opacity:.3;}}
+  .btn-refresh{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);color:#fff;
+    border-radius:10px;width:40px;height:40px;font-size:19px;flex-shrink:0;font-family:inherit;}
+  .btn-refresh.girando span{display:inline-block;animation:girar .9s linear infinite;}
+  @keyframes girar{to{transform:rotate(360deg);}}
+
+  /* --- carga masiva de observaciones --- */
+  .btn-masiva{margin:0 0 12px;background:var(--marron);color:#fff;}
+  .btn-masiva:active{opacity:.85;}
+  .masiva-sel-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0 6px;}
+  .masiva-sel-bar .cuenta{font-size:13px;font-weight:700;color:var(--verde-oscuro);}
+  .masiva-sel-bar .links button{background:none;border:none;color:var(--verde);font-weight:700;font-size:13px;padding:4px 6px;font-family:inherit;}
+  .masiva-lista{border:1px solid var(--borde);border-radius:10px;max-height:34vh;overflow-y:auto;background:#fbfaf7;}
+  .masiva-item{color:var(--texto);font-size:14px;font-weight:400;display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid var(--borde);}
+  .masiva-item:last-child{border-bottom:none;}
+  .masiva-item input{width:20px;height:20px;flex-shrink:0;accent-color:var(--verde-oscuro);}
+  .masiva-item .swatch{width:26px;height:26px;font-size:10.5px;}
+  .masiva-item .t{font-size:14px;font-weight:600;flex:1;}
+  .masiva-item .s{font-size:11.5px;color:var(--texto-suave);}
+  .masiva-item.off{opacity:.45;}
+
+  .foto-picker{display:flex;align-items:center;gap:10px;margin-top:10px;}
+  .foto-btn{flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:3px;width:72px;height:72px;border-radius:12px;border:1.5px dashed var(--borde);background:#fbfaf7;
+    color:var(--texto-suave);font-size:10.5px;font-weight:600;font-family:inherit;text-align:center;}
+  .foto-btn .ic{font-size:22px;line-height:1;}
+  .foto-preview{position:relative;width:72px;height:72px;border-radius:12px;overflow:hidden;
+    border:1.5px solid var(--borde);flex-shrink:0;}
+  .foto-preview img{width:100%;height:100%;object-fit:cover;display:block;}
+  .foto-preview .quitar{position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;
+    background:rgba(20,20,15,.65);color:#fff;border:none;font-size:13px;line-height:1;font-family:inherit;}
+  .foto-hint{font-size:12px;color:var(--texto-suave);flex:1;}
+  .foto-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;
+    color:var(--verde-ok);background:var(--verde-claro);padding:2px 7px;border-radius:20px;margin-left:6px;}
+  .calc-hint{font-size:12px;color:var(--verde-ok);font-weight:600;margin-top:6px;display:none;}
+  .guia-chip{display:inline-block;font-size:11px;font-weight:700;color:#5b3f8c;background:#ece6f7;padding:2px 8px;border-radius:20px;margin-top:3px;}
+  .guia-chip.sin{color:#a33;background:#fbe4e4;}
+  .guia-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--borde);}
+  .guia-item:last-child{border-bottom:none;}
+  .guia-item .g1{font-size:14px;font-weight:700;}
+  .guia-item .g2{font-size:12px;color:var(--texto-suave);margin-top:2px;}
+  .guia-item .saldo{font-size:18px;font-weight:800;color:var(--verde-oscuro);text-align:right;line-height:1;}
+  .guia-item .saldo small{display:block;font-size:10.5px;font-weight:600;color:var(--texto-suave);margin-top:3px;}
+  .guia-item .saldo.cero{color:var(--texto-suave);}
+  .pago-row{border:1px solid var(--borde);border-radius:10px;padding:8px 10px 10px;margin-bottom:8px;background:#fafaf6;}
+  .link-btn{background:none;border:none;color:var(--rojo);font-size:12.5px;font-weight:600;padding:6px 0 0;font-family:inherit;}
+  .btn-sec{background:#fff;color:var(--verde-oscuro);border:1.5px solid var(--verde-oscuro);}
+  .resumen-h{background:#f3f7f1;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.6;margin:10px 0;}
+  .resumen-h b{font-weight:800;}
+  .resumen-h .tot{font-size:15px;color:var(--verde-oscuro);}
+  nav.tabbar button{font-size:10.5px;}
+</style>
+</head>
+<body>
+<div id="cfgOverlay" style="display:none;position:fixed;inset:0;z-index:200;background:#2d4a2c;color:#fff;padding:28px 22px;overflow:auto">
+  <h2 style="margin:0 0 10px">Primera vez</h2>
+  <p style="line-height:1.5">Pegá acá el <b>enlace de configuración</b> que te mandó Franco por WhatsApp. Se hace una sola vez.</p>
+  <textarea id="cfgInput" rows="5" style="width:100%;font-size:15px;border-radius:10px;border:none;padding:10px" placeholder="https://..."></textarea>
+  <button onclick="guardarConfigPegada()" style="margin-top:12px;width:100%;padding:14px;border-radius:12px;border:none;font-size:16px;font-weight:700;background:#fff;color:#2d4a2c">Guardar</button>
+  <p id="cfgMsg" style="color:#ffd7d7;margin-top:10px"></p>
+  <p style="opacity:.8;font-size:13px">Más fácil: abrí directamente el enlace que te mandó Franco, y ya queda listo.</p>
+</div>
+<div id="app">
+
+  <header class="topbar">
+    <div class="tb-text">
+      <h1 id="headerTitle">Pesadas Bubalas</h1>
+      <p id="headerSub">Carga rapida a campo</p>
+      <div class="sync-line loading" id="syncLine"><span class="sync-dot"></span><span id="syncText">Trayendo datos del Drive…</span></div>
+    </div>
+    <button class="btn-refresh" id="btnRefresh" onclick="syncFromServer(true)" aria-label="Actualizar desde Drive"><span>⟳</span></button>
+  </header>
+
+  <main>
+
+    <!-- ===================== PESAR ===================== -->
+    <section class="screen active" id="screen-pesar">
+      <div class="weigh-date-bar">
+        <div class="fila1">
+          <label style="margin:0">Fecha de pesada</label>
+          <input type="date" id="fechaPesadaGlobal">
+          <span class="count-pill" id="pesadosHoyCount">0 / 0</span>
+        </div>
+        <div class="sub">Animales ya pesados en esta fecha vs. total del filtro actual. Los ya pesados quedan marcados con ✓ y se ordenan al final.</div>
+      </div>
+
+      <div class="chips" id="estadoChips"></div>
+      <div class="search"><input type="text" inputmode="numeric" pattern="[0-9]*" id="buscarCaravana" placeholder="Buscar por N° de caravana..."></div>
+
+      <div id="listaAnimales"></div>
+    </section>
+
+    <!-- ===================== HACIENDA ===================== -->
+    <section class="screen" id="screen-hacienda">
+      <div class="card">
+        <h2>Guías madre</h2>
+        <button class="btn btn-primary" onclick="abrirModalGuia()">📷 Nueva guía (foto)</button>
+        <div style="height:8px"></div>
+        <button class="btn btn-sec" onclick="abrirModalAsignar('')">🏷️ Asignar guía a animales</button>
+        <div id="listaGuias" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card">
+        <h2>Registrar compra o venta</h2>
+        <div class="seg" id="hTipoSeg">
+          <button data-v="Compra" class="active" onclick="hSetTipo(this)">Compra</button>
+          <button data-v="Venta" onclick="hSetTipo(this)">Venta</button>
+        </div>
+        <label>Fecha</label>
+        <input type="date" id="hFecha">
+        <label id="hContraLabel">Vendedor</label>
+        <input type="text" id="hContra" placeholder="Nombre">
+        <label>Cómo se hizo</label>
+        <div class="seg" id="hCanalSeg">
+          <button data-v="Directa" class="active" onclick="hSetCanal(this)">Directa</button>
+          <button data-v="Feria" onclick="hSetCanal(this)">Por feria</button>
+        </div>
+
+        <div id="hVentaAnimales" style="display:none">
+          <label>Animales vendidos</label>
+          <button class="btn btn-sec" id="btnElegirVenta" onclick="abrirModalVenta()">Elegir animales (0)</button>
+          <div class="helper" id="hVentaGuias"></div>
+        </div>
+        <div id="hCabezasWrap">
+          <label>Cabezas</label>
+          <input type="number" inputmode="numeric" id="hCabezas" placeholder="0">
+          <p class="helper">Después de guardar la compra, cargá cada animal con su caravana y guía desde la pestaña Pesar (botón +).</p>
+        </div>
+
+        <div class="row">
+          <div><label>Kg bruto (balanza)</label><input type="number" inputmode="decimal" id="hKg" placeholder="0" oninput="hCalc()"></div>
+          <div><label>% Desbaste</label><input type="number" inputmode="decimal" id="hDesbaste" placeholder="0" oninput="hCalc()"></div>
+        </div>
+        <label>Precio por kg neto ($)</label>
+        <input type="number" inputmode="decimal" id="hPrecio" placeholder="0" oninput="hCalc()">
+        <label>Monto de la hacienda ($)</label>
+        <input type="number" inputmode="decimal" id="hMonto" placeholder="0" oninput="hCalc(true)">
+        <label>IVA de la hacienda</label>
+        <select id="hIva" onchange="hCalc()"><option value="0">Sin IVA</option><option value="0.105">10,5%</option><option value="0.21">21%</option></select>
+
+        <div id="hFeria" style="display:none">
+          <div class="row">
+            <div><label>Comisión de la feria %</label><input type="number" inputmode="decimal" id="hComision" placeholder="0" oninput="hCalc()"></div>
+            <div><label>Ing. Brutos y otros ($)</label><input type="number" inputmode="decimal" id="hOtros" placeholder="0" oninput="hCalc()"></div>
+          </div>
+          <p class="helper">El IVA sobre la comisión (21%) se calcula solo.</p>
+        </div>
+
+        <div class="resumen-h" id="hResumen"></div>
+
+        <label id="hPagosTitulo">Pagos</label>
+        <div id="hPagos"></div>
+        <button class="btn btn-sec" id="btnMasPago" onclick="hAgregarPago()">＋ Agregar otro pago</button>
+        <div style="height:10px"></div>
+
+        <label>Foto de la liquidación o del boleto</label>
+        <div class="foto-picker" id="fotoPickerHacienda">
+          <label class="foto-btn" for="haciendaFotoInput"><span class="ic">📷</span>Sacar foto</label>
+          <input type="file" accept="image/*" capture="environment" id="haciendaFotoInput" style="display:none" onchange="onFotoElegida('hacienda', this)">
+          <div class="foto-hint">Liquidación de feria, boleto o factura. Opcional.</div>
+        </div>
+        <button class="btn btn-primary" id="btnGuardarH" onclick="guardarHacienda()">Guardar compra</button>
+      </div>
+
+      <div class="card">
+        <h2>Últimas operaciones</h2>
+        <div id="listaHacienda"></div>
+      </div>
+    </section>
+
+    <!-- ===================== GASTOS ===================== -->
+    <section class="screen" id="screen-gastos">
+      <div class="kpi-row">
+        <div class="kpi gasto"><div class="lab">Gastos del mes</div><div class="val" id="totalGastosMes">$0</div></div>
+      </div>
+      <div class="card">
+        <h2>Registrar gasto</h2>
+        <label>Fecha</label>
+        <input type="date" id="gastoFecha">
+        <label>Concepto</label>
+        <select id="gastoConcepto"></select>
+        <label>Descripcion</label>
+        <input type="text" id="gastoDescripcion" placeholder="Ej: balanceado, peaje, sueldo...">
+        <label>Monto total pagado ($)</label>
+        <input type="number" inputmode="decimal" pattern="[0-9]*" id="gastoMonto" placeholder="0">
+        <label>Comprobante</label>
+        <select id="gastoComprobante" onchange="toggleIvaGasto()">
+          <option>Sin factura</option>
+          <option>Factura A (con IVA)</option>
+          <option>Factura C / Monotributo</option>
+        </select>
+        <div id="gastoIvaWrap" style="display:none">
+          <label>IVA de la factura</label>
+          <select id="gastoIva"><option value="0.21">21%</option><option value="0.105">10,5%</option><option value="0">Sin IVA</option></select>
+        </div>
+        <label>Estado</label>
+        <div class="seg" id="gastoEstadoSeg">
+          <button data-v="Pagado" class="active" onclick="setSeg('gastoEstadoSeg',this)">Pagado</button>
+          <button data-v="A pagar" onclick="setSeg('gastoEstadoSeg',this)">A pagar</button>
+        </div>
+        <label>Foto del comprobante</label>
+        <div class="foto-picker" id="fotoPickerGasto">
+          <label class="foto-btn" for="gastoFotoInput"><span class="ic">📷</span>Sacar foto</label>
+          <input type="file" accept="image/*" capture="environment" id="gastoFotoInput" style="display:none" onchange="onFotoElegida('gasto', this)">
+          <div class="foto-hint">Factura o ticket. Opcional, pero si la sacás no hace falta anotar IVA ni nada más: se lee sola.</div>
+        </div>
+        <button class="btn btn-primary" onclick="guardarGasto()">Guardar gasto</button>
+      </div>
+      <div class="card">
+        <h2>Ultimos gastos</h2>
+        <div id="listaGastos"></div>
+      </div>
+    </section>
+
+    <!-- ===================== INGRESOS ===================== -->
+    <section class="screen" id="screen-ingresos">
+      <div class="kpi-row">
+        <div class="kpi ingreso"><div class="lab">Ingresos del mes</div><div class="val" id="totalIngresosMes">$0</div></div>
+      </div>
+      <div class="card">
+        <h2>Registrar ingreso</h2>
+        <p class="helper" style="margin-top:-4px">Las ventas de animales se cargan en la pestaña <b>Hacienda</b>. Acá van los otros ingresos.</p>
+        <label>Fecha</label>
+        <input type="date" id="ingresoFecha">
+        <label>Medio de cobro</label>
+        <select id="ingresoMedio"></select>
+        <label>Descripcion</label>
+        <input type="text" id="ingresoDescripcion" placeholder="Ej: aporte de socio, interés bancario...">
+        <label>Monto total ($)</label>
+        <input type="number" inputmode="decimal" pattern="[0-9]*" id="ingresoMonto" placeholder="0">
+        <label>Foto del comprobante</label>
+        <div class="foto-picker" id="fotoPickerIngreso">
+          <label class="foto-btn" for="ingresoFotoInput"><span class="ic">📷</span>Sacar foto</label>
+          <input type="file" accept="image/*" capture="environment" id="ingresoFotoInput" style="display:none" onchange="onFotoElegida('ingreso', this)">
+          <div class="foto-hint">Recibo o comprobante. Opcional.</div>
+        </div>
+        <button class="btn btn-primary" onclick="guardarIngreso()">Guardar ingreso</button>
+      </div>
+      <div class="card">
+        <h2>Ultimos ingresos</h2>
+        <div id="listaIngresos"></div>
+      </div>
+    </section>
+
+    <!-- ===================== OBSERVACIONES ===================== -->
+    <section class="screen" id="screen-observaciones">
+      <div class="weigh-date-bar">
+        <div class="fila1">
+          <label style="margin:0">Fecha de la observación</label>
+          <input type="date" id="fechaObsGlobal">
+        </div>
+        <div class="sub">Esta fecha se usa para la nueva observación que cargues. Cada animal guarda un historial de observaciones con fecha.</div>
+      </div>
+
+      <button class="btn btn-masiva" onclick="abrirModalMasiva()">📋 Cargar a varios animales (todo un campo)</button>
+
+      <div class="chips" id="estadoChipsObs"></div>
+      <div class="search"><input type="text" inputmode="numeric" pattern="[0-9]*" id="buscarCaravanaObs" placeholder="Buscar por N° de caravana..."></div>
+
+      <div id="listaAnimalesObs"></div>
+    </section>
+
+  </main>
+
+  <button class="fab" id="fabNuevo" onclick="abrirModalNuevoAnimal()">+</button>
+
+  <nav class="tabbar">
+    <button class="tab-btn active" data-tab="pesar" onclick="irA('pesar')"><span class="ic">⚖️</span>Pesar</button>
+    <button class="tab-btn" data-tab="hacienda" onclick="irA('hacienda')"><span class="ic">🐃</span>Hacienda</button>
+    <button class="tab-btn" data-tab="gastos" onclick="irA('gastos')"><span class="ic">💸</span>Gastos</button>
+    <button class="tab-btn" data-tab="ingresos" onclick="irA('ingresos')"><span class="ic">💰</span>Ingresos</button>
+    <button class="tab-btn" data-tab="observaciones" onclick="irA('observaciones')"><span class="ic">📝</span>Observ.</button>
+  </nav>
+
+  <!-- Modal: confirmar re-pesaje -->
+  <div class="modal-bg" id="modalConfirm">
+    <div class="modal">
+      <h3><span>Animal ya pesado</span><span class="x" onclick="cerrarModal('modalConfirm')">✕</span></h3>
+      <div id="modalConfirmTexto" class="helper" style="font-size:14px;color:var(--texto);"></div>
+      <div class="confirm-actions">
+        <button class="btn btn-outline" onclick="cerrarModal('modalConfirm')">Cancelar</button>
+        <button class="btn btn-primary" onclick="confirmarModificar()">Si, modificar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: cargar pesada de un animal -->
+  <div class="modal-bg" id="modalPesada">
+    <div class="modal">
+      <h3><span id="modalPesadaTitulo">Cargar pesada</span><span class="x" onclick="cerrarModal('modalPesada')">✕</span></h3>
+      <div id="modalPesadaInfo" class="helper"></div>
+      <label>Fecha</label>
+      <input type="date" id="pesadaModalFecha">
+      <label>Peso (kg)</label>
+      <input type="number" inputmode="decimal" pattern="[0-9]*" id="pesadaModalPeso" placeholder="0" autofocus>
+      <label>Observaciones (opcional)</label>
+      <div id="pesadaModalObsTrail" class="obs-trail-box"></div>
+      <textarea id="pesadaModalObs" rows="2" placeholder="Sumar una observacion nueva (se agrega con la fecha de hoy a las anteriores)..."></textarea>
+      <label>Campo / Estado</label>
+      <select id="pesadaModalEstado">
+        <option value="Puesto 12">Puesto 12</option>
+        <option value="Aserradero">Aserradero</option>
+        <option value="Vendido">Vendido</option>
+        <option value="Muerto">Muerto</option>
+      </select>
+      <p class="helper" id="pesadaModalEstadoHelper"></p>
+      <button class="btn btn-primary" onclick="guardarPesada()">Guardar pesada</button>
+    </div>
+  </div>
+
+  <!-- Modal: cargar observacion de un animal -->
+  <div class="modal-bg" id="modalObservacion">
+    <div class="modal">
+      <h3><span id="modalObsTitulo">Cargar observación</span><span class="x" onclick="cerrarModal('modalObservacion')">✕</span></h3>
+      <div id="modalObsInfo" class="helper"></div>
+      <label>Historial de observaciones</label>
+      <div id="modalObsTrail" class="obs-trail-box"></div>
+      <label>Fecha</label>
+      <input type="date" id="obsModalFecha">
+      <label>Observación</label>
+      <textarea id="obsModalTexto" rows="3" placeholder="Ej: cojera pata trasera, revisar en 10 dias..." autofocus></textarea>
+      <label>Campo / Estado</label>
+      <select id="obsModalEstado">
+        <option value="Puesto 12">Puesto 12</option>
+        <option value="Aserradero">Aserradero</option>
+        <option value="Vendido">Vendido</option>
+        <option value="Muerto">Muerto</option>
+      </select>
+      <p class="helper" id="obsModalEstadoHelper"></p>
+      <button class="btn btn-primary" onclick="guardarObservacion()">Guardar observación</button>
+    </div>
+  </div>
+
+  <!-- Modal: observacion para varios animales -->
+  <div class="modal-bg" id="modalMasiva">
+    <div class="modal">
+      <h3><span>Observación para varios animales</span><span class="x" onclick="cerrarModal('modalMasiva')">✕</span></h3>
+      <label>Campo</label>
+      <div class="seg" id="masivaCampoSeg">
+        <button data-v="Aserradero" class="active" onclick="setCampoMasiva(this)">Aserradero</button>
+        <button data-v="Puesto 12" onclick="setCampoMasiva(this)">Puesto 12</button>
+        <button data-v="Ambos" onclick="setCampoMasiva(this)">Los dos</button>
+      </div>
+      <label>Fecha</label>
+      <input type="date" id="masivaFecha">
+      <label>Observación / tratamiento</label>
+      <textarea id="masivaTexto" rows="3" placeholder="Ej: Se desparasitó con ivermectina al 1%"></textarea>
+      <div class="masiva-sel-bar">
+        <span class="cuenta" id="masivaCuenta">0 animales</span>
+        <span class="links"><button onclick="marcarTodosMasiva(true)">Marcar todos</button><button onclick="marcarTodosMasiva(false)">Ninguno</button></span>
+      </div>
+      <div class="search" style="margin-bottom:8px"><input type="text" inputmode="numeric" id="masivaBuscar" placeholder="Buscar caravana en la lista..."></div>
+      <div class="masiva-lista" id="masivaLista"></div>
+      <p class="helper">Destildá los animales que no recibieron el tratamiento. La observación se agrega, con la fecha, al historial de cada caravana marcada.</p>
+      <button class="btn btn-primary" id="btnGuardarMasiva" onclick="guardarObservacionMasiva()">Guardar en 0 animales</button>
+    </div>
+  </div>
+
+  <!-- Modal: nueva guia -->
+  <div class="modal-bg" id="modalGuia">
+    <div class="modal">
+      <h3><span>Nueva guía madre</span><span class="x" onclick="cerrarModal('modalGuia')">✕</span></h3>
+      <label>Foto o PDF de la guía (DTe / DUT)</label>
+      <div class="foto-picker" id="fotoPickerGuia">
+        <label class="foto-btn" for="guiaFotoInput"><span class="ic">📷</span>Foto o PDF</label>
+        <input type="file" accept="image/*,application/pdf" id="guiaFotoInput" style="display:none" onchange="onFotoElegida('guia', this)">
+        <div class="foto-hint">Guardá siempre la guía: es el respaldo legal.</div>
+      </div>
+      <label>N° de guía (DTe / DUT)</label>
+      <input type="text" id="guiaNro" placeholder="Ej: 0123456">
+      <label>Marca</label>
+      <input type="text" id="guiaMarca" placeholder="Ej: marca del vendedor">
+      <label>Señal</label>
+      <input type="text" id="guiaSenal" placeholder="Ej: hendidura oreja izquierda">
+      <label>Origen (campo / vendedor)</label>
+      <input type="text" id="guiaOrigen" placeholder="Nombre">
+      <div class="row">
+        <div><label>Fecha de la guía</label><input type="date" id="guiaFecha"></div>
+        <div><label>Cabezas</label><input type="number" inputmode="numeric" id="guiaCabezas" placeholder="0"></div>
+      </div>
+      <button class="btn btn-primary" onclick="guardarGuia()">Guardar guía</button>
+      <p class="helper">Una guía puede traer animales de varias marcas: cargá una guía por cada marca.</p>
+    </div>
+  </div>
+
+  <!-- Modal: asignar guia a animales -->
+  <div class="modal-bg" id="modalAsignar">
+    <div class="modal">
+      <h3><span>Asignar guía a animales</span><span class="x" onclick="cerrarModal('modalAsignar')">✕</span></h3>
+      <label>Guía madre</label>
+      <select id="asignarGuiaSel"></select>
+      <div class="seg" id="asignarFiltroSeg" style="margin-top:8px">
+        <button data-v="sin" class="active" onclick="asignarSetFiltro(this)">Sin guía</button>
+        <button data-v="todos" onclick="asignarSetFiltro(this)">Todos</button>
+      </div>
+      <div class="masiva-sel-bar">
+        <span class="cuenta" id="asignarCuenta">0 animales</span>
+        <span class="links"><button onclick="asignarMarcarTodos(true)">Marcar los visibles</button><button onclick="asignarMarcarTodos(false)">Ninguno</button></span>
+      </div>
+      <div class="search" style="margin-bottom:8px"><input type="text" inputmode="numeric" id="asignarBuscar" placeholder="Buscar caravana..." oninput="renderAsignarLista()"></div>
+      <div class="masiva-lista" id="asignarLista"></div>
+      <button class="btn btn-primary" id="btnGuardarAsignar" onclick="guardarAsignacion()">Asignar a 0 animales</button>
+    </div>
+  </div>
+
+  <!-- Modal: elegir animales de una venta -->
+  <div class="modal-bg" id="modalVenta">
+    <div class="modal">
+      <h3><span>Animales de la venta</span><span class="x" onclick="cerrarModal('modalVenta')">✕</span></h3>
+      <div class="seg" id="ventaCampoSeg">
+        <button data-v="Todos" class="active" onclick="ventaSetCampo(this)">Todos</button>
+        <button data-v="Puesto 12" onclick="ventaSetCampo(this)">Puesto 12</button>
+        <button data-v="Aserradero" onclick="ventaSetCampo(this)">Aserradero</button>
+      </div>
+      <div class="masiva-sel-bar">
+        <span class="cuenta" id="ventaCuenta">0 animales</span>
+        <span class="links"><button onclick="ventaLimpiar()">Ninguno</button></span>
+      </div>
+      <div class="search" style="margin-bottom:8px"><input type="text" inputmode="numeric" id="ventaBuscar" placeholder="Buscar caravana..." oninput="renderVentaLista()"></div>
+      <div class="masiva-lista" id="ventaLista"></div>
+      <p class="helper">Cada animal muestra su guía y marca. Al guardar la venta quedan como Vendidos y la guía descuenta sola.</p>
+      <button class="btn btn-primary" onclick="cerrarModal('modalVenta');hRefrescarVenta()">Listo</button>
+    </div>
+  </div>
+
+  <!-- Modal: nuevo animal / nueva caravana -->
+  <div class="modal-bg" id="modalNuevoAnimal">
+    <div class="modal">
+      <h3>Nueva caravana<span class="x" onclick="cerrarModal('modalNuevoAnimal')">✕</span></h3>
+      <label>Guía madre (obligatoria)</label>
+      <select id="nuevoGuia"></select>
+      <p class="helper" id="nuevoGuiaHelper"></p>
+      <label>N° de caravana</label>
+      <div class="row" style="align-items:flex-end">
+        <input type="text" id="nuevoCaravanaNum" placeholder="Ej: 128">
+        <button class="btn btn-sec" style="flex:0 0 auto;width:auto;padding:0 12px;margin:0" onclick="asignarNumeroPropio()">Sin caravana</button>
+      </div>
+      <label>Color de la caravana</label>
+      <div class="color-grid" id="colorGrid"></div>
+      <label>Sexo</label>
+      <div class="seg" id="sexoSeg">
+        <button data-v="macho" onclick="setSeg('sexoSeg',this)">Macho</button>
+        <button data-v="hembra" class="active" onclick="setSeg('sexoSeg',this)">Hembra</button>
+        <button data-v="toro" onclick="setSeg('sexoSeg',this)">Toro</button>
+      </div>
+      <label>Campo / Estado</label>
+      <div class="seg" id="estadoSeg">
+        <button data-v="Puesto 12" class="active" onclick="setSeg('estadoSeg',this)">Puesto 12</button>
+        <button data-v="Aserradero" onclick="setSeg('estadoSeg',this)">Aserradero</button>
+      </div>
+      <label>Fecha ingreso al campo</label>
+      <input type="date" id="nuevoFecha">
+      <label>Peso inicial (kg)</label>
+      <input type="number" inputmode="decimal" pattern="[0-9]*" id="nuevoPeso" placeholder="0">
+      <label>Observaciones (opcional)</label>
+      <textarea id="nuevoObs" rows="2" placeholder="Ej: ingreso de compra, vacunado al ingresar..."></textarea>
+      <button class="btn btn-primary" onclick="guardarNuevoAnimal(false)">Crear caravana</button>
+      <div style="height:8px"></div>
+      <button class="btn btn-sec" onclick="guardarNuevoAnimal(true)">Guardar y cargar otro de la misma guía</button>
+      <p class="helper">El numero de caravana se puede repetir en el tiempo: cuando un animal se vende, el numero de caño queda libre y se reutiliza pintandolo de <b>otro color</b>. Por eso cada animal se identifica por numero + color.</p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+// ==================== DATOS SEMILLA (extraidos de tu planilla real) ====================
+const SEED_ANIMALS = [];
+const CONCEPTOS_GASTO = ["Alimentos", "Arrendamiento", "Honorarios", "Combustibles", "Insumos y Veterinarios", "Infraestructura e Instalaciones", "Fletes y Acarreo", "Sueldo y Jornales", "Movilidad", "Impuestos", "Retiro de Socios", "Balanza", "Otros"];
+const MEDIOS_INGRESO = ["Efectivo", "Transfer. Bancos Ingresos", "Cartera de Cheque Ingresados", "Ventas Contado", "Ingresos Financieros", "Aporte socios - Otros Ingresos", "Ninguno"];
+const COLOR_PALETTE = [{"name": "Blanco", "hex": "#FFFFFF"}, {"name": "Azul", "hex": "#1155CC"}, {"name": "Amarillo", "hex": "#FFFF00"}, {"name": "Terracota", "hex": "#CC4125"}, {"name": "Rojo", "hex": "#FF0000"}, {"name": "Verde", "hex": "#38761D"}, {"name": "Naranja", "hex": "#E69138"}, {"name": "Rosa", "hex": "#EA9999"}];
+// La direccion del script y la clave NO estan en el codigo (la pagina es publica):
+// se cargan una sola vez desde el enlace de configuracion y quedan guardadas en el telefono.
+let WEBAPP_URL = '', CLAVE = '';
+function leerConfig(){
+  try{
+    const m = location.hash.match(/[#&]c=([^&]+)/);
+    if(m){
+      const cfg = JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,'+').replace(/_/g,'/')))));
+      if(cfg.u && cfg.k){ localStorage.setItem('campo_cfg', JSON.stringify({u:cfg.u,k:cfg.k})); }
+      history.replaceState(null,'',location.pathname+location.search);
+    }
+  }catch(e){}
+  try{ const c = JSON.parse(localStorage.getItem('campo_cfg')||'null'); if(c){ WEBAPP_URL=c.u; CLAVE=c.k; } }catch(e){}
+}
+leerConfig();
+function guardarConfigPegada(){
+  const t = document.getElementById('cfgInput').value.trim();
+  const m = t.match(/[#&]c=([^&\s]+)/);
+  if(!m){ document.getElementById('cfgMsg').textContent='No parece el enlace completo. Pedilo de nuevo.'; return; }
+  location.hash = 'c='+m[1]; location.reload();
+}
+function qk(){ return '&k='+encodeURIComponent(CLAVE); }
+
+// ==================== ESTADO ====================
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+
+function loadState(){
+  let animals = localStorage.getItem('campo_animals');
+  let gastos = localStorage.getItem('campo_gastos');
+  let ingresos = localStorage.getItem('campo_ingresos');
+  return {
+    animals: animals ? JSON.parse(animals) : JSON.parse(JSON.stringify(SEED_ANIMALS)),
+    gastos: gastos ? JSON.parse(gastos) : [],
+    ingresos: ingresos ? JSON.parse(ingresos) : [],
+    guias: JSON.parse(localStorage.getItem('campo_guias')||'[]'),
+    hacienda: JSON.parse(localStorage.getItem('campo_hacienda')||'[]'),
+  };
+}
+let STATE = loadState();
+let nextAnimalId = Math.max(0, ...STATE.animals.map(a=>a.id)) + 1;
+let nextGastoId = 1, nextIngresoId = 1;
+
+function persist(){
+  localStorage.setItem('campo_animals', JSON.stringify(STATE.animals));
+  localStorage.setItem('campo_gastos', JSON.stringify(STATE.gastos));
+  localStorage.setItem('campo_ingresos', JSON.stringify(STATE.ingresos));
+  localStorage.setItem('campo_guias', JSON.stringify(STATE.guias));
+  localStorage.setItem('campo_hacienda', JSON.stringify(STATE.hacienda));
+}
+
+// ==================== SINCRONIZACION CON DRIVE ====================
+function nearestColorName(hex){
+  const h = String(hex||'').toLowerCase();
+  const f = COLOR_PALETTE.find(c=>c.hex.toLowerCase()===h);
+  return f ? f.name : (hex||'');
+}
+function mapServerAnimal(a){
+  const hist = (a.history||[]).map(h=>({date:h.date, peso:h.peso}));
+  return {
+    id: a.row,
+    caravana: a.caravana,
+    color: a.colorHex,
+    colorName: nearestColorName(a.colorHex),
+    sexo: a.sexo,
+    estado: a.estado,
+    history: hist,
+    obs: a.obs || '',
+    guiaId: a.guiaId || ''
+  };
+}
+function fmtDateDMY(iso){
+  const p = String(iso).split('-');
+  return p.length===3 ? (p[2]+'/'+p[1]+'/'+p[0]) : iso;
+}
+// ---- Cola de envios pendientes (si no habia señal, se reintenta sola) ----
+function getOutbox(){ try{ return JSON.parse(localStorage.getItem('campo_outbox')||'[]'); }catch(e){ return []; } }
+function setOutbox(q){ localStorage.setItem('campo_outbox', JSON.stringify(q)); }
+
+function setSyncStatus(tipo, texto){
+  const line = document.getElementById('syncLine');
+  line.classList.remove('loading','error');
+  if(tipo) line.classList.add(tipo);
+  document.getElementById('syncText').textContent = texto;
+  document.getElementById('btnRefresh').classList.toggle('girando', tipo==='loading');
+}
+function horaCorta(d){
+  return d.toLocaleString('es-AR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+function textoUltimaSync(){
+  const t = localStorage.getItem('campo_lastSync');
+  return t ? horaCorta(new Date(t)) : 'nunca';
+}
+
+async function fetchConTiempo(url, opts, ms){
+  const ctrl = new AbortController();
+  const timer = setTimeout(()=>ctrl.abort(), ms);
+  try{ return await fetch(url, Object.assign({}, opts||{}, {signal: ctrl.signal})); }
+  finally{ clearTimeout(timer); }
+}
+
+async function enviarPendientes(){
+  let q = getOutbox();
+  while(q.length){
+    try{
+      const res = await fetchConTiempo(WEBAPP_URL, {method:'POST', body: JSON.stringify(Object.assign({k:CLAVE}, q[0]))}, 30000);
+      const rj = await res.json();
+      if(rj && rj.error === 'clave'){ showToast('Clave incorrecta: pedí el enlace de configuración de nuevo'); return false; }
+    }catch(err){ return false; }   // sigue sin señal: se reintenta mas tarde
+    q.shift(); setOutbox(q);
+  }
+  return true;
+}
+
+let syncEnCurso = null;
+function syncFromServer(notify){
+  if(!WEBAPP_URL) return Promise.resolve();
+  if(syncEnCurso) return syncEnCurso;
+  syncEnCurso = (async ()=>{
+    setSyncStatus('loading', 'Actualizando desde el Drive…');
+    try{
+      await enviarPendientes();
+      const res = await fetchConTiempo(WEBAPP_URL+'?action=getData&t='+Date.now()+qk(), {cache:'no-store'}, 45000);
+      const data = await res.json();
+      if(data && data.error) throw new Error(data.error);
+      if(!data || !data.animals) throw new Error('respuesta vacia');
+      const guiaPrev = {}; STATE.animals.forEach(a=>{ if(a.guiaId) guiaPrev[a.id]=a.guiaId; });
+      STATE.animals = data.animals.map(mapServerAnimal);
+      STATE.animals.forEach(a=>{ if(!a.guiaId && guiaPrev[a.id]) a.guiaId = guiaPrev[a.id]; });
+      await syncHacienda();
+      nextAnimalId = Math.max(0, ...STATE.animals.map(a=>a.id)) + 1;
+      persist();
+      localStorage.setItem('campo_lastSync', new Date().toISOString());
+      renderAnimales();
+      renderObservaciones();
+      const pend = getOutbox().length;
+      setSyncStatus(pend ? 'error' : '', 'Al día con el Drive · '+textoUltimaSync()+(pend ? ' · '+pend+' sin enviar' : ''));
+      if(notify) showToast('Datos actualizados desde el Drive');
+    }catch(err){
+      console.error('syncFromServer', err);
+      setSyncStatus('error', 'Sin conexión · datos del teléfono del '+textoUltimaSync());
+      if(notify) showToast('No se pudo conectar con el Drive');
+    }finally{
+      syncEnCurso = null;
+    }
+  })();
+  return syncEnCurso;
+}
+async function syncHacienda(){
+  try{
+    const r = await fetchConTiempo(WEBAPP_URL+'?action=getHacienda&t='+Date.now()+qk(), {cache:'no-store'}, 30000);
+    const d = await r.json();
+    if(d && Array.isArray(d.guias)){
+      STATE.guias = d.guias;
+      (d.asignaciones||[]).forEach(x=>{ const an = STATE.animals.find(a=>a.id===x.row); if(an) an.guiaId = x.guiaId; });
+      if(Array.isArray(d.hacienda)) STATE.hacienda = d.hacienda;
+    }
+  }catch(e){ /* el Drive todavia no tiene las hojas de hacienda: se usan los datos del telefono */ }
+}
+async function fetchAnimalStatus(id){
+  try{
+    const res = await fetchConTiempo(WEBAPP_URL+'?action=getAnimalStatus&row='+id+'&t='+Date.now()+qk(), {cache:'no-store'}, 15000);
+    const data = await res.json();
+    if(data && data.ok) return data;
+  } catch(err){ console.error('fetchAnimalStatus', err); }
+  return null;
+}
+async function postToServer(payload){
+  try{
+    const res = await fetchConTiempo(WEBAPP_URL, {method:'POST', body: JSON.stringify(Object.assign({k:CLAVE}, payload))}, 45000);
+    const data = await res.json();
+    if(data && data.error === 'clave'){ showToast('Clave incorrecta: pedí el enlace de configuración de nuevo'); const q0=getOutbox(); q0.push(payload); setOutbox(q0); return null; }
+    if(data && data.error){ showToast('Error al guardar en el Drive: '+data.error); return null; }
+    return data;
+  } catch(err){
+    console.error('postToServer', err);
+    const q = getOutbox(); q.push(payload); setOutbox(q);
+    setSyncStatus('error', 'Sin conexión · '+q.length+' sin enviar (se envían solos al volver la señal)');
+    showToast('Sin señal: quedó guardado en el teléfono y se envía solo después');
+    return null;
+  }
+}
+
+let currentEstadoFilter = 'Todos';
+let currentEstadoFilterObs = 'Todos';
+let selectedColor = COLOR_PALETTE[0].hex;
+let modalAnimalId = null;
+let modalObsAnimalId = null;
+let pendingConfirmId = null;
+
+// ==================== NAV ====================
+function irA(tab){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+tab).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  document.getElementById('fabNuevo').style.display = tab==='pesar' ? 'block' : 'none';
+  const titles = {pesar:['Pesadas Bubalas','Carga rapida a campo'],
+    hacienda:['Hacienda','Guías, compras y ventas de animales'],
+    gastos:['Gastos del establecimiento','Cargar egresos del dia'],
+    ingresos:['Ingresos del establecimiento','Cargar ventas y cobros'],
+    observaciones:['Observaciones','Registra novedades por animal']};
+  document.getElementById('headerTitle').textContent = titles[tab][0];
+  document.getElementById('headerSub').textContent = titles[tab][1];
+  if(tab==='hacienda') renderHacienda();
+  if(tab==='gastos') renderGastos();
+  if(tab==='ingresos') renderIngresos();
+  if(tab==='pesar') renderAnimales();
+  if(tab==='observaciones') renderObservaciones();
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._h);
+  t._h = setTimeout(()=>t.classList.remove('show'), msg.length>45 ? 3500 : 1800);
+}
+
+function cerrarModal(id){
+  document.getElementById(id).classList.remove('show');
+}
+
+// ==================== PESAR: chips y lista ====================
+function renderChips(){
+  const estados = ['Todos','Puesto 12','Aserradero','Vendido','Muerto','Sin guía'];
+  const cont = document.getElementById('estadoChips');
+  cont.innerHTML = estados.map(e=>{
+    const n = e==='Todos' ? STATE.animals.length : (e==='Sin guía' ? STATE.animals.filter(a=>!a.guiaId).length : STATE.animals.filter(a=>a.estado===e).length);
+    return `<div class="chip ${e===currentEstadoFilter?'active':''}" onclick="setEstadoFilter('${e}')">${e} (${n})</div>`;
+  }).join('');
+}
+function setEstadoFilter(e){ currentEstadoFilter = e; renderAnimales(); }
+
+function ultimoPeso(animal){
+  if(!animal.history.length) return null;
+  return animal.history[animal.history.length-1];
+}
+function penultimoPeso(animal){
+  if(animal.history.length<2) return null;
+  return animal.history[animal.history.length-2];
+}
+function diasEntre(d1,d2){
+  return Math.round((new Date(d2)-new Date(d1))/86400000);
+}
+function pesoEnFecha(animal, fecha){
+  return animal.history.find(h=>h.date===fecha) || null;
+}
+
+function renderAnimales(){
+  renderChips();
+  const q = document.getElementById('buscarCaravana').value.trim().toLowerCase();
+  const fechaSel = document.getElementById('fechaPesadaGlobal').value || todayISO();
+
+  let list = STATE.animals.filter(a=>{
+    if(currentEstadoFilter==='Sin guía'){ if(a.guiaId) return false; }
+    else if(currentEstadoFilter!=='Todos' && a.estado!==currentEstadoFilter) return false;
+    if(q && !String(a.caravana).toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  // marcar quien ya fue pesado en la fecha seleccionada
+  list = list.map(a=>({a, pesadoHoy: !!pesoEnFecha(a, fechaSel)}));
+
+  // ordenar: primero los pendientes, luego por numero de caravana
+  list.sort((x,y)=>{
+    if(x.pesadoHoy !== y.pesadoHoy) return x.pesadoHoy ? 1 : -1;
+    return String(x.a.caravana).localeCompare(String(y.a.caravana), undefined, {numeric:true});
+  });
+
+  const totalFiltro = list.length;
+  const pesadosEnFecha = list.filter(x=>x.pesadoHoy).length;
+  document.getElementById('pesadosHoyCount').textContent = pesadosEnFecha+' / '+totalFiltro;
+
+  const cont = document.getElementById('listaAnimales');
+  if(!list.length){
+    cont.innerHTML = '<div class="empty">No hay animales que coincidan.<br>Toca + para crear una caravana nueva.</div>';
+    return;
+  }
+  cont.innerHTML = list.map(({a, pesadoHoy})=>{
+    const last = ultimoPeso(a);
+    const prev = penultimoPeso(a);
+    const sexoLabel = a.sexo==='macho' ? 'M' : (a.sexo==='toro' ? 'T' : 'H');
+    let deltaHtml = '';
+    if(last && prev){
+      const delta = last.peso - prev.peso;
+      const dias = diasEntre(prev.date, last.date) || 1;
+      const engorde = (delta/dias).toFixed(2);
+      const cls = delta>0 ? 'up' : (delta<0 ? 'down':'flat');
+      const sign = delta>0?'+':'';
+      deltaHtml = `<div class="delta ${cls}">${sign}${delta} kg &middot; ${engorde} kg/dia</div>`;
+    }
+    const textColor = colorTexto(a.color);
+    const checkOv = pesadoHoy ? '<span class="check-ov">&#10003;</span>' : '';
+    const pesadoTag = pesadoHoy ? `<div class="pesado-tag">&#10003; Pesado en esta fecha</div>` : '';
+    const obsHtml = a.obs ? `<div class="obs-note">📝 ${escapeHtml(a.obs).replace(/\n/g,'<br>')}</div>` : '';
+    return `<div class="animal ${pesadoHoy?'pesado-hoy':''}" onclick="abrirModalPesada(${a.id})">
+      <div class="swatch" style="background:${a.color};color:${textColor}">${escapeHtml(String(a.caravana))}${checkOv}</div>
+      <div class="animal-info">
+        <div class="car">Caravana ${escapeHtml(String(a.caravana))} <span class="sexo-badge ${a.sexo}">${sexoLabel}</span></div>
+        <div class="meta">${a.estado} &middot; ${a.colorName||''}</div>
+        ${guiaChipHtml(a)}
+        ${obsHtml}
+      </div>
+      <div class="animal-stats">
+        <div class="peso">${last ? last.peso+' kg' : 'Sin pesadas'}</div>
+        ${pesadoHoy ? pesadoTag : deltaHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function colorTexto(hex){
+  const h = String(hex||'').toLowerCase();
+  return (h==='#ffffff' || h==='#ffff00' || h==='' ) ? '#333' : '#fff';
+}
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ==================== MODAL PESADA ====================
+function abrirModalPesada(id){
+  const fechaSel = document.getElementById('fechaPesadaGlobal').value || todayISO();
+  const a = STATE.animals.find(x=>x.id===id);
+  const existente = pesoEnFecha(a, fechaSel);
+  if(existente){
+    pendingConfirmId = id;
+    document.getElementById('modalConfirmTexto').innerHTML =
+      'La caravana <b>'+escapeHtml(String(a.caravana))+'</b> ('+a.colorName+') ya fue pesada el <b>'+fechaSel+'</b> con <b>'+existente.peso+' kg</b>'+
+      '.<br><br>¿Queres modificar ese registro?';
+    document.getElementById('modalConfirm').classList.add('show');
+    return;
+  }
+  abrirModalPesadaDirecto(id, null);
+}
+function confirmarModificar(){
+  cerrarModal('modalConfirm');
+  const fechaSel = document.getElementById('fechaPesadaGlobal').value || todayISO();
+  const a = STATE.animals.find(x=>x.id===pendingConfirmId);
+  const existente = pesoEnFecha(a, fechaSel);
+  abrirModalPesadaDirecto(pendingConfirmId, existente);
+}
+function abrirModalPesadaDirecto(id, existente){
+  modalAnimalId = id;
+  const a = STATE.animals.find(x=>x.id===id);
+  const last = ultimoPeso(a);
+  document.getElementById('modalPesadaTitulo').textContent = 'Caravana '+a.caravana+' ('+a.colorName+')';
+  document.getElementById('modalPesadaInfo').textContent = (last
+    ? 'Última pesada: '+last.peso+' kg el '+fmtDateDMY(last.date)
+    : 'Sin pesadas registradas todavía.') + ' · Guía: ' + (a.guiaId || 'sin guía asignada');
+  const trailBox = document.getElementById('pesadaModalObsTrail');
+  if(a.obs){ trailBox.style.display='block'; trailBox.innerHTML = escapeHtml(a.obs).replace(/\n/g,'<br>'); }
+  else { trailBox.style.display='none'; trailBox.innerHTML=''; }
+  document.getElementById('pesadaModalFecha').value = document.getElementById('fechaPesadaGlobal').value || todayISO();
+  document.getElementById('pesadaModalPeso').value = existente ? existente.peso : '';
+  document.getElementById('pesadaModalObs').value = '';
+  document.getElementById('pesadaModalEstado').value = a.estado;
+  document.getElementById('pesadaModalEstadoHelper').textContent = 'Campo actual: '+a.estado+'. Cambialo solo si el animal se movio o se vendio.';
+  document.getElementById('modalPesada').classList.add('show');
+  setTimeout(()=>document.getElementById('pesadaModalPeso').focus(), 150);
+}
+async function guardarPesada(){
+  const fecha = document.getElementById('pesadaModalFecha').value;
+  const peso = parseFloat(document.getElementById('pesadaModalPeso').value);
+  const obsNuevo = document.getElementById('pesadaModalObs').value.trim();
+  const nuevoEstado = document.getElementById('pesadaModalEstado').value;
+  if(!fecha || !peso){ showToast('Completa fecha y peso'); return; }
+  const a = STATE.animals.find(x=>x.id===modalAnimalId);
+  const estadoAnterior = a.estado;
+  a.history = a.history.filter(h=>h.date!==fecha);
+  a.history.push({date:fecha, peso:peso});
+  a.history.sort((x,y)=> new Date(x.date)-new Date(y.date));
+  a.estado = nuevoEstado;
+  if(obsNuevo){
+    const linea = fmtDateDMY(fecha)+': '+obsNuevo;
+    a.obs = a.obs ? (a.obs+'\n'+linea) : linea;
+  }
+  persist();
+  cerrarModal('modalPesada');
+  if(nuevoEstado !== estadoAnterior){
+    showToast('Pesada guardada: '+peso+' kg · Movido a '+nuevoEstado);
+  } else {
+    showToast('Pesada guardada: '+peso+' kg');
+  }
+  renderAnimales();
+  const resp = await postToServer({action:'pesada', row:a.id, caravana:String(a.caravana), colorHex:a.color, fecha:fecha, peso:peso, obs:obsNuevo, estado:nuevoEstado});
+  if(resp && resp.ok){ showToast('Sincronizado con Drive ✓'); }
+}
+
+// ==================== OBSERVACIONES ====================
+function renderChipsObs(){
+  const estados = ['Todos','Puesto 12','Aserradero','Vendido','Muerto'];
+  const cont = document.getElementById('estadoChipsObs');
+  cont.innerHTML = estados.map(e=>{
+    const n = e==='Todos' ? STATE.animals.length : STATE.animals.filter(a=>a.estado===e).length;
+    return `<div class="chip ${e===currentEstadoFilterObs?'active':''}" onclick="setEstadoFilterObs('${e}')">${e} (${n})</div>`;
+  }).join('');
+}
+function setEstadoFilterObs(e){ currentEstadoFilterObs = e; renderObservaciones(); }
+
+function renderObservaciones(){
+  renderChipsObs();
+  const q = document.getElementById('buscarCaravanaObs').value.trim().toLowerCase();
+
+  let list = STATE.animals.filter(a=>{
+    if(currentEstadoFilterObs!=='Todos' && a.estado!==currentEstadoFilterObs) return false;
+    if(q && !String(a.caravana).toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  list.sort((x,y)=> String(x.caravana).localeCompare(String(y.caravana), undefined, {numeric:true}));
+
+  const cont = document.getElementById('listaAnimalesObs');
+  if(!list.length){
+    cont.innerHTML = '<div class="empty">No hay animales que coincidan.</div>';
+    return;
+  }
+  cont.innerHTML = list.map(a=>{
+    const last = ultimoPeso(a);
+    const sexoLabel = a.sexo==='macho' ? 'M' : (a.sexo==='toro' ? 'T' : 'H');
+    const textColor = colorTexto(a.color);
+    const obsHtml = a.obs ? `<div class="obs-note">📝 ${escapeHtml(a.obs).replace(/\n/g,'<br>')}</div>` : '';
+    return `<div class="animal" onclick="abrirModalObservacion(${a.id})">
+      <div class="swatch" style="background:${a.color};color:${textColor}">${escapeHtml(String(a.caravana))}</div>
+      <div class="animal-info">
+        <div class="car">Caravana ${escapeHtml(String(a.caravana))} <span class="sexo-badge ${a.sexo}">${sexoLabel}</span></div>
+        <div class="meta">${a.estado} &middot; ${a.colorName||''}</div>
+        ${obsHtml}
+      </div>
+      <div class="animal-stats">
+        <div class="peso">${last ? last.peso+' kg' : 'Sin pesadas'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderObsModalContent(a, opts){
+  opts = opts || {};
+  const last = ultimoPeso(a);
+  document.getElementById('modalObsTitulo').textContent = 'Caravana '+a.caravana+' ('+a.colorName+')';
+  document.getElementById('modalObsInfo').textContent = (last
+    ? 'Última pesada: '+last.peso+' kg el '+fmtDateDMY(last.date)+' · '+a.estado
+    : a.estado) + ' · Guía: ' + (a.guiaId || 'sin guía asignada');
+  const trailBox = document.getElementById('modalObsTrail');
+  if(a.obs){ trailBox.style.display='block'; trailBox.innerHTML = escapeHtml(a.obs).replace(/\n/g,'<br>'); }
+  else { trailBox.style.display='block'; trailBox.innerHTML = '<span style="opacity:.6">Sin observaciones todavia.</span>'; }
+  // El desplegable de Campo/Estado SOLO se toca si el usuario todavia no lo edito a mano.
+  // Si ya lo cambio, nunca lo pisamos, para no perder su seleccion.
+  if(!opts.skipEstadoSelect){
+    document.getElementById('obsModalEstado').value = a.estado;
+  }
+  document.getElementById('obsModalEstadoHelper').textContent = 'Campo actual: '+a.estado+'. Cambialo solo si el animal se movio o se vendio.';
+}
+let obsEstadoTocadoPorUsuario = false;
+function abrirModalObservacion(id){
+  modalObsAnimalId = id;
+  obsEstadoTocadoPorUsuario = false;
+  const a = STATE.animals.find(x=>x.id===id);
+  renderObsModalContent(a);
+  document.getElementById('obsModalFecha').value = document.getElementById('fechaObsGlobal').value || todayISO();
+  document.getElementById('obsModalTexto').value = '';
+  document.getElementById('modalObservacion').classList.add('show');
+  setTimeout(()=>document.getElementById('obsModalTexto').focus(), 150);
+  // Trae el estado y las observaciones mas frescas de Drive en segundo plano,
+  // por si otro dispositivo cambio algo despues de la ultima sincronizacion.
+  fetchAnimalStatus(id).then(fresh=>{
+    if(!fresh || modalObsAnimalId !== id) return;
+    let changed = false;
+    if(fresh.estado && fresh.estado !== a.estado){ a.estado = fresh.estado; changed = true; }
+    if(typeof fresh.obs === 'string' && fresh.obs !== a.obs){ a.obs = fresh.obs; changed = true; }
+    if(changed){
+      persist();
+      renderObsModalContent(a, {skipEstadoSelect: obsEstadoTocadoPorUsuario});
+    }
+  });
+}
+
+async function guardarObservacion(){
+  const fecha = document.getElementById('obsModalFecha').value;
+  const texto = document.getElementById('obsModalTexto').value.trim();
+  const nuevoEstado = document.getElementById('obsModalEstado').value;
+  if(!fecha || !texto){ showToast('Completa fecha y observación'); return; }
+  const a = STATE.animals.find(x=>x.id===modalObsAnimalId);
+  const estadoAnterior = a.estado;
+  const linea = fmtDateDMY(fecha)+': '+texto;
+  a.obs = a.obs ? (a.obs+'\n'+linea) : linea;
+  a.estado = nuevoEstado;
+  persist();
+  cerrarModal('modalObservacion');
+  if(nuevoEstado !== estadoAnterior){
+    showToast('Observación guardada · Movido a '+nuevoEstado);
+  } else {
+    showToast('Observación guardada');
+  }
+  renderObservaciones();
+  const resp = await postToServer({action:'observacion', row:a.id, caravana:String(a.caravana), colorHex:a.color, fecha:fecha, obs:texto, estado:nuevoEstado});
+  if(resp && resp.ok){ showToast('Sincronizado con Drive ✓'); }
+}
+
+// ==================== OBSERVACION PARA VARIOS ANIMALES ====================
+let masivaCampo = 'Aserradero';
+let masivaSeleccion = new Set();
+
+function animalesDelCampoMasiva(){
+  return STATE.animals
+    .filter(a => masivaCampo==='Ambos' ? (a.estado==='Aserradero' || a.estado==='Puesto 12') : a.estado===masivaCampo)
+    .sort((x,y)=> String(x.caravana).localeCompare(String(y.caravana), undefined, {numeric:true}));
+}
+function abrirModalMasiva(){
+  document.getElementById('masivaFecha').value = document.getElementById('fechaObsGlobal').value || todayISO();
+  document.getElementById('masivaTexto').value = '';
+  document.getElementById('masivaBuscar').value = '';
+  const campo = (currentEstadoFilterObs==='Puesto 12' || currentEstadoFilterObs==='Aserradero') ? currentEstadoFilterObs : 'Aserradero';
+  const btn = document.querySelector('#masivaCampoSeg button[data-v="'+campo+'"]');
+  setCampoMasiva(btn);
+  document.getElementById('modalMasiva').classList.add('show');
+}
+function setCampoMasiva(btn){
+  setSeg('masivaCampoSeg', btn);
+  masivaCampo = btn.dataset.v;
+  masivaSeleccion = new Set(animalesDelCampoMasiva().map(a=>a.id));
+  renderListaMasiva();
+}
+function renderListaMasiva(){
+  const q = document.getElementById('masivaBuscar').value.trim().toLowerCase();
+  const lista = animalesDelCampoMasiva().filter(a => !q || String(a.caravana).toLowerCase().includes(q));
+  const cont = document.getElementById('masivaLista');
+  cont.innerHTML = lista.length ? lista.map(a=>{
+    const on = masivaSeleccion.has(a.id);
+    return `<label class="masiva-item ${on?'':'off'}" style="margin:0">
+      <input type="checkbox" ${on?'checked':''} onchange="toggleMasiva(${a.id}, this.checked)">
+      <span class="swatch" style="background:${a.color};color:${colorTexto(a.color)}">${escapeHtml(String(a.caravana))}</span>
+      <span class="t">Caravana ${escapeHtml(String(a.caravana))}<br><span class="s">${escapeHtml(a.colorName||'')} · ${escapeHtml(a.estado)} · ${escapeHtml(a.guiaId||'sin guía')}</span></span>
+    </label>`;
+  }).join('') : '<div class="empty">No hay animales en este campo.</div>';
+  actualizarCuentaMasiva();
+}
+function toggleMasiva(id, on){
+  if(on) masivaSeleccion.add(id); else masivaSeleccion.delete(id);
+  renderListaMasiva();
+}
+function marcarTodosMasiva(on){
+  masivaSeleccion = on ? new Set(animalesDelCampoMasiva().map(a=>a.id)) : new Set();
+  renderListaMasiva();
+}
+function actualizarCuentaMasiva(){
+  const n = masivaSeleccion.size;
+  document.getElementById('masivaCuenta').textContent = n+(n===1?' animal marcado':' animales marcados');
+  document.getElementById('btnGuardarMasiva').textContent = 'Guardar en '+n+(n===1?' animal':' animales');
+}
+async function guardarObservacionMasiva(){
+  const fecha = document.getElementById('masivaFecha').value;
+  const texto = document.getElementById('masivaTexto').value.trim();
+  if(!fecha || !texto){ showToast('Completá fecha y observación'); return; }
+  const elegidos = STATE.animals.filter(a=>masivaSeleccion.has(a.id));
+  if(!elegidos.length){ showToast('Marcá al menos un animal'); return; }
+  const linea = fmtDateDMY(fecha)+': '+texto;
+  elegidos.forEach(a=>{ a.obs = a.obs ? (a.obs+'\n'+linea) : linea; });
+  persist();
+  cerrarModal('modalMasiva');
+  renderObservaciones();
+  renderAnimales();
+  showToast('Guardando en '+elegidos.length+' animales…');
+  const resp = await postToServer({
+    action:'observacionMasiva', fecha:fecha, obs:texto,
+    items: elegidos.map(a=>({row:a.id, caravana:String(a.caravana), colorHex:a.color}))
+  });
+  if(resp && resp.ok){
+    let msg = 'Guardado en el Drive en '+resp.cantidad+' animales ✓';
+    if(resp.noEncontrados && resp.noEncontrados.length) msg += ' · No encontradas: '+resp.noEncontrados.join(', ');
+    showToast(msg);
+    syncFromServer(false);
+  }
+}
+
+// ==================== NUEVO ANIMAL ====================
+function renderColorGrid(){
+  const cont = document.getElementById('colorGrid');
+  cont.innerHTML = COLOR_PALETTE.map(c=>
+    `<div class="color-opt ${c.hex===selectedColor?'sel':''}" style="background:${c.hex}" title="${c.name}" onclick="pickColor('${c.hex}')"></div>`
+  ).join('');
+}
+function pickColor(hex){ selectedColor = hex; renderColorGrid(); }
+function setSeg(groupId, btn){
+  document.querySelectorAll('#'+groupId+' button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function abrirModalNuevoAnimal(){
+  const sel = document.getElementById('nuevoGuia');
+  const previa = sel.value;
+  sel.innerHTML = STATE.guias.length
+    ? STATE.guias.map(g=>`<option value="${escapeHtml(guiaKey(g))}">${escapeHtml(guiaKey(g))}</option>`).join('')
+    : '<option value="">(no hay guías cargadas)</option>';
+  if(previa && STATE.guias.some(g=>guiaKey(g)===previa)) sel.value = previa;
+  document.getElementById('nuevoGuiaHelper').textContent = STATE.guias.length ? '' : 'Primero cargá la guía en la pestaña Hacienda (📷 Nueva guía).';
+  document.getElementById('nuevoCaravanaNum').value='';
+  document.getElementById('nuevoFecha').value = todayISO();
+  document.getElementById('nuevoPeso').value='';
+  document.getElementById('nuevoObs').value='';
+  selectedColor = COLOR_PALETTE[0].hex;
+  renderColorGrid();
+  document.getElementById('modalNuevoAnimal').classList.add('show');
+}
+async function guardarNuevoAnimal(otro){
+  const guiaId = document.getElementById('nuevoGuia').value;
+  if(!guiaId){ showToast('Elegí la guía madre del animal'); return; }
+  const num = document.getElementById('nuevoCaravanaNum').value.trim();
+  const fecha = document.getElementById('nuevoFecha').value;
+  const peso = parseFloat(document.getElementById('nuevoPeso').value);
+  const obs = document.getElementById('nuevoObs').value.trim();
+  if(!num){ showToast('Ingresa el numero de caravana'); return; }
+  const sexo = document.querySelector('#sexoSeg button.active').dataset.v;
+  const estado = document.querySelector('#estadoSeg button.active').dataset.v;
+  const colorObj = COLOR_PALETTE.find(c=>c.hex===selectedColor);
+  const dup = STATE.animals.some(a=>String(a.caravana)===num && a.color===selectedColor);
+  if(dup){ showToast('Ya existe esa caravana con ese color'); return; }
+  const nuevo = {
+    id: nextAnimalId++,
+    caravana: num,
+    color: selectedColor,
+    colorName: colorObj.name,
+    sexo: sexo,
+    estado: estado,
+    history: (fecha && peso) ? [{date:fecha, peso:peso}] : [],
+    obs: obs ? (fmtDateDMY(fecha||todayISO())+': '+obs) : '',
+    guiaId: guiaId
+  };
+  STATE.animals.push(nuevo);
+  persist();
+  if(otro){
+    document.getElementById('nuevoCaravanaNum').value=''; document.getElementById('nuevoPeso').value=''; document.getElementById('nuevoObs').value='';
+    document.getElementById('nuevoCaravanaNum').focus();
+  } else { cerrarModal('modalNuevoAnimal'); }
+  showToast('Caravana '+num+' creada en '+guiaId);
+  renderAnimales(); renderGuias();
+  const resp = await postToServer({action:'nuevoAnimal', caravana:num, colorHex:selectedColor, sexo:sexo, estado:estado, fecha:(fecha&&peso)?fecha:undefined, peso:(fecha&&peso)?peso:undefined, obs:obs, guiaId:guiaId});
+  if(resp && resp.ok){
+    nuevo.id = resp.row;
+    persist();
+    showToast('Sincronizado con Drive ✓');
+  }
+}
+
+// ==================== FOTOS DE COMPROBANTE ====================
+const FOTO_PENDIENTE = {gasto:null, ingreso:null, hacienda:null, guia:null}; // {base64, mime} del archivo elegido, antes de guardar
+function resizeImagenAB64(file, maxLado, calidad){
+  return new Promise((resolve, reject)=>{
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = function(){
+      let w = img.width, h = img.height;
+      if(w > h && w > maxLado){ h = Math.round(h*maxLado/w); w = maxLado; }
+      else if(h >= w && h > maxLado){ w = Math.round(w*maxLado/h); h = maxLado; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      const dataUrl = canvas.toDataURL('image/jpeg', calidad);
+      resolve(dataUrl.split(',')[1]); // solo el base64, sin el prefijo data:...
+    };
+    img.onerror = function(){ URL.revokeObjectURL(url); reject(new Error('No se pudo leer la imagen')); };
+    img.src = url;
+  });
+}
+async function onFotoElegida(tipo, inputEl){
+  const file = inputEl.files && inputEl.files[0];
+  if(!file) return;
+  try{
+    showToast('Procesando foto...');
+    if(file.type === 'application/pdf'){
+      if(file.size > 6*1024*1024){ showToast('El PDF pesa demasiado (máx 6 MB)'); inputEl.value=''; return; }
+      const b64pdf = await new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(String(fr.result).split(',')[1]); fr.onerror=()=>rej(new Error('pdf')); fr.readAsDataURL(file); });
+      FOTO_PENDIENTE[tipo] = {base64:b64pdf, mime:'application/pdf'};
+    } else {
+      const b64 = await resizeImagenAB64(file, 1600, 0.72);
+      FOTO_PENDIENTE[tipo] = {base64:b64, mime:'image/jpeg'};
+    }
+    renderFotoPicker(tipo);
+  }catch(err){
+    console.error('onFotoElegida', err);
+    showToast('No se pudo cargar la foto, proba de nuevo');
+  }
+  inputEl.value = '';
+}
+function quitarFoto(tipo){
+  FOTO_PENDIENTE[tipo] = null;
+  renderFotoPicker(tipo);
+}
+function renderFotoPicker(tipo){
+  const cont = document.getElementById('fotoPicker'+tipo.charAt(0).toUpperCase()+tipo.slice(1));
+  const inputId = tipo+'FotoInput';
+  const foto = FOTO_PENDIENTE[tipo];
+  const esGuia = tipo==='guia';
+  if(foto){
+    const prev = foto.mime==='application/pdf' ? '<div class="foto-btn" style="min-width:64px;justify-content:center">📄 PDF</div>' : `<img src="data:${foto.mime};base64,${foto.base64}">`;
+    cont.innerHTML = `
+      <div class="foto-preview">
+        ${prev}
+        <button class="quitar" onclick="quitarFoto('${tipo}')">✕</button>
+      </div>
+      <div class="foto-hint">${esGuia ? 'Guía lista. Queda guardada en el Drive como respaldo.' : 'Foto lista. Se analiza sola al sincronizar: IVA, comisión y demás se completan sin que cargues nada más.'}</div>`;
+  } else {
+    cont.innerHTML = `
+      <label class="foto-btn" for="${inputId}"><span class="ic">📷</span>${esGuia ? 'Foto o PDF' : 'Sacar foto'}</label>
+      <input type="file" ${esGuia ? 'accept="image/*,application/pdf"' : 'accept="image/*" capture="environment"'} id="${inputId}" style="display:none" onchange="onFotoElegida('${tipo}', this)">
+      <div class="foto-hint">${esGuia ? 'Guardá siempre la guía: es el respaldo legal.' : 'Factura, ticket o liquidación. Opcional, pero si la sacás no hace falta anotar IVA ni nada más: se lee sola.'}</div>`;
+  }
+}
+
+// ==================== GASTOS ====================
+function fillSelect(id, arr){
+  document.getElementById(id).innerHTML = arr.map(v=>`<option value="${v}">${v}</option>`).join('');
+}
+function toggleIvaGasto(){
+  document.getElementById('gastoIvaWrap').style.display = document.getElementById('gastoComprobante').value.indexOf('Factura A')===0 ? 'block' : 'none';
+}
+async function guardarGasto(){
+  const fecha = document.getElementById('gastoFecha').value;
+  const concepto = document.getElementById('gastoConcepto').value;
+  const descripcion = document.getElementById('gastoDescripcion').value.trim();
+  const monto = parseFloat(document.getElementById('gastoMonto').value);
+  const comprobante = document.getElementById('gastoComprobante').value;
+  const conIva = comprobante.indexOf('Factura A')===0;
+  const ivaPct = conIva ? parseFloat(document.getElementById('gastoIva').value) : 0;
+  const estadoPago = document.querySelector('#gastoEstadoSeg button.active').dataset.v;
+  if(!fecha || !monto){ showToast('Completa fecha y monto'); return; }
+  const foto = FOTO_PENDIENTE.gasto;
+  STATE.gastos.unshift({id:nextGastoId++, fecha, concepto, descripcion, monto, comprobante, estadoPago, tieneFoto:!!foto});
+  persist();
+  document.getElementById('gastoDescripcion').value='';
+  document.getElementById('gastoMonto').value='';
+  document.getElementById('gastoComprobante').value='Sin factura'; toggleIvaGasto();
+  FOTO_PENDIENTE.gasto = null;
+  renderFotoPicker('gasto');
+  showToast(foto ? 'Gasto guardado con foto' : 'Gasto guardado');
+  renderGastos();
+  const payload = {action:'gasto', fecha:fecha, concepto:concepto, descripcion:descripcion, monto:monto, comprobante:comprobante, ivaPct:ivaPct, estadoPago:estadoPago};
+  if(foto){ payload.fotoBase64 = foto.base64; payload.fotoMime = foto.mime; }
+  const resp = await postToServer(payload);
+  if(resp && resp.ok){ showToast('Sincronizado con Drive ✓'); }
+}
+function renderGastos(){
+  const cont = document.getElementById('listaGastos');
+  if(!STATE.gastos.length){ cont.innerHTML = '<div class="empty">Todavia no cargaste gastos.</div>'; }
+  else {
+    cont.innerHTML = STATE.gastos.slice(0,25).map(g=>`
+      <div class="list-item">
+        <div><div class="desc">${escapeHtml(g.descripcion||g.concepto)}${g.tieneFoto?'<span class="foto-badge">📷 foto</span>':''}</div><div class="cat">${g.concepto} &middot; ${g.fecha}${g.estadoPago==='A pagar'?' &middot; <b>A pagar</b>':''}</div></div>
+        <div class="amt gasto">-$${Number(g.monto).toLocaleString('es-AR')}</div>
+      </div>`).join('');
+  }
+  const now = new Date();
+  const mesActual = now.toISOString().slice(0,7);
+  const total = STATE.gastos.filter(g=>g.fecha && g.fecha.startsWith(mesActual)).reduce((s,g)=>s+Number(g.monto),0);
+  document.getElementById('totalGastosMes').textContent = '$'+total.toLocaleString('es-AR');
+}
+
+// ==================== INGRESOS ====================
+async function guardarIngreso(){
+  const fecha = document.getElementById('ingresoFecha').value;
+  const medio = document.getElementById('ingresoMedio').value;
+  const descripcion = document.getElementById('ingresoDescripcion').value.trim();
+  const monto = parseFloat(document.getElementById('ingresoMonto').value);
+  if(!fecha || !monto){ showToast('Completa fecha y monto'); return; }
+  const foto = FOTO_PENDIENTE.ingreso;
+  STATE.ingresos.unshift({id:nextIngresoId++, fecha, medio, descripcion, monto, tieneFoto:!!foto});
+  persist();
+  document.getElementById('ingresoDescripcion').value='';
+  document.getElementById('ingresoMonto').value='';
+  FOTO_PENDIENTE.ingreso = null;
+  renderFotoPicker('ingreso');
+  showToast(foto ? 'Ingreso guardado con foto' : 'Ingreso guardado');
+  renderIngresos();
+  const payload = {action:'ingreso', fecha:fecha, medio:medio, descripcion:descripcion, monto:monto};
+  if(foto){ payload.fotoBase64 = foto.base64; payload.fotoMime = foto.mime; }
+  const resp = await postToServer(payload);
+  if(resp && resp.ok){ showToast('Sincronizado con Drive ✓'); }
+}
+function renderIngresos(){
+  const cont = document.getElementById('listaIngresos');
+  if(!STATE.ingresos.length){ cont.innerHTML = '<div class="empty">Todavia no cargaste ingresos.</div>'; }
+  else {
+    cont.innerHTML = STATE.ingresos.slice(0,25).map(g=>`
+      <div class="list-item">
+        <div><div class="desc">${escapeHtml(g.descripcion||g.medio)}${g.tieneFoto?'<span class="foto-badge">📷 foto</span>':''}</div><div class="cat">${g.medio} &middot; ${g.fecha}</div></div>
+        <div class="amt ingreso">+$${Number(g.monto).toLocaleString('es-AR')}</div>
+      </div>`).join('');
+  }
+  const now = new Date();
+  const mesActual = now.toISOString().slice(0,7);
+  const total = STATE.ingresos.filter(g=>g.fecha && g.fecha.startsWith(mesActual)).reduce((s,g)=>s+Number(g.monto),0);
+  document.getElementById('totalIngresosMes').textContent = '$'+total.toLocaleString('es-AR');
+}
+
+// ==================== HACIENDA Y GUIAS ====================
+const fmt$ = n => '$'+Math.round(Number(n)||0).toLocaleString('es-AR');
+function guiaKey(g){ return (g.nro||'')+' | '+(g.marca||''); }
+function guiaSaldo(g){
+  const k = guiaKey(g);
+  const cargados = STATE.animals.filter(a=>a.guiaId===k);
+  const salidas = cargados.filter(a=>a.estado==='Vendido'||a.estado==='Muerto').length;
+  return {cargados:cargados.length, salidas, saldo:(Number(g.cabezas)||0)-salidas, vivos:cargados.length-salidas};
+}
+function guiaChipHtml(a){
+  return a.guiaId ? `<div class="guia-chip">Guía ${escapeHtml(a.guiaId)}</div>` : `<div class="guia-chip sin">Sin guía</div>`;
+}
+function renderHacienda(){ renderGuias(); renderListaHacienda(); hRefrescarVenta(); }
+function renderGuias(){
+  const cont = document.getElementById('listaGuias'); if(!cont) return;
+  if(!STATE.guias.length){ cont.innerHTML='<div class="empty">Todavía no hay guías cargadas.</div>'; return; }
+  cont.innerHTML = STATE.guias.map(g=>{
+    const x = guiaSaldo(g);
+    return `<div class="guia-item" onclick="abrirModalAsignar('${escapeHtml(guiaKey(g)).replace(/'/g,"\\'")}')">
+      <div><div class="g1">${escapeHtml(g.nro)} · ${escapeHtml(g.marca)}</div>
+      <div class="g2">${escapeHtml(g.origen||'')} ${g.fecha?'· '+fmtDateDMY(g.fecha):''} · ${x.cargados}/${g.cabezas||0} animales cargados${g.tieneFoto?' · 📎':''}</div></div>
+      <div class="saldo ${x.saldo<=0?'cero':''}">${x.saldo}<small>saldo</small></div></div>`;
+  }).join('');
+}
+// ---- nueva guia ----
+function abrirModalGuia(){
+  ['guiaNro','guiaMarca','guiaSenal','guiaOrigen','guiaCabezas'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('guiaFecha').value = todayISO();
+  FOTO_PENDIENTE.guia = null; renderFotoPicker('guia');
+  document.getElementById('modalGuia').classList.add('show');
+}
+async function guardarGuia(){
+  const nro = document.getElementById('guiaNro').value.trim();
+  const marca = document.getElementById('guiaMarca').value.trim();
+  const senal = document.getElementById('guiaSenal').value.trim();
+  const origen = document.getElementById('guiaOrigen').value.trim();
+  const fecha = document.getElementById('guiaFecha').value;
+  const cabezas = parseInt(document.getElementById('guiaCabezas').value)||0;
+  if(!nro || !marca){ showToast('Falta el N° de guía y la marca'); return; }
+  const g = {nro, marca, senal, origen, fecha, cabezas, tieneFoto:!!FOTO_PENDIENTE.guia};
+  if(STATE.guias.some(x=>guiaKey(x)===guiaKey(g))){ showToast('Esa guía y marca ya existe'); return; }
+  STATE.guias.unshift(g); persist();
+  const foto = FOTO_PENDIENTE.guia; FOTO_PENDIENTE.guia = null;
+  cerrarModal('modalGuia'); renderGuias();
+  showToast('Guía guardada');
+  const payload = {action:'guia', nro, marca, senal, origen, fecha, cabezas};
+  if(foto){ payload.fotoBase64 = foto.base64; payload.fotoMime = foto.mime; }
+  const r = await postToServer(payload);
+  if(r && r.ok) showToast('Guía sincronizada ✓');
+}
+// ---- asignar guia a animales ----
+let asignarSel = new Set(), asignarFiltro = 'sin';
+function abrirModalAsignar(key){
+  if(!STATE.guias.length){ showToast('Primero cargá una guía'); return; }
+  const sel = document.getElementById('asignarGuiaSel');
+  sel.innerHTML = STATE.guias.map(g=>`<option value="${escapeHtml(guiaKey(g))}">${escapeHtml(guiaKey(g))}</option>`).join('');
+  if(key) sel.value = key;
+  asignarSel = new Set(); asignarFiltro = 'sin';
+  document.querySelectorAll('#asignarFiltroSeg button').forEach(b=>b.classList.toggle('active', b.dataset.v==='sin'));
+  document.getElementById('asignarBuscar').value='';
+  renderAsignarLista();
+  document.getElementById('modalAsignar').classList.add('show');
+}
+function asignarSetFiltro(btn){ setSeg('asignarFiltroSeg',btn); asignarFiltro=btn.dataset.v; renderAsignarLista(); }
+function asignarVisibles(){
+  const q = document.getElementById('asignarBuscar').value.trim().toLowerCase();
+  return STATE.animals.filter(a=>(asignarFiltro==='todos'||!a.guiaId) && (!q||String(a.caravana).toLowerCase().includes(q)));
+}
+function renderAsignarLista(){
+  const lista = asignarVisibles();
+  document.getElementById('asignarLista').innerHTML = lista.length ? lista.map(a=>{
+    const on = asignarSel.has(a.id);
+    return `<label class="masiva-item ${on?'':'off'}" style="margin:0"><input type="checkbox" ${on?'checked':''} onchange="asignarToggle(${a.id},this.checked)">
+      <span class="swatch" style="background:${a.color};color:${colorTexto(a.color)}">${escapeHtml(String(a.caravana))}</span>
+      <span class="t">Caravana ${escapeHtml(String(a.caravana))}<br><span class="s">${escapeHtml(a.colorName||'')} · ${escapeHtml(a.estado)} · ${escapeHtml(a.guiaId||'sin guía')}</span></span></label>`;
+  }).join('') : '<div class="empty">No hay animales para mostrar.</div>';
+  const n = asignarSel.size;
+  document.getElementById('asignarCuenta').textContent = n+' seleccionados';
+  document.getElementById('btnGuardarAsignar').textContent = 'Asignar a '+n+' animales';
+}
+function asignarToggle(id,on){ if(on) asignarSel.add(id); else asignarSel.delete(id); renderAsignarLista(); }
+function asignarMarcarTodos(on){ if(on) asignarVisibles().forEach(a=>asignarSel.add(a.id)); else asignarSel=new Set(); renderAsignarLista(); }
+async function guardarAsignacion(){
+  const key = document.getElementById('asignarGuiaSel').value;
+  if(!key || !asignarSel.size){ showToast('Elegí la guía y al menos un animal'); return; }
+  const ids = [...asignarSel];
+  const items = [];
+  ids.forEach(id=>{ const a = STATE.animals.find(x=>x.id===id); if(a){ a.guiaId = key; items.push({row:a.id, caravana:a.caravana, colorHex:a.color}); } });
+  persist(); cerrarModal('modalAsignar'); renderAnimales(); renderGuias();
+  showToast(items.length+' animales asignados a '+key);
+  const r = await postToServer({action:'asignarGuia', guiaId:key, animales:items});
+  if(r && r.ok) showToast('Asignación sincronizada ✓');
+}
+function asignarNumeroPropio(){
+  const usados = STATE.animals.map(a=>String(a.caravana)).filter(c=>/^P\d+$/.test(c)).map(c=>parseInt(c.slice(1)));
+  const n = (usados.length?Math.max(...usados):0)+1;
+  document.getElementById('nuevoCaravanaNum').value = 'P'+n;
+  showToast('Número propio P'+n+' (anotalo en la caravana nueva)');
+}
+// ---- venta: elegir animales ----
+let ventaSel = new Set(), ventaCampo = 'Todos';
+function abrirModalVenta(){ renderVentaLista(); document.getElementById('modalVenta').classList.add('show'); }
+function ventaSetCampo(btn){ setSeg('ventaCampoSeg',btn); ventaCampo=btn.dataset.v; renderVentaLista(); }
+function ventaLimpiar(){ ventaSel=new Set(); renderVentaLista(); hRefrescarVenta(); }
+function renderVentaLista(){
+  const q = document.getElementById('ventaBuscar').value.trim().toLowerCase();
+  const lista = STATE.animals.filter(a=>(a.estado==='Puesto 12'||a.estado==='Aserradero') && (ventaCampo==='Todos'||a.estado===ventaCampo) && (!q||String(a.caravana).toLowerCase().includes(q)));
+  document.getElementById('ventaLista').innerHTML = lista.length ? lista.map(a=>{
+    const on = ventaSel.has(a.id);
+    return `<label class="masiva-item ${on?'':'off'}" style="margin:0"><input type="checkbox" ${on?'checked':''} onchange="ventaToggle(${a.id},this.checked)">
+      <span class="swatch" style="background:${a.color};color:${colorTexto(a.color)}">${escapeHtml(String(a.caravana))}</span>
+      <span class="t">Caravana ${escapeHtml(String(a.caravana))}<br><span class="s">${escapeHtml(a.estado)} · ${escapeHtml(a.guiaId||'SIN GUÍA')}</span></span></label>`;
+  }).join('') : '<div class="empty">No hay animales en este campo.</div>';
+  document.getElementById('ventaCuenta').textContent = ventaSel.size+' animales';
+}
+function ventaToggle(id,on){ if(on) ventaSel.add(id); else ventaSel.delete(id); renderVentaLista(); }
+function hRefrescarVenta(){
+  document.getElementById('btnElegirVenta').textContent = 'Elegir animales ('+ventaSel.size+')';
+  const porGuia = {};
+  ventaSel.forEach(id=>{ const a=STATE.animals.find(x=>x.id===id); if(a){ const k=a.guiaId||'SIN GUÍA'; porGuia[k]=(porGuia[k]||0)+1; } });
+  const txt = Object.keys(porGuia).map(k=>k+': '+porGuia[k]).join(' · ');
+  document.getElementById('hVentaGuias').textContent = txt ? 'Descuenta de → '+txt : '';
+  const hc = document.getElementById('hCabezas'); if(hTipo()==='Venta') hc.value = ventaSel.size;
+  hCalc();
+}
+// ---- formulario hacienda ----
+function hTipo(){ return document.querySelector('#hTipoSeg button.active').dataset.v; }
+function hCanal(){ return document.querySelector('#hCanalSeg button.active').dataset.v; }
+function hSetTipo(b){ setSeg('hTipoSeg',b); hAplicarTipo(); }
+function hSetCanal(b){ setSeg('hCanalSeg',b); hAplicarTipo(); }
+function hAplicarTipo(){
+  const v = hTipo()==='Venta', f = hCanal()==='Feria';
+  document.getElementById('hContraLabel').textContent = v ? 'Comprador' : 'Vendedor';
+  document.getElementById('hVentaAnimales').style.display = v ? 'block' : 'none';
+  document.getElementById('hCabezasWrap').style.display = v ? 'none' : 'block';
+  document.getElementById('hFeria').style.display = f ? 'block' : 'none';
+  document.getElementById('hPagosTitulo').textContent = v ? 'Cobros' : 'Pagos';
+  document.getElementById('btnGuardarH').textContent = v ? 'Guardar venta' : 'Guardar compra';
+  hCalc();
+}
+let hMontoManual = false;
+function hCalc(manual){
+  if(manual===true) hMontoManual = true;
+  const kg = parseFloat(document.getElementById('hKg').value)||0;
+  const d = parseFloat(document.getElementById('hDesbaste').value)||0;
+  const p = parseFloat(document.getElementById('hPrecio').value)||0;
+  const kgN = kg*(1-d/100);
+  if(manual!==true && kg && p) document.getElementById('hMonto').value = Math.round(kgN*p);
+  const monto = parseFloat(document.getElementById('hMonto').value)||0;
+  const iva = monto*parseFloat(document.getElementById('hIva').value);
+  const feria = hCanal()==='Feria';
+  const com = feria ? monto*(parseFloat(document.getElementById('hComision').value)||0)/100 : 0;
+  const ivaCom = com*0.21;
+  const otros = feria ? (parseFloat(document.getElementById('hOtros').value)||0) : 0;
+  const venta = hTipo()==='Venta';
+  const total = venta ? monto+iva-com-ivaCom-otros : monto+iva+com+ivaCom+otros;
+  window._hTotal = Math.round(total);
+  let h = '';
+  if(kg) h += `Kg neto: <b>${Math.round(kgN*100)/100}</b><br>`;
+  h += `Hacienda: <b>${fmt$(monto)}</b>`;
+  if(iva) h += ` · IVA ${fmt$(iva)}`;
+  if(feria) h += `<br>Comisión ${fmt$(com)} + IVA ${fmt$(ivaCom)}${otros?' + otros '+fmt$(otros):''}`;
+  h += `<br><span class="tot">${venta?'A cobrar':'Total a pagar'}: <b>${fmt$(total)}</b></span>`;
+  document.getElementById('hResumen').innerHTML = h;
+  hActualizarSaldo();
+}
+function hAgregarPago(valorInicial){
+  const cont = document.getElementById('hPagos');
+  const n = cont.children.length;
+  if(n>=3){ showToast('Máximo 3 pagos por operación'); return; }
+  const div = document.createElement('div'); div.className='pago-row';
+  div.innerHTML = `<div class="row"><div><label>Fecha</label><input type="date" class="pFecha" value="${todayISO()}"></div>
+    <div><label>Medio</label><select class="pMedio"><option>Efectivo</option><option>Transferencia</option><option>Cheque</option></select></div></div>
+    <label>Monto ($)</label><input type="number" inputmode="decimal" class="pMonto" placeholder="0" value="${valorInicial||''}" oninput="hActualizarSaldo()">
+    ${n>0?'<button class="link-btn" onclick="this.parentNode.remove();hActualizarSaldo()">Quitar este pago</button>':''}`;
+  cont.appendChild(div);
+}
+function hActualizarSaldo(){
+  const pagado = [...document.querySelectorAll('#hPagos .pMonto')].reduce((t,i)=>t+(parseFloat(i.value)||0),0);
+  const saldo = (window._hTotal||0)-pagado;
+  const el = document.getElementById('hResumen');
+  const base = el.innerHTML.replace(/<br><span class="saldo-h">.*$/,'');
+  el.innerHTML = base + `<br><span class="saldo-h">Pagado ${fmt$(pagado)} · ${saldo>0?'<b style="color:#a33">Queda debiendo '+fmt$(saldo)+'</b>':(saldo<0?'<b style="color:#a33">Te pasaste '+fmt$(-saldo)+'</b>':'<b>Saldado ✓</b>')}</span>`;
+}
+function hReset(){
+  ['hContra','hCabezas','hKg','hDesbaste','hPrecio','hMonto','hComision','hOtros'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('hIva').value='0'; hMontoManual=false; ventaSel=new Set();
+  document.getElementById('hPagos').innerHTML=''; hAgregarPago();
+  FOTO_PENDIENTE.hacienda=null; renderFotoPicker('hacienda');
+  hAplicarTipo(); hRefrescarVenta();
+}
+async function guardarHacienda(){
+  const tipo=hTipo(), canal=hCanal();
+  const fecha=document.getElementById('hFecha').value;
+  const contra=document.getElementById('hContra').value.trim();
+  const monto=parseFloat(document.getElementById('hMonto').value)||0;
+  if(!fecha||!contra||!monto){ showToast('Completá fecha, '+(tipo==='Venta'?'comprador':'vendedor')+' y monto'); return; }
+  let cabezas = parseInt(document.getElementById('hCabezas').value)||0;
+  const animales=[];
+  if(tipo==='Venta'){
+    if(!ventaSel.size){ showToast('Elegí los animales vendidos'); return; }
+    const sinGuia = [...ventaSel].map(id=>STATE.animals.find(a=>a.id===id)).filter(a=>a&&!a.guiaId);
+    if(sinGuia.length && !confirm(sinGuia.length+' animales no tienen guía asignada. ¿Vender igual?')) return;
+    ventaSel.forEach(id=>{ const a=STATE.animals.find(x=>x.id===id); if(a) animales.push({row:a.id,caravana:a.caravana,colorHex:a.color,guiaId:a.guiaId||''}); });
+    cabezas=animales.length;
+  } else if(!cabezas){ showToast('Falta la cantidad de cabezas'); return; }
+  const pagos=[...document.querySelectorAll('#hPagos .pago-row')].map(r=>({fecha:r.querySelector('.pFecha').value,medio:r.querySelector('.pMedio').value,monto:parseFloat(r.querySelector('.pMonto').value)||0})).filter(p=>p.monto>0);
+  const foto=FOTO_PENDIENTE.hacienda;
+  const op={fecha,tipo,contraparte:contra,canal,cabezas,
+    kgBruto:parseFloat(document.getElementById('hKg').value)||0,
+    desbastePct:parseFloat(document.getElementById('hDesbaste').value)||0,
+    precioKg:parseFloat(document.getElementById('hPrecio').value)||0,
+    monto, ivaPct:parseFloat(document.getElementById('hIva').value),
+    comisionPct: canal==='Feria'?(parseFloat(document.getElementById('hComision').value)||0):0,
+    otros: canal==='Feria'?(parseFloat(document.getElementById('hOtros').value)||0):0,
+    pagos, total:window._hTotal};
+  STATE.hacienda.unshift(Object.assign({tieneFoto:!!foto},op));
+  if(tipo==='Venta') animales.forEach(x=>{ const a=STATE.animals.find(y=>y.id===x.row); if(a) a.estado='Vendido'; });
+  persist();
+  const payload=Object.assign({action:'hacienda',animales},op);
+  if(foto){ payload.fotoBase64=foto.base64; payload.fotoMime=foto.mime; }
+  hReset(); renderHacienda(); renderAnimales(); renderChips();
+  showToast(tipo==='Venta'?'Venta guardada: '+cabezas+' animales vendidos':'Compra guardada. Ahora cargá cada animal con su guía (Pesar → +)');
+  const r=await postToServer(payload);
+  if(r&&r.ok) showToast('Sincronizado con Drive ✓');
+}
+function renderListaHacienda(){
+  const cont=document.getElementById('listaHacienda'); if(!cont) return;
+  cont.innerHTML = STATE.hacienda.length ? STATE.hacienda.slice(0,15).map(h=>`<div class="list-item"><div><div class="desc">${escapeHtml(h.tipo)} · ${escapeHtml(h.contraparte)}</div><div class="cat">${h.fecha} · ${h.cabezas} cab.${h.kgBruto?' · '+h.kgBruto+' kg':''}</div></div><div class="amt ${h.tipo==='Venta'?'ingreso':'gasto'}">${h.tipo==='Venta'?'+':'-'}${fmt$(h.total||h.monto)}</div></div>`).join('') : '<div class="empty">Todavía no hay operaciones.</div>';
+}
+
+// ==================== INIT ====================
+if(!WEBAPP_URL){ document.getElementById('cfgOverlay').style.display='block'; }
+document.getElementById('fechaPesadaGlobal').value = todayISO();
+document.getElementById('gastoFecha').value = todayISO();
+document.getElementById('ingresoFecha').value = todayISO();
+document.getElementById('fechaObsGlobal').value = todayISO();
+fillSelect('gastoConcepto', CONCEPTOS_GASTO);
+fillSelect('ingresoMedio', MEDIOS_INGRESO);
+document.getElementById('hFecha').value = todayISO();
+hReset();
+document.getElementById('buscarCaravana').addEventListener('input', renderAnimales);
+document.getElementById('fechaPesadaGlobal').addEventListener('change', renderAnimales);
+document.getElementById('buscarCaravanaObs').addEventListener('input', renderObservaciones);
+document.getElementById('masivaBuscar').addEventListener('input', renderListaMasiva);
+document.getElementById('obsModalEstado').addEventListener('change', ()=>{ obsEstadoTocadoPorUsuario = true; });
+document.querySelectorAll('.modal-bg').forEach(m=>{
+  m.addEventListener('click', e=>{ if(e.target===m) m.classList.remove('show'); });
+});
+renderAnimales();
+renderObservaciones();
+setSyncStatus('loading', 'Actualizando desde el Drive… (datos del teléfono del '+textoUltimaSync()+')');
+syncFromServer(false);
+
+// Sincronizacion automatica en segundo plano cada 1 minuto, sin interrumpir al usuario.
+setInterval(()=>{ if(document.visibilityState==='visible') syncFromServer(false); }, 60000);
+
+// Al volver la señal, envia lo pendiente y actualiza.
+window.addEventListener('online', ()=>syncFromServer(false));
+// Chrome a veces "congela" la pagina y la restaura sin recargarla: tambien actualizamos ahi.
+window.addEventListener('pageshow', e=>{ if(e.persisted) syncFromServer(false); });
+
+// Cuando volves a la app (por ejemplo despues de tenerla en segundo plano
+// o cambiar de pestana en el celular), trae los datos frescos automaticamente,
+// sin necesidad de cerrarla y volver a abrirla.
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState === 'visible'){ syncFromServer(false); }
+});
+</script>
+<script>
+// Funciona sin señal: la pagina se guarda en el telefono.
+if('serviceWorker' in navigator){ window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
+</script>
+</body>
+</html>
