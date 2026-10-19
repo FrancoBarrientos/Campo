@@ -862,7 +862,7 @@ function renderChips(){
   const estados = ['Todos','Puesto 12','Aserradero','Vendido','Muerto','Sin guía'];
   const cont = document.getElementById('estadoChips');
   cont.innerHTML = estados.map(e=>{
-    const n = e==='Todos' ? STATE.animals.length : (e==='Sin guía' ? STATE.animals.filter(a=>!a.guiaId).length : STATE.animals.filter(a=>a.estado===e).length);
+    const n = e==='Todos' ? STATE.animals.length : (e==='Sin guía' ? STATE.animals.filter(a=>!a.guiaId && a.estado!=='Vendido' && a.estado!=='Muerto').length : STATE.animals.filter(a=>a.estado===e).length);
     return `<div class="chip ${e===currentEstadoFilter?'active':''}" onclick="setEstadoFilter('${e}')">${e} (${n})</div>`;
   }).join('');
 }
@@ -889,7 +889,7 @@ function renderAnimales(){
   const fechaSel = document.getElementById('fechaPesadaGlobal').value || todayISO();
 
   let list = STATE.animals.filter(a=>{
-    if(currentEstadoFilter==='Sin guía'){ if(a.guiaId) return false; }
+    if(currentEstadoFilter==='Sin guía'){ if(a.guiaId || a.estado==='Vendido' || a.estado==='Muerto') return false; }
     else if(currentEstadoFilter!=='Todos' && a.estado!==currentEstadoFilter) return false;
     if(q && !String(a.caravana).toLowerCase().includes(q)) return false;
     return true;
@@ -1494,7 +1494,7 @@ function abrirModalAsignar(key){
 function asignarSetFiltro(btn){ setSeg('asignarFiltroSeg',btn); asignarFiltro=btn.dataset.v; renderAsignarLista(); }
 function asignarVisibles(){
   const q = document.getElementById('asignarBuscar').value.trim().toLowerCase();
-  return STATE.animals.filter(a=>(asignarFiltro==='todos'||!a.guiaId) && (!q||String(a.caravana).toLowerCase().includes(q)));
+  return STATE.animals.filter(a=>(asignarFiltro==='todos'||(!a.guiaId && a.estado!=='Vendido' && a.estado!=='Muerto')) && (!q||String(a.caravana).toLowerCase().includes(q)));
 }
 function renderAsignarLista(){
   const lista = asignarVisibles();
