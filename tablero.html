@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Buffalo Dashboard - Vista previa</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{--bg:#f4f6fa;--bg2:#ffffff;--bg3:#eef1f7;--bd:#d9dfeb;--tx:#1b2433;--tx2:#4a566b;--tx3:#7a8699;
+--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#2f9e2f;--s7:#9085e9;--s8:#e66767;--good:#16a34a;--bad:#dc2626;--warn:#d97706}
+[data-theme=dark]{--bg:#0e1117;--bg2:#161b26;--bg3:#1e2636;--bd:#2a3347;--tx:#e8eaf0;--tx2:#aab4c6;--tx3:#7a8699}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sans-serif;font-size:13px;min-height:100vh}
+.hdr{background:var(--bg2);border-bottom:1px solid var(--bd);padding:0 16px;display:flex;align-items:center;min-height:52px;flex-wrap:wrap;position:sticky;top:0;z-index:99;gap:6px}
+.hdr-t{font-weight:700;font-size:15px;margin-right:12px;white-space:nowrap}
+.tabs{display:flex;overflow-x:auto;flex:1}
+.tab{padding:0 14px;cursor:pointer;display:flex;align-items:center;color:var(--tx2);font-size:12px;font-weight:500;border-bottom:2px solid transparent;white-space:nowrap;height:52px}
+.tab:hover{color:var(--tx)}.tab.on{color:var(--s1);border-bottom-color:var(--s1)}
+.badge{background:#3b2a05;color:#fbbf24;border:1px solid #7a5a10;border-radius:5px;padding:3px 8px;font-size:11px;white-space:nowrap}
+.main{padding:16px;max-width:1280px;margin:0 auto}
+.pg{display:none}.pg.on{display:block}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-bottom:14px}
+.kpi{background:var(--bg2);border:1px solid var(--bd);border-radius:9px;padding:11px 13px}
+.kpi-l{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;font-weight:600}
+.kpi-v{font-size:20px;font-weight:700;line-height:1.1}
+.kpi-s{font-size:11px;color:var(--tx2);margin-top:3px}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.cc{background:var(--bg2);border:1px solid var(--bd);border-radius:9px;padding:13px;margin-bottom:0}
+.cct{font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.sub{font-size:11px;color:var(--tx3);margin-bottom:8px;line-height:1.45}
+.cw{position:relative;height:240px}
+.tc{background:var(--bg2);border:1px solid var(--bd);border-radius:9px;overflow:hidden;margin-bottom:14px}
+.tct{padding:9px 13px;font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--bd)}
+.tw{overflow-x:auto;max-height:420px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:7px 10px;font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--bd);position:sticky;top:0;background:var(--bg2);white-space:nowrap}
+td{padding:6px 10px;border-bottom:1px solid var(--bg3);white-space:nowrap}
+tr:hover td{background:var(--bg3)}
+.r{text-align:right}.pos{color:var(--good)}.neg{color:var(--bad)}.mut{color:var(--tx3)}
+.sec{font-size:12px;font-weight:700;color:var(--tx);margin:20px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.fb{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--bg2);border:1px solid var(--bd);border-radius:9px;padding:9px 12px;margin-bottom:14px}
+.fb label{font-size:11px;color:var(--tx3);font-weight:600}
+select,input[type=text],input[type=number]{background:var(--bg3);border:1px solid var(--bd);border-radius:5px;color:var(--tx);padding:6px 8px;font-size:12px;outline:none;font-family:inherit}
+select:focus,input:focus{border-color:var(--s1)}
+.alert{background:#fff7e0;border:1px solid #e6c46a;border-radius:9px;padding:10px 14px;margin-bottom:14px;font-size:12px;line-height:1.6;color:#5c4300}
+.alert b,.alert summary{color:#8a5a00}.alert summary{cursor:pointer;font-weight:700}
+[data-theme=dark] .alert{background:#2a1f0a;border-color:#7a5a10;color:#f3d79a}[data-theme=dark] .alert b,[data-theme=dark] .alert summary{color:#fbbf24}
+.alert ul{margin:8px 0 0 18px}
+.note{background:var(--bg3);border-left:3px solid var(--s1);padding:8px 12px;border-radius:5px;font-size:12px;color:var(--tx2);margin-bottom:12px;line-height:1.5}
+.chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;border:1px solid var(--bd)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle;border:1px solid #556}
+.res{max-height:230px;overflow:auto}
+.res div{padding:6px 10px;border-bottom:1px solid var(--bg3);cursor:pointer;font-size:12px}
+.res div:hover{background:var(--bg3)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+@media(max-width:760px){.cg,.two{grid-template-columns:1fr}}
+.clk{cursor:pointer}.kpi.clk:hover{border-color:var(--s1);box-shadow:0 0 0 2px rgba(57,135,229,.25)}
+tr.clk:hover td{background:var(--bg3)}
+.seg{display:flex;flex-wrap:wrap;gap:5px}.seg button{background:var(--bg3);color:var(--tx2);border:1px solid var(--bd);border-radius:14px;padding:4px 11px;font-size:12px;cursor:pointer}.seg button.on{background:var(--s1);color:#fff;border-color:var(--s1)}
+tr.tot td{font-weight:700;border-top:2px solid var(--bd)}
+.sec2{font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 6px}
+.tgl{background:var(--bg3);color:var(--tx);border:1px solid var(--bd);border-radius:14px;padding:5px 11px;font-size:12px;cursor:pointer;margin-left:auto}
+#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:flex-start;justify-content:center;padding:30px 12px;overflow:auto}
+.mbox{background:var(--bg2);border:1px solid var(--bd);border-radius:12px;max-width:860px;width:100%;padding:18px 20px;position:relative}
+.mbox h3{font-size:15px;margin-bottom:6px}.mx{position:absolute;right:16px;top:12px;cursor:pointer;color:var(--tx2);font-size:12px}
+.ok{color:var(--good);font-weight:700}.rev{color:var(--warn);font-weight:700}.mal{color:var(--bad);font-weight:700}
+.badge{background:#fff4d6;color:#8a5a00;border-color:#e6c46a}[data-theme=dark] .badge{background:#3b2a05;color:#fbbf24;border-color:#7a5a10}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-t">&#128003; Buffalo Dashboard</div>
+  <div class="tabs">
+    <div class="tab on" onclick="showPg('ingresos',this)">&#128176; Ingresos y tenencia</div>
+    <div class="tab" onclick="showPg('gastos',this)">&#128203; Gastos</div>
+    <div class="tab" onclick="showPg('flujo',this)">&#128202; Flujo: económico y financiero</div>
+    <div class="tab" onclick="showPg('pesajes',this)">&#9878; Pesajes</div>
+    <div class="tab" onclick="showPg('animal',this)">&#128269; Por animal</div>
+    <div class="tab" onclick="showPg('caja',this)">&#127974; Caja y Banco</div>
+    <div class="tab" onclick="showPg('auditoria',this)">&#128269; Auditoría</div>
+  </div>
+  <button class="tgl" onclick="toggleTheme()" id="tgl">🌙 Oscuro</button><span class="badge">VISTA PREVIA · datos del Excel al 5/11/2026</span>
+</div>
+<div class="main">
+<details class="alert" id="alertas" open><summary>Datos del Excel que conviene corregir (afectan los números de abajo)</summary><ul id="alertas-ul"></ul></details>
+
+<!-- INGRESOS Y TENENCIA -->
+<div id="pg-ingresos" class="pg on">
+  <div class="sec" style="margin-top:0">Tenencia hoy (en línea desde la planilla)</div>
+  <div class="kpis" id="k-ten"></div>
+  <div class="two">
+    <div class="tc"><div class="tct">Por campo</div><div class="tw"><table><thead><tr><th>Campo</th><th class="r">Cabezas</th><th class="r">Kg totales</th><th class="r">Kg prom.</th><th class="r">kg/día últ. pesada</th><th class="r">Valor est.</th></tr></thead><tbody id="tb-campo"></tbody></table></div></div>
+    <div class="tc"><div class="tct">Por lote &nbsp;<select id="t-modo" onchange="MODO=this.value;renderTenencia();">  <option>Color</option><option>Guía</option></select></div><div class="tw"><table><thead><tr><th>Lote</th><th class="r">Cabezas</th><th class="r">Kg prom.</th><th class="r">kg/día</th><th class="r">Últ. pesada</th></tr></thead><tbody id="tb-lote"></tbody></table></div></div>
+  </div>
+  <div class="sec">Ventas de hacienda</div>
+  <div class="kpis" id="k-ven"></div>
+  <div class="cg">
+    <div class="cc"><div class="cct">Ventas por mes (neto de hacienda, sin IVA)</div><div class="sub">Por fecha de la operación.</div><div class="cw"><canvas id="c-ven"></canvas></div></div>
+    <div class="tc" style="margin:0"><div class="tct">Detalle de ventas</div><div class="tw" style="max-height:290px"><table><thead><tr><th>Fecha</th><th>Comprador</th><th class="r">Cab.</th><th class="r">Kg neto</th><th class="r">Precio</th><th class="r">Monto</th><th class="r">Saldo</th><th>Estado</th></tr></thead><tbody id="tb-ven"></tbody></table></div></div>
+  </div>
+</div>
+
+<!-- GASTOS -->
+<div id="pg-gastos" class="pg">
+  <div class="kpis" id="k-gas"></div>
+  <div class="cg">
+    <div class="cc"><div class="cct">Gastos por mes (sin IVA)</div><div class="cw"><canvas id="c-gmes"></canvas></div></div>
+    <div class="cc"><div class="cct">Por rubro</div><div class="cw"><canvas id="c-grub"></canvas></div></div>
+  </div>
+  <div class="tc"><div class="tct">Rubro por mes</div><div class="tw"><table id="t-grub"></table></div></div>
+</div>
+
+<!-- FLUJO -->
+<div id="pg-flujo" class="pg">
+  <div class="fb">
+    <label>Valor del stock para el resultado económico:</label>
+    <label>Precio $/kg vivo</label><input type="number" id="p-precio" value="3200" style="width:80px" onchange="renderFlujo()">
+    <label>Desbaste %</label><input type="number" id="p-desb" value="10" style="width:60px" onchange="renderFlujo()">
+    <span class="mut">(precio de las últimas ventas por kg; lo cambiás vos)</span><span class="mut" style="margin-left:auto">💡 Tocá una barra o un mes de la tabla para ver el detalle</span>
+  </div>
+  <div class="sec2">Económico · devengado (por fecha de la operación)</div><div class="kpis" id="k-eco"></div>
+  <div class="sec2">Financiero · caja (por fecha de cobro y pago)</div><div class="kpis" id="k-fin"></div>
+  <div class="cc" id="det" style="display:none;padding:0;margin-bottom:14px"></div>
+  <div class="two">
+    <div class="cc"><div class="cct">Económico: ¿qué resultado dio producir? (devengado)</div><div class="sub">Ventas − compras − gastos ± variación del valor de la hacienda. No depende de cuándo se cobra o se paga.</div><div class="cw"><canvas id="c-eco"></canvas></div></div>
+    <div class="cc"><div class="cct">Financiero: ¿cuánta plata entró y salió? (caja)</div><div class="sub">Por fecha de cobro o pago. Lo que está después de hoy son cheques a cobrar.</div><div class="cw"><canvas id="c-fin"></canvas></div></div>
+  </div>
+  <div class="cg">
+    <div class="cc"><div class="cct">Flujo financiero acumulado</div><div class="cw" style="height:210px"><canvas id="c-acu"></canvas></div></div>
+    <div class="tc" style="margin:0"><div class="tct">Por qué el económico y el financiero no coinciden</div><div class="tw"><table id="t-puente"></table></div></div>
+  </div>
+  <div class="tc"><div class="tct">Mes a mes</div><div class="tw"><table id="t-mes"></table></div></div>
+</div>
+
+<!-- PESAJES -->
+<div id="pg-pesajes" class="pg">
+  <div class="sec2" style="margin-top:0">Gestión del engorde · mes a mes, sin depender del día de pesada</div>
+  <div class="note">Cada ganancia entre dos pesadas de un animal se reparte día por día entre los meses. Así cada mes usa a <b>todos</b> los animales, no solo los que se pesaron ese día. Cada animal cuenta en el campo donde está hoy.</div>
+  <div class="fb"><label>Peso de venta de referencia (kg):</label><input type="number" id="pv" value="450" style="width:70px" onchange="renderGest()"><span class="mut">lo cambiás vos; se usa para estimar cuándo llega cada animal</span>
+  <label style="margin-left:14px">Costo por kg:</label><label><input type="checkbox" id="g-rep" checked onchange="renderGest()"> repartir cada compra de alimento hasta la próxima compra</label>
+  <label>Promedio de</label><select id="g-win" onchange="renderGest()"><option value="1">1 mes</option><option value="3" selected>3 meses</option><option value="6">6 meses</option></select></div>
+  <div class="kpis" id="g-k"></div>
+  <div class="two">
+    <div class="cc"><div class="cct">¿Está engordando el campo? kg/animal/día por mes</div><div class="sub">Línea por campo. Debajo de 0,5 es poco engorde. Tocá un punto para ver los animales de ese mes.</div><div class="cw" style="height:280px"><canvas id="c-mg"></canvas></div></div>
+    <div class="cc"><div class="cct">Kg ganados por mes y costo de cada kg</div><div class="sub">Barras: kg producidos. Línea: gastos ÷ kg ganados, sin compra de hacienda. La compra de alimento se reparte hasta la siguiente compra y se promedia en la ventana elegida. Si casi no hubo engorde (menos de 600 kg) no se calcula, porque el costo por kg no tiene sentido.</div><div class="cw" style="height:280px"><canvas id="c-mk"></canvas></div></div>
+  </div>
+  <div id="g-det" class="cc" style="display:none;padding:0;margin-bottom:14px"></div>
+  <div class="tc"><div class="tct">Cuándo llega cada animal al peso de venta <span id="g-lt" class="mut" style="text-transform:none;font-weight:400"></span>
+    <span style="float:right;text-transform:none;font-weight:400">Campo: <select id="g-camp" onchange="renderGest()"><option value="">Todos</option><option>Puesto 12</option><option>Aserradero</option></select></span></div>
+    <div id="g-meses" style="padding:8px 13px 0;font-size:12px;color:var(--tx2)"></div><div class="kpis" id="g-k2" style="margin:10px 12px"></div><div class="tw" style="max-height:380px"><table id="g-t"></table></div></div>
+  <div class="sec2">Detalle: pesadas y lotes</div>
+  <div class="fb">
+    <label>Campo:</label><select id="pf-c" onchange="renderPesajes()"><option value="">Todos los vivos</option><option>Puesto 12</option><option>Aserradero</option><option value="Vendido">Ya vendidos</option><option value="*">Todos (incluye vendidos)</option></select>
+    <label>Agrupar lote por:</label><select id="pf-m" onchange="MODO=this.value;$('t-modo').value=MODO;$('pf-l').length=1;renderPesajes()"><option>Color</option><option>Guía</option></select><label>Lote:</label><select id="pf-l" onchange="renderPesajes()"><option value="">Todos</option></select>
+    <label>Mínimo de animales por pesada:</label><input type="number" id="pf-n" value="5" style="width:60px" onchange="renderPesajes()">
+  </div>
+  <div class="kpis" id="k-pes"></div>
+  <div class="cg">
+    <div class="cc"><div class="cct">Peso promedio por lote en el tiempo</div><div class="sub">Cada línea es un lote (color de caravana o guía, según elijas arriba). Se ve cuándo cada lote engordó, se estancó o bajó.</div><div class="cw" style="height:300px"><canvas id="c-plote"></canvas></div></div>
+    <div class="cc"><div class="cct">Ganancia diaria promedio en cada pesada (kg/animal/día)</div><div class="sub">Compara cada animal con su pesada anterior. Rojo: menos de 0,5 · Verde: 0,75 o más.</div><div class="cw" style="height:300px"><canvas id="c-gdp"></canvas></div></div>
+  </div>
+  <div class="tc"><div class="tct">Cada pesada: días que pasaron y cuánto cambió el peso</div><div class="tw"><table><thead><tr><th>Fecha</th><th class="r">Días desde la anterior</th><th class="r">Animales</th><th class="r">Kg prom.</th><th class="r">Δ kg prom.</th><th class="r">kg/día prom.</th><th class="r">Bajaron</th><th class="r">% que bajó</th></tr></thead><tbody id="tb-ev"></tbody></table></div></div>
+  <div class="tc"><div class="tct">Engorde por animal: quién engordó mucho y quién poco <span id="eg-n" class="mut" style="text-transform:none;font-weight:400"></span></div>
+    <div class="fb" style="border:0;border-radius:0;margin:0;border-bottom:1px solid var(--bd)">
+      <label>Ver:</label><select id="eg-v" onchange="renderEng()"><option value="a">Resumen por animal (primera a última pesada)</option><option value="p">Pesada por pesada</option></select>
+      <label>Campo:</label><select id="eg-c" onchange="renderEng()"><option value="">Todos</option><option>Puesto 12</option><option>Aserradero</option><option>Vendido</option></select>
+      <label>Sexo:</label><select id="eg-s" onchange="renderEng()"><option value="">Todos</option><option>hembra</option><option>macho</option><option>toro</option></select>
+      <label>Clasif.:</label><select id="eg-g" onchange="renderEng()"><option value="">Todas</option><option value="r">Rojo (menos de 0,5)</option><option value="a">Amarillo (0,5 a 0,75)</option><option value="v">Verde (0,75 o más)</option></select>
+      <label>Caravana / color:</label><input type="text" id="eg-b" placeholder="#..." onkeyup="renderEng()" style="width:90px">
+      <label>Kg actual desde:</label><input type="number" id="eg-kd" placeholder="ej. 200" onchange="renderEng()" style="width:75px"><label>hasta:</label><input type="number" id="eg-kh" placeholder="ej. 400" onchange="renderEng()" style="width:75px">
+      <label>kg/día desde:</label><input type="number" step="0.01" id="eg-gd" placeholder="ej. 0.5" onchange="renderEng()" style="width:75px"><label>hasta:</label><input type="number" step="0.01" id="eg-gh" placeholder="ej. 1.5" onchange="renderEng()" style="width:75px">
+      <label>Pesadas entre:</label><input type="date" id="eg-fd" onchange="renderEng()"><label>y</label><input type="date" id="eg-fh" onchange="renderEng()">
+      <label>Ordenar:</label><select id="eg-o" onchange="renderEng()"><option value="gd">Más engordaron primero</option><option value="ga">Menos engordaron primero</option><option value="kg">Más pesados primero</option><option value="dk">Más kg ganados primero</option></select>
+      <button class="tgl" style="margin-left:0" onclick="limpiarEng()">Limpiar filtros</button>
+    </div>
+    <div class="kpis" id="eg-k" style="margin:10px 12px"></div>
+    <div class="tw" style="max-height:480px"><table id="eg-t"></table></div>
+  </div>
+  <div class="two">
+    <div class="tc"><div class="tct">Animales que bajaron en su última pesada</div><div class="tw" style="max-height:300px"><table><thead><tr><th>Caravana</th><th>Campo</th><th class="r">Antes</th><th class="r">Ahora</th><th class="r">Δ kg</th><th class="r">kg/día</th></tr></thead><tbody id="tb-baja"></tbody></table></div></div>
+    <div class="tc"><div class="tct">Vivos sin pesar hace más de 45 días</div><div class="tw" style="max-height:300px"><table><thead><tr><th>Caravana</th><th>Campo</th><th>Última pesada</th><th class="r">Días</th><th class="r">Último kg</th></tr></thead><tbody id="tb-sin"></tbody></table></div></div>
+  </div>
+  <div class="sec">Aserradero: lote de la hoja "Pesada Aserradero" (compra de 4.423 kg, 7 de septiembre de 2025)</div>
+  <div class="note">En esta hoja las fechas tienen el año mal cargado (por ejemplo 28/01/25 que por la secuencia es 2026). Las reconstruí con los "días entre pesaje" de la propia hoja. Las columnas 15/11 y 06/12 quedaron afuera porque son fechas futuras.</div>
+  <div class="cg">
+    <div class="cc"><div class="cct">Peso promedio del lote por pesada</div><div class="cw" style="height:240px"><canvas id="c-aser"></canvas></div></div>
+    <div class="tc" style="margin:0"><div class="tct">Pesada por pesada</div><div class="tw" style="max-height:290px"><table><thead><tr><th>Fecha</th><th class="r">Días</th><th class="r">Animales</th><th class="r">Kg prom.</th><th class="r">kg/día</th></tr></thead><tbody id="tb-aser"></tbody></table></div></div>
+  </div>
+</div>
+
+<!-- POR ANIMAL -->
+<div id="pg-animal" class="pg">
+  <div class="fb">
+    <label>Buscar animal:</label>
+    <input type="text" id="an-q" placeholder="N° de caravana, color o guía..." style="width:260px" oninput="buscarAnimal()">
+    <label>Estado:</label><select id="an-e" onchange="buscarAnimal()"><option value="">Todos</option><option>Puesto 12</option><option>Aserradero</option><option>Vendido</option><option>Muerto</option></select>
+    <span class="mut" id="an-n"></span>
+  </div>
+  <div class="two" style="grid-template-columns:320px 1fr">
+    <div class="tc" style="margin:0"><div class="tct">Resultados</div><div class="res" id="an-res" style="max-height:520px"></div></div>
+    <div id="an-det"></div>
+  </div>
+</div>
+
+<!-- CAJA Y BANCO -->
+<div id="pg-caja" class="pg">
+  <div class="note">Los saldos de <b>efectivo</b> y <b>banco</b> y la conciliación aparecen cuando esté activa la Tesorería en la planilla (hojas Tesorería, Cheques y Extracto banco). Esta vista previa muestra lo que ya se puede calcular con tus ventas.</div>
+  <div class="kpis" id="k-caja"></div>
+  <div class="tc"><div class="tct">Cheques y pagos a cobrar de ventas (desde hoy)</div><div class="tw"><table><thead><tr><th>Cobra el</th><th>Comprador</th><th>Medio</th><th class="r">Importe</th><th class="r">Faltan</th></tr></thead><tbody id="tb-cheq"></tbody></table></div></div>
+</div>
+
+<div id="pg-auditoria" class="pg"><div class="note">Controles automáticos sobre las planillas. Cada uno dice <b>dónde</b> está el dato a corregir. Cuando lo corrijas en la planilla, al actualizar el tablero desaparece el aviso.</div><div class="kpis" id="k-aud"></div><div class="tc"><div class="tct">Controles</div><div class="tw" style="max-height:none"><table id="t-aud"></table></div></div></div>
+</div>
+<div id="modal" onclick="if(event.target===this)closeModal()"><div class="mbox"><span class="mx" onclick="closeModal()">✕ cerrar</span><div id="modal-body"></div></div></div>
+<script type="text/plain" id="appcode">
+var DATA=window.__BOOT_DATA;
+function cssv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+var HOY=DATA.hoy;
+var C={s:['#3987e5','#d95926','#199e70','#c98500','#d55181','#2f9e2f','#9085e9','#e66767']};
+var LOTECOL={'Blanco':'#9aa3b2','Terracota':'#d95926','Rojo oscuro':'#b03030','Azul':'#3987e5','Amarillo':'#eab308','Rojo':'#ef4444','Verde':'#2f9e2f','Naranja':'#e69138','Rosa':'#e87ba4'};
+function themeChart(){Chart.defaults.color=cssv('--tx2');Chart.defaults.borderColor=cssv('--bd');}themeChart();Chart.defaults.font.size=11;
+Chart.defaults.maintainAspectRatio=false;Chart.defaults.animation=false;
+var CH={};
+function mk(id,cfg){if(CH[id])CH[id].destroy();CH[id]=new Chart(document.getElementById(id),cfg);}
+function $(i){return document.getElementById(i);}
+function T(d){var p=d.split('-');return Date.UTC(+p[0],+p[1]-1,+p[2]);}
+function days(a,b){return Math.round((T(b)-T(a))/864e5);}
+function fN(n,dec){return (n==null||isNaN(n))?'-':Number(n).toLocaleString('es-AR',{minimumFractionDigits:dec||0,maximumFractionDigits:dec||0});}
+function fM(n){return (n<0?'-':'')+'$'+fN(Math.abs(n));}
+function fMM(n){var a=Math.abs(n);var s=a>=1e6?fN(a/1e6,1)+' M':fN(a);return (n<0?'-':'')+'$'+s;}
+function fD(d){if(!d)return '';var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0].slice(2);}
+function mon(d){return d.slice(0,7);}
+var MN=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+function mlab(m){var p=m.split('-');return MN[+p[1]-1]+'-'+p[0].slice(2);}
+function sum(a,f){return a.reduce(function(t,x){return t+(f?f(x):x);},0);}
+function avg(a){return a.length?sum(a)/a.length:null;}
+function cls(n){return n>0?'pos':(n<0?'neg':'');}
+
+/* ---------- Limpieza de datos ---------- */
+var ALERTS=[];
+var AN=DATA.animals.map(function(a){
+  var ok=[],raros=0;
+  a.w.forEach(function(x){if(x[1]<100||x[1]>650){raros++;}else ok.push(x);});
+  ok.sort(function(p,q){return p[0]<q[0]?-1:1;});
+  a.pw=ok;a.raros=raros;
+  a.vivo=(a.estado==='Puesto 12'||a.estado==='Aserradero');
+  return a;
+});
+var raros=sum(AN,function(a){return a.raros;});
+var HAC=DATA.hacienda.map(function(h){
+  var x=Object.assign({},h);
+  if(x.tipo==='Compra' && x.pagos.length && x.f.slice(0,4)==='2028' && x.pagos[0].f){x.f=(x.pagos[0].f.slice(0,4)==='2028'?'2025'+x.pagos[0].f.slice(4):x.pagos[0].f);x.fcorr=true;x.pagos=x.pagos.map(function(p){return {f:p.f&&p.f.slice(0,4)==='2028'?'2025'+p.f.slice(4):p.f,m:p.m,v:p.v};});}
+  x.porCabeza=(x.canal==='Feria' && x.precio>100000);
+  return x;
+});
+(function alertas(){
+  var comp=HAC.filter(function(h){return h.fcorr;});
+  if(comp.length)ALERTS.push('<b>Compras con fecha 2028:</b> '+comp.length+' compras (Don Antonio y Anchorena, 13/10/2028). En esta vista las puse en 2025 según la fecha de pago.');
+  var pc=HAC.filter(function(h){return h.porCabeza&&h.tipo==='Venta';});
+  if(pc.length)ALERTS.push('<b>Venta por cabeza cargada en la columna de kg:</b> '+pc.map(function(h){return h.contra+' '+fD(h.f)+' ('+fN(h.cabezas)+' cab. a '+fM(h.precio)+')';}).join(', ')+'. El "precio promedio por kg" de octubre en la hoja Resumen ($13.980) sale mal por eso. Acá la trato como venta por cabeza.');
+  var reas=sum(DATA.otros,function(o){return o.m;});
+  if(reas)ALERTS.push('<b>Cobros por '+fMM(reas)+' sin venta asignada</b> (hoja "Otros ingresos", tipo "Venta a reasignar", noviembre 2025). Los conté como ventas del mes en que se cobraron; conviene asignarlos a la operación y a los animales.');
+  var sinGuia=AN.filter(function(a){return a.vivo&&!a.guia;}).length;
+  ALERTS.push('<b>Económico mes a mes aproximado:</b> los animales vendidos antes de usar la app no tienen fecha de venta. Supuse que salieron después de su última pesada, por eso algunos meses (por ejemplo noviembre 2025) muestran una baja de hacienda mayor que las ventas cargadas. El total del período es más confiable que cada mes.');
+  ALERTS.push('<b>'+sinGuia+' de '+AN.filter(function(a){return a.vivo;}).length+' animales vivos no tienen guía asignada.</b> El lote se puede ver por color de caravana o por guía.');
+  if(raros)ALERTS.push('<b>'+raros+' pesadas con valores raros</b> (menos de 100 o más de 650 kg). No las usé en los promedios; conviene revisarlas.');
+  var nuev=AN.filter(function(a){return a.pw.length&&a.pw[0][0]>'2025-05-31';}).length;
+  ALERTS.push('<b>'+nuev+' animales aparecen en la hoja de pesadas después de mayo 2025</b> y solo hay 2 compras cargadas en Hacienda (octubre 2025). Para el resultado económico estimé el costo de los demás con su peso de entrada y el precio de referencia.');
+  var sinPeso=DATA.animals.filter(function(a){return !a.w.length;}).length;
+  if(sinPeso)ALERTS.push('<b>'+sinPeso+' animales sin ninguna pesada</b> (por ejemplo caravanas de 14 dígitos de Aserradero).');
+  ALERTS.push('<b>Hoja "Pesada Aserradero (1)" duplicada</b> en la planilla, y fechas con año equivocado en "Pesada Aserradero" (la vista previa las corrige sola).');
+  $('alertas-ul').innerHTML=ALERTS.map(function(x){return '<li>'+x+'</li>';}).join('');
+})();
+
+/* ---------- Datos de la hoja vieja (cargada a mano) + Hacienda ---------- */
+var HOYM=mon(HOY);
+var COMPRA_RE=/bubill|animal|cabeza|hacienda|novill|vaca|terner|toro|b[uú]falo/i;
+var EGR=DATA.egresos.map(function(e){var x=Object.assign({},e);x.kind='gasto';x.fix='';
+  if(x.c==='Compras'){
+    if(COMPRA_RE.test(x.desc))x.kind='compra';
+    else if(/alquiler/i.test(x.desc)){x.c='Arrendamiento';x.fix='Estaba como "Compras"; es un alquiler (lo conté como Arrendamiento)';}
+    else{x.c='Otros';x.fix='Estaba como "Compras" pero no es hacienda (lo conté como Otros)';}
+  }
+  if(x.c==='Retiro de Socios')x.kind='retiro';
+  return x;});
+var GA=EGR.filter(function(e){return e.kind==='gasto';});
+var RETIROS=EGR.filter(function(e){return e.kind==='retiro';});
+var COMPRAS=[];
+HAC.forEach(function(h){if(h.tipo==='Compra')COMPRAS.push({f:h.f,contra:h.contra,monto:h.monto,cab:h.cabezas,pagos:h.pagos,fuente:'Hacienda',row:h.row,desc:h.contra+(h.cabezas?' · '+fN(h.cabezas)+' cab.':'')});});
+EGR.filter(function(e){return e.kind==='compra';}).forEach(function(e){var m=e.desc.match(/(\d+)\s*(bubill|animal|cabeza|novill|vaca|terner)/i);COMPRAS.push({f:e.f,contra:e.desc.trim(),monto:e.m,cab:m?+m[1]:null,pagos:[{f:e.f,m:'Según hoja vieja',v:e.m}],fuente:'Hoja vieja',row:e.row,desc:e.desc.trim()});});
+var ING=DATA.ingresos.map(function(i){var x=Object.assign({},i);
+  x.kind=/aporte/i.test(x.medio)?'aporte':(/financ/i.test(x.medio)?'financiero':'venta');
+  x.cheque=/cheque/i.test(x.medio)&&!/deposit/i.test(x.medio);return x;});
+var usedH={};
+ING.forEach(function(i){if(i.kind!=='venta'||!(i.m>0))return;var best=null;
+  HAC.forEach(function(h,hi){if(h.tipo!=='Venta'||usedH[hi])return;if(Math.abs(days(i.f,h.f))>45)return;
+    var e=Math.min(Math.abs(h.monto-i.m),Math.abs(h.total-i.m))/i.m;if(e<0.03&&(!best||e<best.e))best={hi:hi,e:e};});
+  if(best){usedH[best.hi]=1;i.match=best.hi;}});
+var VEXTRA=ING.filter(function(i){return i.kind==='venta'&&i.m>0&&i.match===undefined;});
+var APORTES=ING.filter(function(i){return i.kind==='aporte';});
+var FINANC=ING.filter(function(i){return i.kind==='financiero';});
+var HVENTAS=HAC.filter(function(h){return h.tipo==='Venta';});
+var HSINING=HAC.map(function(h,i){return {h:h,i:i};}).filter(function(x){return x.h.tipo==='Venta'&&!usedH[x.i];}).map(function(x){return x.h;});
+// cheques recibidos (en cartera / cobrados)
+var CHEQ=[];
+HVENTAS.forEach(function(h){h.pagos.forEach(function(p){if(/cheque/i.test(p.m))CHEQ.push({vto:p.f,contra:h.contra||'sin comprador',imp:p.v,ref:'Venta del '+fD(h.f)+' (Hacienda fila '+h.row+')'});});});
+VEXTRA.forEach(function(i){if(i.cheque)CHEQ.push({vto:i.cobro||null,contra:i.desc||'sin detalle',imp:i.m,ref:'Hoja vieja fila '+i.row+' · '+fD(i.f)});});
+CHEQ.sort(function(a,b){return (a.vto||'9999')<(b.vto||'9999')?-1:1;});
+var CHEQ_EMIT=DATA.chequesEmitidos||[];
+
+var MODO='Color';
+function gk(a){return MODO==='Guía'?(a.guia?a.guia:'Sin guía'):a.color;}
+function gcol(key,i){return MODO==='Guía'?C.s[i%8]:(LOTECOL[key]||'#888');}
+/* ---------- Pesadas por animal ---------- */
+function gains(a){ // lista de tramos [fecha,dias,delta,gdp]
+  var out=[];
+  for(var i=1;i<a.pw.length;i++){var d=days(a.pw[i-1][0],a.pw[i][0]);if(d>0)out.push({f:a.pw[i][0],d:d,delta:a.pw[i][1]-a.pw[i-1][1],gdp:(a.pw[i][1]-a.pw[i-1][1])/d,prev:a.pw[i-1][1],now:a.pw[i][1]});}
+  return out;
+}
+AN.forEach(function(a){a.g=gains(a);a.last=a.pw.length?a.pw[a.pw.length-1]:null;a.first=a.pw.length?a.pw[0]:null;});
+
+function showPg(id,el){
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  $('pg-'+id).classList.add('on');el.classList.add('on');
+  if(id==='pesajes')renderPesajes();
+  if(id==='flujo')renderFlujo();
+  if(id==='auditoria')renderAuditoria();
+}
+
+/* ---------- INGRESOS Y TENENCIA ---------- */
+function stockVal(kg){return kg*(+$('p-precio').value||3200)*(1-(+$('p-desb').value||0)/100);}
+function renderTenencia(){
+  var vivos=AN.filter(function(a){return a.vivo&&a.last;});
+  var kg=sum(vivos,function(a){return a.last[1];});
+  var gd=vivos.map(function(a){return a.g.length?a.g[a.g.length-1].gdp:null;}).filter(function(x){return x!=null;});
+  var ultima=vivos.map(function(a){return a.last[0];}).sort().pop();
+  $('k-ten').innerHTML=
+   k('Animales vivos',fN(vivos.length),fN(AN.filter(function(a){return a.estado==='Puesto 12';}).length)+' en Puesto 12 · '+fN(AN.filter(function(a){return a.estado==='Aserradero';}).length)+' en Aserradero')+
+   k('Kg en pie',fN(kg),'según la última pesada de cada uno')+
+   k('Peso promedio',fN(kg/vivos.length)+' kg','por animal')+
+   k('kg/día (última pesada)',fN(avg(gd),2),'promedio de los vivos')+
+   k('Valor estimado',fMM(stockVal(kg)),'a $'+fN(+$('p-precio').value)+'/kg con '+fN(+$('p-desb').value)+'% de desbaste')+
+   k('Última pesada',fD(ultima),'hace '+days(ultima,HOY)+' días');
+  var campos=['Puesto 12','Aserradero'];
+  $('tb-campo').innerHTML=campos.map(function(c){
+    var v=vivos.filter(function(a){return a.estado===c;});var kk=sum(v,function(a){return a.last[1];});
+    var g=v.map(function(a){return a.g.length?a.g[a.g.length-1].gdp:null;}).filter(function(x){return x!=null;});
+    return '<tr><td>'+c+'</td><td class="r">'+v.length+'</td><td class="r">'+fN(kk)+'</td><td class="r">'+fN(kk/v.length)+'</td><td class="r">'+fN(avg(g),2)+'</td><td class="r">'+fMM(stockVal(kk))+'</td></tr>';
+  }).join('');
+  var lotes={};vivos.forEach(function(a){(lotes[gk(a)]=lotes[gk(a)]||[]).push(a);});
+  $('tb-lote').innerHTML=Object.keys(lotes).sort(function(a,b){return lotes[b].length-lotes[a].length;}).map(function(l){
+    var v=lotes[l];var g=v.map(function(a){return a.g.length?a.g[a.g.length-1].gdp:null;}).filter(function(x){return x!=null;});
+    var u=v.map(function(a){return a.last[0];}).sort().pop();
+    return '<tr><td><span class="dot" style="background:'+(MODO==='Guía'?'#7a8699':(LOTECOL[l]||'#888'))+'"></span>'+l+'</td><td class="r">'+v.length+'</td><td class="r">'+fN(sum(v,function(a){return a.last[1];})/v.length)+'</td><td class="r">'+fN(avg(g),2)+'</td><td class="r">'+fD(u)+'</td></tr>';
+  }).join('');
+  // ventas
+  var V=HAC.filter(function(h){return h.tipo==='Venta';}).sort(function(a,b){return a.f<b.f?1:-1;});
+  var tot=sum(V,function(h){return h.monto;}),cob=sum(V,function(h){return h.total-h.saldo;}),sal=sum(V,function(h){return h.saldo;});
+  var cabs=sum(V,function(h){return h.cabezas||0;});
+  $('k-ven').innerHTML=k('Vendido (neto)',fMM(tot),V.length+' operaciones')+k('Cobrado',fMM(cob),'de lo facturado')+k('Saldo a cobrar',fMM(sal),'ventas con saldo pendiente')+k('Cabezas con dato',fN(cabs),'varias ventas no tienen cantidad cargada');
+  $('tb-ven').innerHTML=V.map(function(h){
+    var pr=h.porCabeza?fM(h.precio)+'/cab':(h.precio?fM(h.precio)+'/kg':'-');
+    var kgn=h.porCabeza?'-':fN(h.kg*(1-(h.desb||0)));
+    return '<tr><td>'+fD(h.f)+'</td><td>'+(h.contra||'<span class="mut">sin comprador</span>')+'</td><td class="r">'+(h.cabezas?fN(h.cabezas):'<span class="mut">-</span>')+'</td><td class="r">'+kgn+'</td><td class="r">'+pr+'</td><td class="r">'+fM(h.monto)+'</td><td class="r '+(h.saldo>0?'neg':'')+'">'+(h.saldo?fM(h.saldo):'')+'</td><td>'+h.estado+'</td></tr>';
+  }).join('');
+  var m={};V.forEach(function(h){m[mon(h.f)]=(m[mon(h.f)]||0)+h.monto;});
+  var ks=Object.keys(m).sort();
+  mk('c-ven',{type:'bar',data:{labels:ks.map(mlab),datasets:[{label:'Ventas',data:ks.map(function(x){return m[x];}),backgroundColor:C.s[0],borderRadius:4}]},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fM(c.raw);}}}},scales:{y:{ticks:{callback:function(v){return fMM(v);}}}}}});
+}
+function k(l,v,s){return '<div class="kpi"><div class="kpi-l">'+l+'</div><div class="kpi-v">'+v+'</div><div class="kpi-s">'+(s||'')+'</div></div>';}
+
+/* ---------- GASTOS ---------- */
+function renderGastos(){
+  var G=DATA.gastos;var tot=sum(G,function(g){return g.neto;});
+  var meses={},rub={},cruz={};
+  G.forEach(function(g){var m=mon(g.f);meses[m]=(meses[m]||0)+g.neto;rub[g.c]=(rub[g.c]||0)+g.neto;cruz[g.c]=cruz[g.c]||{};cruz[g.c][m]=(cruz[g.c][m]||0)+g.neto;});
+  var ms=Object.keys(meses).sort(),rs=Object.keys(rub).sort(function(a,b){return rub[b]-rub[a];});
+  var d0=G.map(function(g){return g.f;}).sort()[0],d1=G.map(function(g){return g.f;}).sort().pop();
+  // cabeza-dias y kg producidos en la ventana de gastos
+  var cd=0,kgp=0;
+  AN.forEach(function(a){if(!a.first)return;var ini=a.first[0]>d0?a.first[0]:d0;var fin=a.vivo?d1:(a.last[0]<d1?a.last[0]:d1);if(fin>ini)cd+=days(ini,fin);
+    a.g.forEach(function(x){if(x.f>d0&&x.f<=d1)kgp+=x.delta;});});
+  $('k-gas').innerHTML=k('Gastos cargados',fMM(tot),fD(d0)+' al '+fD(d1))+k('Promedio mensual',fMM(tot/ms.length),ms.length+' meses con gastos')+
+    k('Costo por cabeza por día',fM(tot/cd),'en el período de los gastos')+k('Costo por kg producido',fM(tot/kgp),fN(kgp)+' kg ganados en el período')+k('Mayor rubro',rs[0],fMM(rub[rs[0]])+' · '+fN(rub[rs[0]]/tot*100)+'%');
+  mk('c-gmes',{type:'bar',data:{labels:ms.map(mlab),datasets:[{label:'Gastos',data:ms.map(function(m){return meses[m];}),backgroundColor:C.s[1],borderRadius:4}]},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fM(c.raw);}}}},scales:{y:{ticks:{callback:function(v){return fMM(v);}}}}}});
+  mk('c-grub',{type:'bar',data:{labels:rs,datasets:[{label:'Gastos',data:rs.map(function(r){return rub[r];}),backgroundColor:C.s[0],borderRadius:4}]},options:{indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fM(c.raw);}}}},scales:{x:{ticks:{callback:function(v){return fMM(v);}}}}}});
+  $('t-grub').innerHTML='<thead><tr><th>Rubro</th>'+ms.map(function(m){return '<th class="r">'+mlab(m)+'</th>';}).join('')+'<th class="r">Total</th></tr></thead><tbody>'+rs.map(function(r){return '<tr><td>'+r+'</td>'+ms.map(function(m){return '<td class="r">'+(cruz[r][m]?fN(cruz[r][m]/1000)+'k':'<span class="mut">-</span>')+'</td>';}).join('')+'<td class="r"><b>'+fMM(rub[r])+'</b></td></tr>';}).join('')+'</tbody>';
+}
+
+/* ---------- FLUJO ---------- */
+function stockEn(fin){
+  var kg=0;
+  AN.forEach(function(a){
+    if(!a.first||a.first[0]>fin)return;
+    if(!a.vivo&&a.last[0]<fin)return;
+    var w=null;for(var i=0;i<a.pw.length;i++){if(a.pw[i][0]<=fin)w=a.pw[i][1];}
+    if(w)kg+=w;
+  });
+  return kg;
+}
+var FL=null;
+function renderFlujo(){
+  var meses=[];for(var y=2025,m=3;!(y===2027&&m>1);){meses.push(y+'-'+(m<10?'0':'')+m);m++;if(m>12){m=1;y++;}}
+  var Z=function(){var o={};meses.forEach(function(m){o[m]=0;});return o;};
+  var ven=Z(),comH=Z(),gas=Z(),cobR=Z(),cobP=Z(),pagH=Z(),pagG=Z(),apo=Z(),ret=Z();
+  var IT={ventas:[],compras:[],gastos:[],cobros:[],pagosG:[],pagosH:[],socios:[]};
+  function add(o,m,v){if(m in o)o[m]+=v;}
+  // ventas
+  HVENTAS.forEach(function(h){add(ven,mon(h.f),h.monto);
+    IT.ventas.push({m:mon(h.f),f:h.f,t:(h.contra||'sin comprador')+(h.cabezas?' · '+fN(h.cabezas)+' cab.':'')+(h.porCabeza?' (por cabeza)':(h.kg?' · '+fN(h.kg*(1-(h.desb||0)))+' kg neto':'')),v:h.monto,s:'Hacienda fila '+h.row});
+    h.pagos.forEach(function(p){if(!p.f)return;var pr=p.f>HOY;add(pr?cobP:cobR,mon(p.f),p.v);IT.cobros.push({m:mon(p.f),f:p.f,t:(h.contra||'sin comprador')+' · '+p.m+(pr?' (programado)':''),v:p.v,s:'Hacienda fila '+h.row});});});
+  VEXTRA.forEach(function(i){add(ven,mon(i.f),i.m);var cf=(i.cheque&&i.cobro)?i.cobro:i.f,pr=cf>HOY;add(pr?cobP:cobR,mon(cf),i.m);
+    IT.ventas.push({m:mon(i.f),f:i.f,t:'Venta sin operación en Hacienda · '+(i.desc||i.medio),v:i.m,s:'Hoja vieja fila '+i.row});
+    IT.cobros.push({m:mon(cf),f:cf,t:(i.desc||'Venta a reasignar')+' · '+i.medio+(pr?' (programado)':''),v:i.m,s:'Hoja vieja fila '+i.row});});
+  FINANC.forEach(function(i){add(ven,mon(i.f),i.m);add(cobR,mon(i.f),i.m);IT.ventas.push({m:mon(i.f),f:i.f,t:'Ingreso financiero',v:i.m,s:'Hoja vieja fila '+i.row});IT.cobros.push({m:mon(i.f),f:i.f,t:'Ingreso financiero',v:i.m,s:'Hoja vieja fila '+i.row});});
+  // compras de hacienda
+  COMPRAS.forEach(function(c){add(comH,mon(c.f),c.monto);IT.compras.push({m:mon(c.f),f:c.f,t:c.desc,v:c.monto,s:c.fuente+' fila '+c.row});
+    c.pagos.forEach(function(p){if(!p.f)return;add(pagH,mon(p.f),p.v);IT.pagosH.push({m:mon(p.f),f:p.f,t:'Compra: '+c.desc+' · '+p.m,v:p.v,s:c.fuente+' fila '+c.row});});});
+  // gastos
+  GA.forEach(function(e){add(gas,mon(e.f),e.m);add(pagG,mon(e.f),e.m);IT.gastos.push({m:mon(e.f),f:e.f,t:e.c+' · '+e.desc,v:e.m,s:'Hoja vieja fila '+e.row});IT.pagosG.push({m:mon(e.f),f:e.f,t:e.c+' · '+e.desc,v:e.m,s:'Hoja vieja fila '+e.row});});
+  // socios
+  APORTES.forEach(function(i){add(apo,mon(i.f),i.m);IT.socios.push({m:mon(i.f),f:i.f,t:'APORTE de socios · '+(i.desc||''),v:i.m,s:'Hoja vieja fila '+i.row});});
+  RETIROS.forEach(function(e){add(ret,mon(e.f),e.m);IT.socios.push({m:mon(e.f),f:e.f,t:'RETIRO de socios · '+e.desc,v:-e.m,s:'Hoja vieja fila '+e.row});});
+  // valor de hacienda
+  var val={};
+  meses.forEach(function(m){var p=m.split('-');var fin=new Date(Date.UTC(+p[0],+p[1],0)).toISOString().slice(0,10);if(fin>HOY)fin=HOY;val[m]=stockVal(stockEn(fin));});
+  var act=meses.filter(function(m){return m<=HOYM;});
+  var ent={};act.forEach(function(m){ent[m]=0;});
+  AN.forEach(function(a){if(!a.first)return;var mm=mon(a.first[0]);if(mm<='2025-05')return;if(mm in ent)ent[mm]+=stockVal(a.first[1]);});
+  var xtra={},eco={},ds={};
+  act.forEach(function(m,i){xtra[m]=Math.max(0,ent[m]-comH[m]);ds[m]=(i===0||m<='2025-05')?0:val[m]-val[act[i-1]];eco[m]=ven[m]-comH[m]-xtra[m]-gas[m]+ds[m];});
+  var finM={},acu={},run=0;
+  meses.forEach(function(m){finM[m]=cobR[m]+cobP[m]-pagH[m]-pagG[m]+apo[m]-ret[m];run+=finM[m];acu[m]=run;});
+  var S=function(o,l){return sum(l||act,function(m){return o[m];});};
+  var tV=S(ven),tCH=S(comH),tX=S(xtra),tG=S(gas),tDS=S(ds),tEco=S(eco);
+  var tCR=S(cobR,meses),tCP=S(cobP,meses),tPG=S(pagG,meses),tPH=S(pagH,meses),tAp=S(apo,meses),tRe=S(ret,meses);
+  var finOp=tCR-tPG-tPH,finTot=finOp+tAp-tRe;
+  var cartera=CHEQ.filter(function(c){return c.vto&&c.vto>HOY;});
+  FL={meses:meses,IT:IT};
+  $('k-eco').innerHTML=
+    ks('Ventas',fMM(tV),'por fecha de operación')+
+    ks('Compras de hacienda',fMM(tCH+tX),fMM(tCH)+' cargadas'+(tX?' + '+fMM(tX)+' estimadas':''),null,'#c98500')+
+    ks('Gastos',fMM(tG),'hoja vieja, todos los rubros')+
+    ks('Variación valor hacienda',fMM(tDS),'engorde y precio, estimado')+
+    ks('Resultado económico',fMM(tEco),'ventas − compras − gastos ± hacienda',null,tEco>=0?'#199e70':'#e66767');
+  $('k-fin').innerHTML=
+    ks('Cobros hasta hoy',fMM(tCR),'plata que entró')+
+    ks('Pagos de gastos',fMM(tPG),'plata que salió')+
+    ks('Pagos de hacienda',fMM(tPH),'compra de animales',null,'#c98500')+
+    ks('Aportes de socios',fMM(tAp),tAp?'':'ninguno cargado')+
+    ks('Retiros de socios',fMM(tRe),tRe?'':'ninguno cargado')+
+    ks('Resultado financiero',fMM(finTot),'cobros − pagos ± socios',null,finTot>=0?'#199e70':'#e66767')+
+    ks('Cheques por cobrar',fMM(sum(cartera,function(c){return c.imp;})),cartera.length+' cheques · tocá para ver','openCheques()','#3987e5');
+  var lab=meses.map(mlab);
+  var tabEco=['ventas','compras','compras','gastos',null,'ventas'];
+  mk('c-eco',{type:'bar',data:{labels:act.map(mlab),datasets:[
+    {label:'Ventas',data:act.map(function(m){return ven[m];}),backgroundColor:C.s[2],stack:'e',borderRadius:3},
+    {label:'Compras de hacienda (cargadas)',data:act.map(function(m){return -comH[m];}),backgroundColor:C.s[3],stack:'e',borderRadius:3},
+    {label:'Compras de hacienda (estimadas)',data:act.map(function(m){return -xtra[m];}),backgroundColor:'rgba(201,133,0,.35)',borderColor:C.s[3],borderWidth:1,stack:'e',borderRadius:3},
+    {label:'Gastos',data:act.map(function(m){return -gas[m];}),backgroundColor:C.s[1],stack:'e',borderRadius:3},
+    {label:'Variación valor hacienda',data:act.map(function(m){return ds[m];}),backgroundColor:C.s[6],stack:'e',borderRadius:3},
+    {type:'line',label:'Resultado del mes',data:act.map(function(m){return eco[m];}),borderColor:cssv('--tx'),backgroundColor:cssv('--tx'),borderWidth:2,pointRadius:4,pointHoverRadius:7,stack:'res',tension:.15}]},
+    options:{onClick:function(e,els){if(els.length)openDetalle(act[els[0].index],tabEco[els[0].datasetIndex]||'ventas');},onHover:hov,
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+fM(c.raw);}}}},scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:function(v){return fMM(v);}}}}}});
+  var tabFin=['cobros','cobros','pagosG','pagosH','socios','socios'];
+  mk('c-fin',{type:'bar',data:{labels:lab,datasets:[
+    {label:'Cobros',data:meses.map(function(m){return cobR[m];}),backgroundColor:C.s[2],borderRadius:3,stack:'a'},
+    {label:'Cobros programados (cheques)',data:meses.map(function(m){return cobP[m];}),backgroundColor:'rgba(25,158,112,.35)',borderColor:C.s[2],borderWidth:1,borderRadius:3,stack:'a'},
+    {label:'Pagos de gastos',data:meses.map(function(m){return -pagG[m];}),backgroundColor:C.s[1],borderRadius:3,stack:'a'},
+    {label:'Pagos de hacienda',data:meses.map(function(m){return -pagH[m];}),backgroundColor:C.s[3],borderRadius:3,stack:'a'},
+    {label:'Aportes de socios',data:meses.map(function(m){return apo[m];}),backgroundColor:C.s[0],borderRadius:3,stack:'a'},
+    {label:'Retiros de socios',data:meses.map(function(m){return -ret[m];}),backgroundColor:C.s[4],borderRadius:3,stack:'a'}]},
+    options:{onClick:function(e,els){if(els.length)openDetalle(meses[els[0].index],tabFin[els[0].datasetIndex]);},onHover:hov,
+      plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+fM(Math.abs(c.raw));}}}},scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:function(v){return fMM(v);}}}}}});
+  mk('c-acu',{type:'line',data:{labels:lab,datasets:[{label:'Acumulado',data:meses.map(function(m){return acu[m];}),borderColor:C.s[0],backgroundColor:'rgba(57,135,229,.15)',fill:true,tension:.2,pointRadius:4,pointHoverRadius:7,segment:{borderDash:function(c){return meses[c.p1DataIndex]>HOYM?[5,4]:undefined;}}}]},
+    options:{onClick:function(e,els){if(els.length)openDetalle(meses[els[0].index],'cobros');},onHover:hov,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fM(c.raw);}}}},scales:{y:{ticks:{callback:function(v){return fMM(v);}}}}}});
+  var row=function(l,v,b,sg){return '<tr><td>'+(b?'<b>'+l+'</b>':l)+'</td><td class="r '+cls(v)+'">'+(b?'<b>'+fM(v)+'</b>':fM(v))+'</td></tr>';};
+  var vNoCob=tV-tCR;
+  $('t-puente').innerHTML='<tbody>'+row('Resultado económico (estimado)',tEco,true)+
+    row('menos: variación del valor de la hacienda (no es plata)',-tDS)+
+    row('más: compras estimadas sin compra cargada (no es plata)',tX)+
+    row('menos: ventas todavía no cobradas',-vNoCob)+
+    row('más: compras de hacienda no pagadas',tCH-tPH)+
+    row('más: gastos no pagados',tG-tPG)+
+    row('= Resultado financiero operativo',finOp,true)+
+    row('más: aportes de socios',tAp)+row('menos: retiros de socios',-tRe)+
+    row('= Variación de caja',finTot,true)+'</tbody>';
+  var th='<thead><tr><th>Mes</th><th class="r">Ventas</th><th class="r">Compras hacienda</th><th class="r">Compras estim.</th><th class="r">Gastos</th><th class="r">Δ valor hacienda</th><th class="r">Económico</th><th class="r">Cobros</th><th class="r">Pagos gastos</th><th class="r">Pagos hacienda</th><th class="r">Socios (+/−)</th><th class="r">Financiero</th><th class="r">Acumulado</th></tr></thead>';
+  var body=meses.map(function(m){var fut=m>HOYM,e=fut?'':null;
+    return '<tr class="clk" onclick="openDetalle(\''+m+'\')"'+(fut?' style="opacity:.65"':'')+'><td>'+mlab(m)+(fut?' <span class="chip">futuro</span>':'')+'</td><td class="r">'+(fut?'':fN(ven[m]))+'</td><td class="r">'+(fut?'':fN(comH[m]))+'</td><td class="r mut">'+(fut?'':fN(xtra[m]))+'</td><td class="r">'+(fut?'':fN(gas[m]))+'</td><td class="r">'+(fut?'':fN(ds[m]))+'</td><td class="r '+(fut?'':cls(eco[m]))+'"><b>'+(fut?'':fN(eco[m]))+'</b></td><td class="r">'+fN(cobR[m]+cobP[m])+'</td><td class="r">'+fN(pagG[m])+'</td><td class="r">'+fN(pagH[m])+'</td><td class="r">'+fN(apo[m]-ret[m])+'</td><td class="r '+cls(finM[m])+'"><b>'+fN(finM[m])+'</b></td><td class="r">'+fN(acu[m])+'</td></tr>';}).join('');
+  var tot='<tr class="tot"><td>TOTAL</td><td class="r">'+fN(tV)+'</td><td class="r">'+fN(tCH)+'</td><td class="r">'+fN(tX)+'</td><td class="r">'+fN(tG)+'</td><td class="r">'+fN(tDS)+'</td><td class="r '+cls(tEco)+'">'+fN(tEco)+'</td><td class="r">'+fN(tCR+tCP)+'</td><td class="r">'+fN(tPG)+'</td><td class="r">'+fN(tPH)+'</td><td class="r">'+fN(tAp-tRe)+'</td><td class="r '+cls(finTot+tCP)+'">'+fN(finTot+tCP)+'</td><td class="r">'+fN(run)+'</td></tr>';
+  $('t-mes').innerHTML=th+'<tbody>'+body+tot+'</tbody>';
+  if(window._detMes)openDetalle(window._detMes,window._detTab,true);
+}
+function ks(l,v,s,click,col){return '<div class="kpi'+(click?' clk':'')+'"'+(click?' onclick="'+click+'"':'')+'><div class="kpi-l">'+l+'</div><div class="kpi-v"'+(col?' style="color:'+col+'"':'')+'>'+v+'</div><div class="kpi-s">'+(s||'')+'</div></div>';}
+function hov(e,els){if(e&&e.native&&e.native.target)e.native.target.style.cursor=els.length?'pointer':'default';}
+var DET_TABS=[['ventas','Ventas'],['compras','Compras de hacienda'],['gastos','Gastos'],['cobros','Cobros'],['pagosG','Pagos de gastos'],['pagosH','Pagos de hacienda'],['socios','Socios']];
+function openDetalle(m,tab,keep){
+  if(!FL)return;tab=tab||window._detTab||'ventas';window._detMes=m;window._detTab=tab;
+  var IT=FL.IT,card=$('det');card.style.display='block';
+  var html='<div class="tct">Detalle de '+mlab(m)+' <span class="mut" style="text-transform:none">· tocá una barra, un mes de la tabla o una solapa</span><span style="float:right;cursor:pointer" onclick="cerrarDetalle()">✕ cerrar</span></div><div style="padding:10px 13px"><div class="seg">';
+  DET_TABS.forEach(function(t){var l=IT[t[0]].filter(function(x){return x.m===m;});html+='<button class="'+(t[0]===tab?'on':'')+'" onclick="openDetalle(\''+m+'\',\''+t[0]+'\')">'+t[1]+' ('+l.length+')</button>';});
+  var l=IT[tab].filter(function(x){return x.m===m;}).sort(function(a,b){return a.f<b.f?-1:1;});
+  html+='</div><div class="tw" style="max-height:300px;margin-top:8px"><table><thead><tr><th>Fecha</th><th>Concepto</th><th class="r">Importe</th><th>Dónde está</th></tr></thead><tbody>'+
+    (l.length?l.map(function(x){return '<tr><td>'+fD(x.f)+'</td><td style="white-space:normal">'+x.t.replace(/</g,'&lt;')+'</td><td class="r">'+fM(x.v)+'</td><td class="mut">'+x.s+'</td></tr>';}).join('')+'<tr class="tot"><td></td><td>Total</td><td class="r">'+fM(sum(l,function(x){return x.v;}))+'</td><td></td></tr>':'<tr><td colspan="4" class="mut">Nada en este mes</td></tr>')+'</tbody></table></div></div>';
+  card.innerHTML=html;
+  if(!keep)card.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function cerrarDetalle(){$('det').style.display='none';window._detMes=null;}
+/* ---------- CHEQUES ---------- */
+function openCheques(){
+  var prox=CHEQ.filter(function(c){return c.vto&&c.vto>HOY;}),pas=CHEQ.filter(function(c){return c.vto&&c.vto<=HOY;}),sin=CHEQ.filter(function(c){return !c.vto;});
+  function tabla(l,vacio){return l.length?'<table><thead><tr><th>Vence</th><th>De quién</th><th class="r">Importe</th><th class="r">Faltan</th><th>Origen</th></tr></thead><tbody>'+l.map(function(c){return '<tr><td>'+(c.vto?fD(c.vto):'<span class="neg">sin fecha</span>')+'</td><td>'+c.contra+'</td><td class="r">'+fM(c.imp)+'</td><td class="r">'+(c.vto?(days(HOY,c.vto)>0?days(HOY,c.vto)+' días':'venció hace '+(-days(HOY,c.vto))+' d'):'-')+'</td><td class="mut">'+c.ref+'</td></tr>';}).join('')+'<tr class="tot"><td></td><td>Total</td><td class="r">'+fM(sum(l,function(c){return c.imp;}))+'</td><td></td><td></td></tr></tbody></table>':'<div class="mut" style="padding:10px">'+vacio+'</div>';}
+  var em=CHEQ_EMIT.length?'<table><thead><tr><th>Vence</th><th>Nº</th><th>Destino</th><th class="r">Importe</th></tr></thead><tbody>'+CHEQ_EMIT.map(function(c){return '<tr><td>'+fD(c.vto)+'</td><td>'+c.nro+'</td><td>'+c.destino+'</td><td class="r">'+fM(c.imp)+'</td></tr>';}).join('')+'</tbody></table>':'<div class="mut" style="padding:10px;line-height:1.6">No hay cheques propios emitidos cargados todavía. Cuando pagues con cheque propio desde la app (Gastos → ¿Cómo se pagó? → Cheque propio) van a aparecer acá con su fecha de vencimiento y la fecha en que se debitan del banco.</div>';
+  $('modal-body').innerHTML='<h3>Cheques que tengo (recibidos de ventas)</h3><div class="sec2">Por cobrar desde hoy · '+prox.length+'</div>'+tabla(prox,'No hay cheques por cobrar.')+'<div class="sec2">Ya vencidos (según la fecha de cobro cargada)</div>'+tabla(pas,'Ninguno.')+(sin.length?'<div class="sec2">Sin fecha de vencimiento cargada</div>'+tabla(sin,''):'')+'<h3 style="margin-top:18px">Cheques que emití (propios)</h3>'+em;
+  $('modal').style.display='flex';
+}
+function closeModal(){ $('modal').style.display='none'; }
+
+
+/* ---------- PESAJES ---------- */
+function filtroPes(){
+  var c=$('pf-c').value,l=$('pf-l').value;
+  return AN.filter(function(a){
+    if(!a.pw.length)return false;
+    if(c===''&&!a.vivo)return false;
+    if(c==='Puesto 12'||c==='Aserradero'){if(a.estado!==c)return false;}
+    if(c==='Vendido'&&a.estado!=='Vendido')return false;
+    if(l&&gk(a)!==l)return false;
+    return true;});
+}
+function renderPesajes(){
+  if($('pf-l').options.length<2){var ks={};AN.forEach(function(a){if(a.vivo||true)ks[gk(a)]=(ks[gk(a)]||0)+1;});Object.keys(ks).sort(function(a,b){return ks[b]-ks[a];}).forEach(function(l){$('pf-l').add(new Option(l+' ('+ks[l]+')',l));});}
+  var set=filtroPes(),minN=+$('pf-n').value||1;
+  var ev={};
+  set.forEach(function(a){
+    a.pw.forEach(function(x){ev[x[0]]=ev[x[0]]||{f:x[0],w:[],gd:[],dl:[],bajo:0,cmp:0,dias:[]};ev[x[0]].w.push(x[1]);});
+    a.g.forEach(function(g){var e=ev[g.f];e.gd.push(g.gdp);e.dl.push(g.delta);e.dias.push(g.d);e.cmp++;if(g.delta<0)e.bajo++;});
+  });
+  var fechas=Object.keys(ev).filter(function(f){return ev[f].w.length>=minN;}).sort();
+  var rows=fechas.map(function(f,i){var e=ev[f];return {f:f,dias:i?days(fechas[i-1],f):null,n:e.w.length,kg:avg(e.w),dl:avg(e.dl),gd:avg(e.gd),bajo:e.bajo,cmp:e.cmp};});
+  var ult=rows[rows.length-1]||{};
+  var tg=set.filter(function(a){return a.g.length;}).map(function(a){return (a.last[1]-a.first[1])/Math.max(1,days(a.first[0],a.last[0]));});
+  $('k-pes').innerHTML=k('Animales en el filtro',fN(set.length),'con al menos una pesada')+k('Pesadas relevantes',fN(rows.length),'con '+minN+' o más animales')+
+    k('Última pesada',ult.f?fD(ult.f):'-',ult.f?'hace '+days(ult.f,HOY)+' días · '+ult.n+' animales':'')+
+    k('kg/día última pesada',ult.gd!=null?fN(ult.gd,2):'-','promedio de ese día')+k('kg/día histórico',fN(avg(tg),2),'desde la primera a la última pesada de cada uno')+
+    k('Bajaron en la última',ult.cmp?fN(ult.bajo)+' de '+ult.cmp:'-',ult.cmp?fN(ult.bajo/ult.cmp*100)+'% de los comparables':'');
+  $('tb-ev').innerHTML=rows.slice().reverse().map(function(r){
+    var c=r.gd==null?'':(r.gd<0.5?'neg':(r.gd>=0.75?'pos':''));
+    return '<tr><td>'+fD(r.f)+'</td><td class="r">'+(r.dias==null?'-':r.dias)+'</td><td class="r">'+r.n+'</td><td class="r">'+fN(r.kg)+'</td><td class="r '+cls(r.dl)+'">'+(r.dl==null?'-':(r.dl>0?'+':'')+fN(r.dl,1))+'</td><td class="r '+c+'">'+(r.gd==null?'-':fN(r.gd,2))+'</td><td class="r">'+(r.cmp?r.bajo+' de '+r.cmp:'-')+'</td><td class="r '+(r.cmp&&r.bajo/r.cmp>.3?'neg':'')+'">'+(r.cmp?fN(r.bajo/r.cmp*100)+'%':'-')+'</td></tr>';}).join('');
+  mk('c-gdp',{type:'bar',data:{labels:rows.map(function(r){return fD(r.f);}),datasets:[{label:'kg/día',data:rows.map(function(r){return r.gd;}),backgroundColor:rows.map(function(r){return r.gd==null?'#556':(r.gd<0.5?C.s[7]:(r.gd>=0.75?C.s[2]:C.s[3]));}),borderRadius:3}]},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fN(c.raw,2)+' kg/día · '+rows[c.dataIndex].dias+' días desde la anterior';}}}},scales:{y:{ticks:{callback:function(v){return fN(v,1);}}}}}});
+  // peso por lote
+  var porL={};set.forEach(function(a){var kk=gk(a);porL[kk]=porL[kk]||{};a.pw.forEach(function(x){(porL[kk][x[0]]=porL[kk][x[0]]||[]).push(x[1]);});});
+  var allF=Object.keys(ev).sort();
+  var ls=Object.keys(porL).filter(function(l){return sum(Object.keys(porL[l]),function(f){return porL[l][f].length;})>=minN*2;}).sort(function(a,b){return Object.keys(porL[b]).length-Object.keys(porL[a]).length;}).slice(0,8);
+  mk('c-plote',{type:'line',data:{labels:allF.map(fD),datasets:ls.map(function(l,li){return {label:l,data:allF.map(function(f){var v=porL[l][f];return v&&v.length>=Math.min(3,minN)?avg(v):null;}),borderColor:gcol(l,li),backgroundColor:gcol(l,li),tension:.2,pointRadius:3,spanGaps:true,borderWidth:2};})},options:{plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{mode:'index',intersect:false,callbacks:{label:function(c){return c.dataset.label+': '+fN(c.raw)+' kg';}}}},interaction:{mode:'index',intersect:false},scales:{y:{title:{display:true,text:'kg promedio'}}}}});
+  // bajaron y sin pesar
+  var baj=set.filter(function(a){return a.vivo&&a.g.length&&a.g[a.g.length-1].delta<0;}).map(function(a){return {a:a,g:a.g[a.g.length-1]};}).sort(function(x,y){return x.g.delta-y.g.delta;});
+  $('tb-baja').innerHTML=baj.length?baj.map(function(x){return '<tr><td>'+x.a.car+' <span class="mut">'+x.a.color+'</span></td><td>'+x.a.estado+'</td><td class="r">'+fN(x.g.prev)+'</td><td class="r">'+fN(x.g.now)+'</td><td class="r neg">'+fN(x.g.delta)+'</td><td class="r neg">'+fN(x.g.gdp,2)+'</td></tr>';}).join(''):'<tr><td colspan="6" class="mut">Ninguno</td></tr>';
+  var sin=set.filter(function(a){return a.vivo&&days(a.last[0],HOY)>45;}).sort(function(x,y){return x.last[0]<y.last[0]?-1:1;});
+  $('tb-sin').innerHTML=sin.length?sin.map(function(a){return '<tr><td>'+a.car+' <span class="mut">'+a.color+'</span></td><td>'+a.estado+'</td><td>'+fD(a.last[0])+'</td><td class="r neg">'+days(a.last[0],HOY)+'</td><td class="r">'+fN(a.last[1])+'</td></tr>';}).join(''):'<tr><td colspan="5" class="mut">Todos pesados en los últimos 45 días</td></tr>';
+  // aserradero
+  var aa=DATA.aser.map(function(a){var o={pw:a.w.filter(function(x){return x[1]>=100&&x[1]<=650;}).sort(function(p,q){return p[0]<q[0]?-1:1;})};o.g=gains(o);return o;}).filter(function(a){return a.pw.length;});
+  var ae={};aa.forEach(function(a){a.pw.forEach(function(x){ae[x[0]]=ae[x[0]]||{w:[],gd:[]};ae[x[0]].w.push(x[1]);});a.g.forEach(function(g){ae[g.f].gd.push(g.gdp);});});
+  var af=Object.keys(ae).filter(function(f){return ae[f].w.length>=3;}).sort();
+  var ar=af.map(function(f,i){return {f:f,d:i?days(af[i-1],f):null,n:ae[f].w.length,kg:avg(ae[f].w),gd:ae[f].gd.length?avg(ae[f].gd):null};});
+  $('tb-aser').innerHTML=ar.slice().reverse().map(function(r){return '<tr><td>'+fD(r.f)+'</td><td class="r">'+(r.d==null?'-':r.d)+'</td><td class="r">'+r.n+'</td><td class="r">'+fN(r.kg)+'</td><td class="r '+(r.gd==null?'':(r.gd<0.5?'neg':(r.gd>=0.75?'pos':'')))+'">'+(r.gd==null?'-':fN(r.gd,2))+'</td></tr>';}).join('');
+  mk('c-aser',{type:'line',data:{labels:ar.map(function(r){return fD(r.f);}),datasets:[{label:'Peso promedio',data:ar.map(function(r){return r.kg;}),borderColor:C.s[0],backgroundColor:C.s[0],tension:.2,pointRadius:3,borderWidth:2}]},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fN(c.raw)+' kg · '+ar[c.dataIndex].n+' animales';}}}},scales:{y:{title:{display:true,text:'kg'}}}}});
+  renderEng();
+  renderGest();
+}
+
+
+/* ---------- ENGORDE POR ANIMAL (filtros) ---------- */
+function clsg(g){return g==null?'':(g<0.5?'r':(g<0.75?'a':'v'));}
+function limpiarEng(){['eg-c','eg-s','eg-g','eg-b','eg-kd','eg-kh','eg-gd','eg-gh','eg-fd','eg-fh'].forEach(function(i){$(i).value='';});renderEng();}
+function renderEng(){
+  var v=$('eg-v').value,c=$('eg-c').value,sx=$('eg-s').value,g=$('eg-g').value,b=$('eg-b').value.trim().toLowerCase();
+  var N=function(i){var x=$(i).value;return x===''?null:parseFloat(x);};
+  var kd=N('eg-kd'),kh=N('eg-kh'),gd=N('eg-gd'),gh=N('eg-gh'),fd=$('eg-fd').value||null,fh=$('eg-fh').value||null,o=$('eg-o').value;
+  var rows=[];
+  AN.forEach(function(a,ai){
+    if(c&&a.estado!==c)return;if(sx&&a.sexo!==sx)return;
+    if(b&&a.car.toLowerCase().indexOf(b)<0&&a.color.toLowerCase().indexOf(b)<0&&(a.guia||'').toLowerCase().indexOf(b)<0)return;
+    var pw=a.pw.filter(function(x){return (!fd||x[0]>=fd)&&(!fh||x[0]<=fh);});
+    if(pw.length<2)return;
+    if(v==='a'){
+      var f=pw[0],l=pw[pw.length-1],d=days(f[0],l[0]);if(d<=0)return;
+      rows.push({ai:ai,a:a,f0:f[0],f1:l[0],w0:f[1],w1:l[1],d:d,dk:l[1]-f[1],gdp:(l[1]-f[1])/d,n:pw.length});
+    }else{
+      for(var i=1;i<pw.length;i++){var d2=days(pw[i-1][0],pw[i][0]);if(d2<=0)continue;
+        rows.push({ai:ai,a:a,f0:pw[i-1][0],f1:pw[i][0],w0:pw[i-1][1],w1:pw[i][1],d:d2,dk:pw[i][1]-pw[i-1][1],gdp:(pw[i][1]-pw[i-1][1])/d2,n:2});}
+    }
+  });
+  rows=rows.filter(function(r){return (kd===null||r.w1>=kd)&&(kh===null||r.w1<=kh)&&(gd===null||r.gdp>=gd)&&(gh===null||r.gdp<=gh)&&(!g||clsg(r.gdp)===g);});
+  rows.sort(function(x,y){return o==='gd'?y.gdp-x.gdp:o==='ga'?x.gdp-y.gdp:o==='kg'?y.w1-x.w1:y.dk-x.dk;});
+  var nr=rows.filter(function(r){return clsg(r.gdp)==='r';}).length,na=rows.filter(function(r){return clsg(r.gdp)==='a';}).length,nv=rows.filter(function(r){return clsg(r.gdp)==='v';}).length;
+  $('eg-n').textContent=' · '+rows.length+(v==='a'?' animales':' tramos');
+  $('eg-k').innerHTML=k(v==='a'?'Animales':'Tramos',fN(rows.length),'con el filtro actual')+k('kg/día promedio',rows.length?fN(avg(rows.map(function(r){return r.gdp;})),2):'-','promedio de los filtrados')+
+    k('Rojo (poco)',fN(nr),rows.length?fN(nr/rows.length*100)+'% · menos de 0,5':'')+k('Amarillo',fN(na),'0,5 a 0,75')+k('Verde (mucho)',fN(nv),rows.length?fN(nv/rows.length*100)+'% · 0,75 o más':'')+
+    k('Kg ganados',fN(sum(rows,function(r){return r.dk;})),'suma de los filtrados');
+  var th='<thead><tr><th>Caravana</th><th>Color</th><th>Campo</th><th>Sexo</th><th>'+(v==='a'?'Desde':'Pesada anterior')+'</th><th>'+(v==='a'?'Hasta':'Pesada')+'</th>'+(v==='a'?'<th class="r">Pesadas</th>':'')+'<th class="r">Kg ant.</th><th class="r">Kg act.</th><th class="r">Dif. kg</th><th class="r">Días</th><th class="r">kg/día</th><th>Clasif.</th></tr></thead>';
+  var lim=rows.slice(0,600).map(function(r){var cl=clsg(r.gdp),a=r.a;
+    return '<tr class="clk" onclick="irAnimal('+r.ai+')" style="border-left:3px solid '+(LOTECOL[a.color]||'#888')+'"><td><b>'+a.car+'</b></td><td>'+a.color+'</td><td>'+a.estado+'</td><td>'+(a.sexo||'-')+'</td><td>'+fD(r.f0)+'</td><td>'+fD(r.f1)+'</td>'+(v==='a'?'<td class="r">'+r.n+'</td>':'')+'<td class="r">'+fN(r.w0)+'</td><td class="r">'+fN(r.w1)+'</td><td class="r '+cls(r.dk)+'">'+(r.dk>0?'+':'')+fN(r.dk)+'</td><td class="r">'+r.d+'</td><td class="r '+(cl==='r'?'neg':cl==='v'?'pos':'')+'"><b>'+fN(r.gdp,2)+'</b></td><td><span class="'+(cl==='r'?'mal':cl==='v'?'ok':'rev')+'">'+(cl==='r'?'● Rojo':cl==='v'?'● Verde':'● Amarillo')+'</span></td></tr>';}).join('');
+  $('eg-t').innerHTML=th+'<tbody>'+(lim||'<tr><td colspan="13" class="mut">Ningún animal con esos filtros</td></tr>')+'</tbody>'+(rows.length>600?'<tfoot><tr><td colspan="13" class="mut">Se muestran los primeros 600 de '+rows.length+'. Afiná los filtros.</td></tr></tfoot>':'');
+}
+function irAnimal(ai){showPg('animal',document.querySelectorAll('.tab')[4]);$('an-q').value=AN[ai].car;$('an-e').value='';buscarAnimal();verAnimal(ai);window.scrollTo(0,0);}
+
+
+/* ---------- GESTIÓN DEL ENGORDE ---------- */
+var MG=null;
+function calcMG(){
+  var ag={};var cam=['Puesto 12','Aserradero','Vendido'];
+  AN.forEach(function(a,ai){
+    for(var i=1;i<a.pw.length;i++){var n=days(a.pw[i-1][0],a.pw[i][0]);if(n<=0)continue;var g=(a.pw[i][1]-a.pw[i-1][1])/n;
+      var c=T(a.pw[i-1][0]);
+      for(var j=0;j<n;j++){var d=new Date(c+j*864e5).toISOString().slice(0,10),m=d.slice(0,7);
+        var key=m;var o=ag[key]=ag[key]||{};var cc=cam.indexOf(a.estado)>=0?a.estado:'Vendido';var x=o[cc]=o[cc]||{kg:0,ad:0,an:{}};x.kg+=g;x.ad++;x.an[ai]=1;}}
+  });
+  return ag;
+}
+function renderGest(){
+  if(!MG)MG=calcMG();
+  var ag=MG,ms=Object.keys(ag).filter(function(m){return m<=HOYM&&sum(Object.keys(ag[m]),function(c){return ag[m][c].ad;})>=60;}).sort();
+  var cam=['Puesto 12','Aserradero','Vendido'];
+  function gd(m,c){var o=c?[ag[m][c]]:Object.keys(ag[m]).map(function(k){return ag[m][k];});var kg=0,ad=0;o.forEach(function(x){if(x){kg+=x.kg;ad+=x.ad;}});return {kg:kg,ad:ad,gdp:ad?kg/ad:null};}
+  var rep=$('g-rep').checked,win=+$('g-win').value||1;
+  var GD={};function addG(f,v){GD[f]=(GD[f]||0)+v;}
+  var alim=GA.filter(function(e){return e.c==='Alimentos';}).sort(function(a,b){return a.f<b.f?-1:1;});
+  GA.forEach(function(e){if(!(rep&&e.c==='Alimentos'))addG(e.f,e.m);});
+  if(rep){var fch=[];alim.forEach(function(e){if(fch.indexOf(e.f)<0)fch.push(e.f);});
+    var gaps=[];for(var q=1;q<fch.length;q++)gaps.push(days(fch[q-1],fch[q]));gaps.sort(function(a,b){return a-b;});var med=gaps.length?gaps[Math.floor(gaps.length/2)]:60;
+    alim.forEach(function(e){var qi=fch.indexOf(e.f),nx=qi+1<fch.length?days(e.f,fch[qi+1]):med;if(nx<1)nx=1;
+      for(var z=0;z<nx;z++){var dd=new Date(T(e.f)+z*864e5).toISOString().slice(0,10);if(dd<=HOY)addG(dd,e.m/nx);}});}
+  var gasM={};Object.keys(GD).forEach(function(f){gasM[mon(f)]=(gasM[mon(f)]||0)+GD[f];});
+  var costo=ms.map(function(m,i){var a=Math.max(0,i-win+1),g=0,kk=0;for(var z=a;z<=i;z++){g+=gasM[ms[z]]||0;kk+=gd(ms[z]).kg;}return kk>=600*Math.min(win,2)?g/kk:null;});
+  // últimos 90 días
+  var lim=new Date(T(HOY)-90*864e5).toISOString().slice(0,10);
+  var u={};AN.forEach(function(a){for(var i=1;i<a.pw.length;i++){if(a.pw[i][0]<=lim)continue;var n=days(a.pw[i-1][0],a.pw[i][0]);if(n<=0)continue;
+    var d0=a.pw[i-1][0]<lim?lim:a.pw[i-1][0],nn=days(d0,a.pw[i][0]);if(nn<=0)continue;var g=(a.pw[i][1]-a.pw[i-1][1])/n;var c=a.estado;var x=u[c]=u[c]||{kg:0,ad:0};x.kg+=g*nn;x.ad+=nn;}});
+  var tk=0,ta=0;Object.keys(u).forEach(function(c){tk+=u[c].kg;ta+=u[c].ad;});
+  function ug(c){return u[c]&&u[c].ad?u[c].kg/u[c].ad:null;}
+  var gas90=sum(Object.keys(GD).filter(function(f){return f>lim&&f<=HOY;}),function(f){return GD[f];});
+  var viv=AN.filter(function(a){return a.vivo&&a.last;});
+  function cob(c){var v=viv.filter(function(a){return a.estado===c;});var o=v.filter(function(a){return days(a.last[0],HOY)<=45;}).length;return v.length?fN(o/v.length*100)+'% ('+o+' de '+v.length+')':'-';}
+  var gc=function(x){return x==null?'-':fN(x,2);};
+  $('g-k').innerHTML=
+    ks('kg/día últimos 90 días',gc(ta?tk/ta:null),'todos los animales',null,(ta&&tk/ta<0.5)?'#e66767':'#199e70')+
+    ks('Puesto 12',gc(ug('Puesto 12')),'kg/animal/día, 90 días')+ks('Aserradero',gc(ug('Aserradero')),'kg/animal/día, 90 días')+
+    ks('Kg ganados, 90 días',fN(tk),'toda la hacienda')+
+    ks('Costo por kg ganado',tk>0?fM(gas90/tk):'-',rep?'gastos 90 días (alimento repartido) ÷ kg ganados':'gastos 90 días ÷ kg ganados')+
+    ks('Confianza del dato','P12 '+cob('Puesto 12'),'Aserradero '+cob('Aserradero')+' · pesados en 45 días');
+  var col={'Puesto 12':C.s[0],'Aserradero':C.s[2],'Vendido':'#9aa3b2'};
+  mk('c-mg',{type:'line',data:{labels:ms.map(mlab),datasets:[
+    {label:'Puesto 12',data:ms.map(function(m){return ag[m]['Puesto 12']&&ag[m]['Puesto 12'].ad>=30?gd(m,'Puesto 12').gdp:null;}),borderColor:col['Puesto 12'],backgroundColor:col['Puesto 12'],tension:.2,pointRadius:4,pointHoverRadius:8,borderWidth:2,spanGaps:true},
+    {label:'Aserradero',data:ms.map(function(m){return ag[m]['Aserradero']&&ag[m]['Aserradero'].ad>=30?gd(m,'Aserradero').gdp:null;}),borderColor:col['Aserradero'],backgroundColor:col['Aserradero'],tension:.2,pointRadius:4,pointHoverRadius:8,borderWidth:2,spanGaps:true},
+    {label:'Todos',data:ms.map(function(m){return gd(m).gdp;}),borderColor:cssv('--tx'),backgroundColor:cssv('--tx'),borderDash:[5,4],tension:.2,pointRadius:3,pointHoverRadius:7,borderWidth:2},
+    {label:'Mínimo esperado 0,5',data:ms.map(function(){return 0.5;}),borderColor:'#e66767',borderWidth:1,pointRadius:0,borderDash:[2,3]}]},
+    options:{onClick:function(e,els){if(els.length&&els[0].datasetIndex<3)gestDet(ms[els[0].index]);},onHover:hov,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+(c.raw==null?'-':fN(c.raw,2)+' kg/día');}}}},scales:{y:{title:{display:true,text:'kg/animal/día'}}}}});
+  mk('c-mk',{data:{labels:ms.map(mlab),datasets:[
+    {type:'bar',label:'Puesto 12',data:ms.map(function(m){return gd(m,'Puesto 12').kg;}),backgroundColor:col['Puesto 12'],stack:'k',yAxisID:'y'},
+    {type:'bar',label:'Aserradero',data:ms.map(function(m){return gd(m,'Aserradero').kg;}),backgroundColor:col['Aserradero'],stack:'k',yAxisID:'y'},
+    {type:'bar',label:'Vendidos',data:ms.map(function(m){return gd(m,'Vendido').kg;}),backgroundColor:'#9aa3b2',stack:'k',yAxisID:'y'},
+    {type:'line',label:'Costo por kg ganado ($, promedio '+win+(win>1?' meses':' mes')+')',data:costo,borderColor:C.s[1],backgroundColor:C.s[1],pointRadius:4,pointHoverRadius:8,borderWidth:2,yAxisID:'y2',spanGaps:false}]},
+    options:{onClick:function(e,els){if(els.length)gestDet(ms[els[0].index]);},onHover:hov,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+(c.raw==null?'-':(c.dataset.yAxisID==='y2'?fM(c.raw):fN(c.raw)+' kg'));}}}},
+      scales:{x:{stacked:true},y:{stacked:true,title:{display:true,text:'kg ganados'}},y2:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:function(v){return fMM(v);}},title:{display:true,text:'$ por kg'}}}}});
+  window._gms=ms;
+  // llegada al peso de venta
+  var pv=+$('pv').value||450,rows=[];
+  var fc=$('g-camp').value;
+  viv.filter(function(a){return !fc||a.estado===fc;}).forEach(function(a){
+    var rec=a.pw.filter(function(x){return days(x[0],a.last[0])<=120;}),gdp=null;
+    if(rec.length>=2){var dd=days(rec[0][0],a.last[0]);if(dd>0)gdp=(a.last[1]-rec[0][1])/dd;}
+    if(gdp==null&&a.first&&a.first[0]!==a.last[0])gdp=(a.last[1]-a.first[1])/days(a.first[0],a.last[0]);
+    var falta=pv-a.last[1],st,fe=null;
+    if(falta<=0)st='listo';else if(gdp==null||gdp<0.15)st='sinritmo';else{var n=Math.ceil(falta/gdp);fe=new Date(T(a.last[0])+n*864e5).toISOString().slice(0,10);st='mes';}
+    rows.push({a:a,ai:AN.indexOf(a),gdp:gdp,falta:falta,fe:fe,st:st});});
+  var ord={listo:0,mes:1,sinritmo:2};
+  rows.sort(function(x,y){return ord[x.st]-ord[y.st]||((x.fe||'9')<(y.fe||'9')?-1:1)||x.falta-y.falta;});
+  var cn=function(t){return rows.filter(function(r){return r.st===t;}).length;};
+  var pm={};rows.forEach(function(r){if(r.st==='mes'){var m=mon(r.fe);pm[m]=(pm[m]||0)+1;}});
+  $('g-meses').innerHTML='<b>Salida estimada por mes:</b> '+(cn('listo')?'<span class="chip">ya llegaron: '+cn('listo')+'</span> ':'')+Object.keys(pm).sort().map(function(m){return '<span class="chip">'+mlab(m)+': '+pm[m]+'</span>';}).join(' ');
+  $('g-lt').textContent=' · peso de venta '+fN(pv)+' kg';
+  var n60=rows.filter(function(r){return r.st==='mes'&&days(HOY,r.fe)<=60;}).length,nl=rows.filter(function(r){return r.st==='mes'&&days(HOY,r.fe)>60;}).length;
+  $('g-k2').innerHTML=ks('Ya llegaron',fN(cn('listo')),'para vender hoy',null,'#199e70')+ks('Llegan en 60 días',fN(n60),'a su ritmo reciente',null,'#c98500')+ks('Más adelante',fN(nl),'después de 60 días')+ks('Sin ritmo de engorde',fN(cn('sinritmo')),'menos de 0,15 kg/día: revisar',null,'#e66767');
+  var lab={listo:'<span class="ok">● Ya llegó</span>',sinritmo:'<span class="mal">● Sin ritmo</span>'};
+  $('g-t').innerHTML='<thead><tr><th>Caravana</th><th>Color</th><th>Campo</th><th>Última pesada</th><th class="r">Último kg</th><th class="r">kg/día reciente</th><th class="r">Faltan kg</th><th>Llega aprox.</th><th>Mes de salida</th></tr></thead><tbody>'+rows.map(function(r){var a=r.a;
+    return '<tr class="clk" onclick="irAnimal('+r.ai+')"><td><b>'+a.car+'</b></td><td>'+a.color+'</td><td>'+a.estado+'</td><td>'+fD(a.last[0])+'</td><td class="r">'+fN(a.last[1])+'</td><td class="r">'+gc(r.gdp)+'</td><td class="r">'+(r.falta<=0?'-':fN(r.falta))+'</td><td>'+(r.fe?fD(r.fe):'-')+'</td><td>'+(r.st==='mes'?'<b class="'+(days(HOY,r.fe)<=60?'rev':'')+'">'+mlab(mon(r.fe))+'</b>':lab[r.st])+'</td></tr>';}).join('')+'</tbody>';
+}
+function gestDet(m){
+  var rows=[];AN.forEach(function(a,ai){var kg=0,ad=0;for(var i=1;i<a.pw.length;i++){var n=days(a.pw[i-1][0],a.pw[i][0]);if(n<=0)continue;var g=(a.pw[i][1]-a.pw[i-1][1])/n,c=T(a.pw[i-1][0]);
+      for(var j=0;j<n;j++){if(new Date(c+j*864e5).toISOString().slice(0,7)===m){kg+=g;ad++;}}}
+    if(ad>=5)rows.push({a:a,ai:ai,kg:kg,ad:ad,gdp:kg/ad});});
+  rows.sort(function(x,y){return x.gdp-y.gdp;});
+  var el=$('g-det');el.style.display='block';
+  el.innerHTML='<div class="tct">Animales en '+mlab(m)+' · de los que menos a los que más engordaron <span style="float:right;cursor:pointer" onclick="$(\'g-det\').style.display=\'none\'">✕ cerrar</span></div><div class="tw" style="max-height:300px"><table><thead><tr><th>Caravana</th><th>Color</th><th>Campo</th><th class="r">Días contados</th><th class="r">kg ganados</th><th class="r">kg/día</th></tr></thead><tbody>'+rows.map(function(r){return '<tr class="clk" onclick="irAnimal('+r.ai+')"><td><b>'+r.a.car+'</b></td><td>'+r.a.color+'</td><td>'+r.a.estado+'</td><td class="r">'+r.ad+'</td><td class="r '+cls(r.kg)+'">'+fN(r.kg)+'</td><td class="r '+(r.gdp<0.5?'neg':r.gdp>=0.75?'pos':'')+'">'+fN(r.gdp,2)+'</td></tr>';}).join('')+'</tbody></table></div>';
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* ---------- POR ANIMAL ---------- */
+var SEL=null;
+function buscarAnimal(){
+  var q=$('an-q').value.trim().toLowerCase(),e=$('an-e').value;
+  var r=AN.filter(function(a){
+    if(e&&a.estado!==e)return false;
+    if(!q)return a.vivo;
+    return (a.car.toLowerCase().indexOf(q)>=0)||(a.color.toLowerCase().indexOf(q)>=0)||((a.guia||'').toLowerCase().indexOf(q)>=0)||(a.estado.toLowerCase().indexOf(q)>=0)||(a.obs||'').toLowerCase().indexOf(q)>=0;
+  });
+  $('an-n').textContent=r.length+' animales';
+  $('an-res').innerHTML=r.slice(0,200).map(function(a,i){return '<div onclick="verAnimal('+AN.indexOf(a)+')"><span class="dot" style="background:'+(LOTECOL[a.color]||'#888')+'"></span><b>'+a.car+'</b> <span class="mut">'+a.color+' · '+a.estado+(a.last?' · '+fN(a.last[1])+' kg':'')+'</span></div>';}).join('')||'<div class="mut">Sin resultados</div>';
+  if(r.length&&(!SEL||r.indexOf(SEL)<0))verAnimal(AN.indexOf(r[0]));
+}
+function verAnimal(i){
+  var a=AN[i];SEL=a;
+  if(!a.pw.length){$('an-det').innerHTML='<div class="note">Este animal no tiene pesadas cargadas.</div>';return;}
+  var dias=days(a.first[0],a.last[0]),gan=a.last[1]-a.first[1];
+  var u=a.g.length?a.g[a.g.length-1]:null;
+  $('an-det').innerHTML='<div class="kpis">'+
+    k('Caravana',a.car,'<span class="dot" style="background:'+(LOTECOL[a.color]||'#888')+'"></span>'+a.color+' · '+(a.sexo||'-'))+
+    k('Estado',a.estado,a.guia?'Guía '+a.guia:'sin guía asignada')+
+    k('Peso inicial',fN(a.first[1])+' kg',fD(a.first[0]))+
+    k('Último peso',fN(a.last[1])+' kg',fD(a.last[0])+(a.vivo?' · hace '+days(a.last[0],HOY)+' días':''))+
+    k('Ganó en total',(gan>=0?'+':'')+fN(gan)+' kg',fN(dias)+' días entre pesadas')+
+    k('kg/día total',dias?fN(gan/dias,2):'-',u?'última: '+fN(u.gdp,2):'')+'</div>'+
+    '<div class="cc" style="margin-bottom:12px"><div class="cct">Evolución del peso</div><div class="cw" style="height:230px"><canvas id="c-animal"></canvas></div></div>'+
+    '<div class="tc"><div class="tct">Historial de pesadas</div><div class="tw" style="max-height:260px"><table><thead><tr><th>Fecha</th><th class="r">Kg</th><th class="r">Días</th><th class="r">Δ kg</th><th class="r">kg/día</th></tr></thead><tbody>'+
+    a.pw.map(function(x,j){var g=a.g.filter(function(y){return y.f===x[0];})[0];return '<tr><td>'+fD(x[0])+'</td><td class="r">'+fN(x[1])+'</td><td class="r">'+(g?g.d:'-')+'</td><td class="r '+(g?cls(g.delta):'')+'">'+(g?(g.delta>0?'+':'')+fN(g.delta):'-')+'</td><td class="r '+(g?(g.gdp<0.5?'neg':(g.gdp>=0.75?'pos':'')):'')+'">'+(g?fN(g.gdp,2):'-')+'</td></tr>';}).reverse().join('')+'</tbody></table></div></div>'+
+    (a.obs?'<div class="note">Observaciones: '+a.obs.replace(/</g,'&lt;')+'</div>':'');
+  mk('c-animal',{type:'line',data:{labels:a.pw.map(function(x){return fD(x[0]);}),datasets:[{label:'Peso (kg)',data:a.pw.map(function(x){return x[1];}),borderColor:C.s[0],backgroundColor:C.s[0],tension:.15,pointRadius:4,borderWidth:2}]},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fN(c.raw)+' kg';}}}},scales:{y:{title:{display:true,text:'kg'}}}}});
+}
+
+/* ---------- CAJA Y BANCO ---------- */
+function renderCaja(){
+  var fut=[];HAC.forEach(function(h){if(h.tipo!=='Venta')return;h.pagos.forEach(function(p){if(p.f&&p.f>HOY)fut.push({f:p.f,c:h.contra||'sin comprador',m:p.m,v:p.v});});});
+  fut.sort(function(a,b){return a.f<b.f?-1:1;});
+  var sal=sum(HAC.filter(function(h){return h.tipo==='Venta';}),function(h){return h.saldo;});
+  $('k-caja').innerHTML=k('Efectivo en caja','pendiente','se calcula con la Tesorería')+k('Saldo banco','pendiente','se calcula con la Tesorería')+k('A cobrar (cheques futuros)',fMM(sum(fut,function(x){return x.v;})),fut.length+' cobros programados')+k('Saldo de ventas sin fecha',fMM(sal),'venta parcial sin cobros cargados');
+  $('tb-cheq').innerHTML=fut.map(function(x){return '<tr><td>'+fD(x.f)+'</td><td>'+x.c+'</td><td>'+x.m+'</td><td class="r">'+fM(x.v)+'</td><td class="r">'+days(HOY,x.f)+' días</td></tr>';}).join('')||'<tr><td colspan="5" class="mut">Sin cobros programados</td></tr>';
+}
+
+
+function toggleTheme(){var d=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',d?'light':'dark');$('tgl').textContent=d?'🌙 Oscuro':'☀️ Claro';
+  try{localStorage.setItem('tema',d?'light':'dark');}catch(e){}
+  themeChart();renderTenencia();renderGastos();renderFlujo();var on=document.querySelector('.pg.on').id;if(on==='pg-pesajes')renderPesajes();}
+try{if(localStorage.getItem('tema')==='dark'){document.documentElement.setAttribute('data-theme','dark');$('tgl').textContent='☀️ Claro';themeChart();}}catch(e){}
+/* ---------- AUDITORÍA ---------- */
+function renderAuditoria(){
+  var R=[];
+  function add(n,items,donde,det,sev){R.push({n:n,c:items.length,donde:donde,det:det,sev:sev||'rev',items:items});}
+  var h28=HAC.filter(function(h){return h.fcorr;});
+  add('Compras con fecha 2028',h28.map(function(h){return h.contra+' · fila '+h.row;}),'Hoja Hacienda, columna Fecha','Corregir el año a 2025. En el tablero ya las conté en 2025.');
+  var dup=(DATA.sheets||[]).filter(function(x){return /\(1\)|copia/i.test(x.name||x);});
+  add('Hojas duplicadas',dup.map(function(x){return x.name||x;}),'Pie de la planilla','Borrar "Pesada Aserradero (1)" (es copia de "Pesada Aserradero").');
+  add('Pesadas con peso raro (<100 o >650 kg)',(DATA.raros||[]).map(function(r){return 'fila '+r.row+' · caravana '+r.car+' · '+fD(r.f)+' · '+r.kg+' kg';}),'Hojas de pesadas','No entran en promedios. Revisar si es error de tipeo.');
+  add('Caravanas repetidas',(DATA.dupCar||[]).map(function(r){return (Array.isArray(r)?r.join(' '):String(r));}),'Hojas de pesadas','Dos animales con la misma caravana y color.');
+  add('Ventas en la hoja vieja sin operación en Hacienda',VEXTRA.map(function(i){return fD(i.f)+' · '+fM(i.m)+' · '+(i.desc||i.medio)+' (fila '+i.row+')';}),'Hoja vieja → cargar en Hacienda','Entra en el tablero como venta, pero sin animales asociados.');
+  add('Ventas en Hacienda sin cobro en la hoja vieja',HSINING.map(function(h){return fD(h.f)+' · '+h.contra+' · '+fM(h.monto)+' (fila '+h.row+')';}),'Hoja Hacienda / hoja vieja','Verificar que el cobro esté cargado en algún lado.');
+  add('Ingresos con importe 0',ING.filter(function(i){return !(i.m>0);}).map(function(i){return fD(i.f)+' · '+(i.desc||i.medio)+' (fila '+i.row+')';}),'Hoja vieja','Venta cargada sin monto.');
+  add('Cheques sin fecha de cobro',CHEQ.filter(function(c){return !c.vto;}).map(function(c){return c.contra+' · '+fM(c.imp)+' · '+c.ref;}),'Hoja vieja (col. cobro) / Hacienda','No se pueden ubicar en el flujo.');
+  add('Gastos mal clasificados que corregí',EGR.filter(function(e){return e.fix;}).map(function(e){return e.desc+' · '+fM(e.m)+' (fila '+e.row+') → '+e.fix;}),'Hoja vieja, columna Categoría','Cambiar la categoría en la planilla.');
+  add('Importes cargados como texto',EGR.filter(function(e){return e.txt;}).map(function(e){return e.desc+' (fila '+e.row+')';}),'Hoja vieja, columna Importe','Funcionan, pero conviene formato número para sumar bien en la planilla.','info');
+  add('Gastos con fecha futura',EGR.filter(function(e){return e.f>HOY;}).map(function(e){return fD(e.f)+' · '+e.desc+' (fila '+e.row+')';}),'Hoja vieja','Puede ser un error de año.');
+  add('Animales vivos sin guía asignada',AN.filter(function(a){return a.vivo&&!a.guia;}).map(function(a){return a.car+' '+a.color;}),'Hojas de pesadas','Sin guía no se puede ver el lote por origen.','info');
+  add('Animales vivos sin pesar hace más de 120 días',AN.filter(function(a){return a.vivo&&a.last&&days(a.last[0],HOY)>120;}).map(function(a){return a.car+' '+a.color+' · última '+fD(a.last[0]);}),'Hojas de pesadas','Probablemente vendidos: marcar "Vendido" en la columna Estado.');
+  add('Guías con diferencia en el control',(DATA.guias||[]).filter(function(g){return g.ctrl&&g.ctrl!=='OK';}).map(function(g){return 'Guía '+g.n+' · '+g.ctrl;}),'Hoja Guías','Cabezas cargadas distintas de las de la guía.');
+  var ok=R.filter(function(r){return !r.c;}).length,rv=R.filter(function(r){return r.c&&r.sev!=='info';}).length;
+  $('k-aud').innerHTML=ks('Controles',R.length,'revisados')+ks('Sin problemas',ok,'',null,'#199e70')+ks('A revisar',rv,'afectan números',null,rv?'#c98500':'#199e70')+ks('Informativos',R.filter(function(r){return r.c&&r.sev==='info';}).length,'mejoras de orden');
+  $('t-aud').innerHTML='<thead><tr><th>Control</th><th>Estado</th><th class="r">Casos</th><th>Dónde corregir</th><th>Qué hacer</th></tr></thead><tbody>'+R.map(function(r,i){
+    var st=!r.c?'<span class="ok">✔ OK</span>':(r.sev==='info'?'<span class="mut">ⓘ Info</span>':'<span class="rev">⚠ Revisar</span>');
+    return '<tr'+(r.c?' class="clk" onclick="var e=document.getElementById(\'aud'+i+'\');e.style.display=e.style.display===\'none\'?\'table-row\':\'none\'"':'')+'><td>'+r.n+'</td><td>'+st+'</td><td class="r">'+r.c+'</td><td>'+r.donde+'</td><td style="white-space:normal">'+r.det+'</td></tr>'+(r.c?'<tr id="aud'+i+'" style="display:none"><td colspan="5" style="white-space:normal;background:var(--bg3);font-size:12px;line-height:1.6">'+r.items.slice(0,40).map(function(x){return String(x).replace(/</g,'&lt;');}).join('<br>')+(r.items.length>40?'<br>… y '+(r.items.length-40)+' más':'')+'</td></tr>':'');}).join('')+'</tbody>';
+}
+renderTenencia();renderGastos();renderCaja();buscarAnimal();renderAuditoria();
+</script>
+<div id="livebar" style="position:fixed;right:10px;bottom:10px;z-index:60;font-size:11px;padding:5px 10px;background:var(--bg3);border:1px solid var(--bd);border-radius:8px;color:var(--tx2);display:none"></div>
+<div id="keyform" style="position:fixed;inset:0;z-index:70;background:var(--bg);display:none;align-items:center;justify-content:center;padding:20px"><div style="max-width:380px;width:100%;text-align:center"><div style="font-size:42px">&#128003;</div><h2 style="margin:6px 0">Buffalo Dashboard</h2><div id="keymsg" style="color:var(--tx2);font-size:13px;margin-bottom:12px">Ingresá la clave del tablero (se pide una sola vez en este dispositivo).</div><input id="keyin" type="password" autocomplete="off" placeholder="Clave del tablero" style="width:100%;padding:10px;font-size:15px;border:1px solid var(--bd);border-radius:8px;background:var(--bg3);color:var(--tx);box-sizing:border-box"><button id="keybtn" style="margin-top:10px;width:100%;padding:10px;font-size:15px;border:0;border-radius:8px;background:#2f6f3a;color:#fff;cursor:pointer">Entrar</button></div></div>
+<script>
+(function(){
+var URL_='https://script.google.com/macros/s/AKfycbzVjE_JDzEUAue4w3aNPsljTJJ84FwRJuGmcgGG9vzX9lxI8NhqC07JnZWiEtAa16C68Q/exec';
+function g(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function p(k,v){try{if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v);}catch(e){}}
+function bar(t,link){var b=document.getElementById('livebar');b.style.display='block';b.innerHTML=t+(link?' &middot; <a href="#" id="lb1" style="color:inherit;text-decoration:underline">'+link+'</a> &middot; <a href="#" id="lb2" style="color:inherit;text-decoration:underline">cambiar clave</a>':'');
+  var a=document.getElementById('lb1'),c=document.getElementById('lb2');
+  if(a)a.onclick=function(e){e.preventDefault();refresh(true);};
+  if(c)c.onclick=function(e){e.preventDefault();p('dash_key',null);askKey('');};}
+function run(d){window.__BOOT_DATA=d;var s=document.createElement('script');s.text=document.getElementById('appcode').textContent;document.body.appendChild(s);}
+function sig(d){var x=Object.assign({},d);delete x.actualizado;return JSON.stringify(x);}
+function fetchLive(key){return fetch(URL_+'?action=getDashboard&kt='+encodeURIComponent(key)).then(function(r){return r.json();});}
+function askKey(msg){
+  var f=document.getElementById('keyform');f.style.display='flex';
+  document.getElementById('keymsg').textContent=msg||'Ingresá la clave del tablero (se pide una sola vez en este dispositivo).';
+  var go=function(){var k=document.getElementById('keyin').value.trim();if(!k)return;p('dash_key',k);location.reload();};
+  document.getElementById('keybtn').onclick=go;document.getElementById('keyin').onkeydown=function(e){if(e.key==='Enter')go();};
+}
+var shown=false;
+function refresh(force){
+  var key=g('dash_key');if(!key){askKey('');return;}
+  bar('Actualizando datos…');
+  fetchLive(key).then(function(d){
+    if(d&&d.error){p('dash_key',null);p('dash_cache',null);askKey(d.error==='clave'?'La clave no es correcta. Probá de nuevo.':'Error: '+d.error);return;}
+    var old=g('dash_cache'),same=false;
+    try{same=old&&sig(JSON.parse(old))===sig(d);}catch(e){}
+    p('dash_cache',JSON.stringify(d));
+    if(!shown){shown=true;run(d);bar('Datos de la planilla al '+d.actualizado,'actualizar');}
+    else if(same&&!force){bar('Datos de la planilla al '+d.actualizado,'actualizar');}
+    else{location.reload();}
+  }).catch(function(){
+    if(!shown){var c=g('dash_cache');if(c){shown=true;var dd=JSON.parse(c);run(dd);bar('Sin conexión: mostrando datos del '+dd.actualizado,'reintentar');}
+      else{askKey('No se pudo conectar. Revisá internet y probá de nuevo.');}}
+    else bar('Sin conexión: mostrando datos del '+JSON.parse(g('dash_cache')).actualizado,'reintentar');
+  });
+}
+var c0=g('dash_cache');
+if(c0&&g('dash_key')){try{var d0=JSON.parse(c0);shown=true;run(d0);bar('Datos al '+d0.actualizado+' · actualizando…');}catch(e){p('dash_cache',null);}}
+refresh(false);
+})();
+</script>
+</body>
+</html>
