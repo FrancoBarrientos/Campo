@@ -180,8 +180,7 @@ tr.tot td{font-weight:700;border-top:2px solid var(--bd)}
     <div class="tc"><div class="tct">Animales que bajaron en su última pesada</div><div class="tw" style="max-height:300px"><table><thead><tr><th>Caravana</th><th>Campo</th><th class="r">Antes</th><th class="r">Ahora</th><th class="r">Δ kg</th><th class="r">kg/día</th></tr></thead><tbody id="tb-baja"></tbody></table></div></div>
     <div class="tc"><div class="tct">Vivos sin pesar hace más de 45 días</div><div class="tw" style="max-height:300px"><table><thead><tr><th>Caravana</th><th>Campo</th><th>Última pesada</th><th class="r">Días</th><th class="r">Último kg</th></tr></thead><tbody id="tb-sin"></tbody></table></div></div>
   </div>
-  <div class="sec">Aserradero: lote de la hoja "Pesada Aserradero" (compra de 4.423 kg, 7 de septiembre de 2025)</div>
-  <div class="note">En esta hoja las fechas tienen el año mal cargado (por ejemplo 28/01/25 que por la secuencia es 2026). Las reconstruí con los "días entre pesaje" de la propia hoja. Las columnas 15/11 y 06/12 quedaron afuera porque son fechas futuras.</div>
+  <div class="sec">Aserradero: lote de la hoja "Pesada Aserradero" (compra de 4.423 kg)</div>
   <div class="cg">
     <div class="cc"><div class="cct">Peso promedio del lote por pesada</div><div class="cw" style="height:240px"><canvas id="c-aser"></canvas></div></div>
     <div class="tc" style="margin:0"><div class="tct">Pesada por pesada</div><div class="tw" style="max-height:290px"><table><thead><tr><th>Fecha</th><th class="r">Días</th><th class="r">Animales</th><th class="r">Kg prom.</th><th class="r">kg/día</th></tr></thead><tbody id="tb-aser"></tbody></table></div></div>
@@ -268,7 +267,7 @@ var HAC=DATA.hacienda.map(function(h){
   ALERTS.push('<b>'+nuev+' animales aparecen en la hoja de pesadas después de mayo 2025</b> y solo hay 2 compras cargadas en Hacienda (octubre 2025). Para el resultado económico estimé el costo de los demás con su peso de entrada y el precio de referencia.');
   var sinPeso=DATA.animals.filter(function(a){return !a.w.length;}).length;
   if(sinPeso)ALERTS.push('<b>'+sinPeso+' animales sin ninguna pesada</b> (por ejemplo caravanas de 14 dígitos de Aserradero).');
-  ALERTS.push('<b>Hoja "Pesada Aserradero (1)" duplicada</b> en la planilla, y fechas con año equivocado en "Pesada Aserradero" (la vista previa las corrige sola).');
+  ALERTS.push('<b>Hoja "Pesada Aserradero (1)" duplicada</b> en la planilla.');
   $('alertas-ul').innerHTML=ALERTS.map(function(x){return '<li>'+x+'</li>';}).join('');
 })();
 
