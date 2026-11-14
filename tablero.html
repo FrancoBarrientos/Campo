@@ -92,6 +92,8 @@ tr.tot td{font-weight:700;border-top:2px solid var(--bd)}
     <div class="tc"><div class="tct">Por campo</div><div class="tw"><table><thead><tr><th>Campo</th><th class="r">Cabezas</th><th class="r">Kg totales</th><th class="r">Kg prom.</th><th class="r">kg/día últ. pesada</th><th class="r">Valor est.</th></tr></thead><tbody id="tb-campo"></tbody></table></div></div>
     <div class="tc"><div class="tct">Por lote &nbsp;<select id="t-modo" onchange="MODO=this.value;renderTenencia();">  <option>Color</option><option>Guía</option></select></div><div class="tw"><table><thead><tr><th>Lote</th><th class="r">Cabezas</th><th class="r">Kg prom.</th><th class="r">kg/día</th><th class="r">Últ. pesada</th></tr></thead><tbody id="tb-lote"></tbody></table></div></div>
   </div>
+  <div class="sec">Reproductores (fuera del engorde)</div>
+  <div class="tc"><div class="sub" style="padding:0 0 8px">Hembras y toro de cría del Aserradero. Sus kilos no se cuentan como kg ganados, ni en el costo por kg, ni en la valuación de hacienda del resultado. Las crías que nacen pasan al engorde.</div><div class="tw"><table><thead><tr><th>Caravana</th><th>Color</th><th>Sexo</th><th class="r">Último peso (kg)</th><th>Fecha</th><th>Guía</th></tr></thead><tbody id="tb-repro"></tbody></table></div></div>
   <div class="sec">Ventas de hacienda</div>
   <div class="kpis" id="k-ven"></div>
   <div class="cg">
@@ -237,12 +239,15 @@ function cls(n){return n>0?'pos':(n<0?'neg':'');}
 
 /* ---------- Limpieza de datos ---------- */
 var ALERTS=[];
+var REPRO_KEYS=['5|Azul','9|Azul','11|Azul','13|Azul','16|Azul','22|Azul','11|Amarillo','3|Blanco','O 3|Blanco','21|Blanco','26|Terracota'];
 var AN=DATA.animals.map(function(a){
   var ok=[],raros=0;
   a.w.forEach(function(x){if(x[1]<100||x[1]>650){raros++;}else ok.push(x);});
   ok.sort(function(p,q){return p[0]<q[0]?-1:1;});
   a.pw=ok;a.raros=raros;
   a.vivo=(a.estado==='Puesto 12'||a.estado==='Aserradero');
+  a.repro=(a.estado==='Aserradero'&&REPRO_KEYS.indexOf(String(a.car).trim()+'|'+String(a.color).trim())>=0);
+  a.vivoEng=(a.vivo&&!a.repro);
   return a;
 });
 var raros=sum(AN,function(a){return a.raros;});
@@ -286,7 +291,7 @@ var GA=EGR.filter(function(e){return e.kind==='gasto';});
 var RETIROS=EGR.filter(function(e){return e.kind==='retiro';});
 var COMPRAS=[];
 HAC.forEach(function(h){if(h.tipo==='Compra')COMPRAS.push({f:h.f,contra:h.contra,monto:h.monto,cab:h.cabezas,pagos:h.pagos,fuente:'Hacienda',row:h.row,desc:h.contra+(h.cabezas?' · '+fN(h.cabezas)+' cab.':'')});});
-EGR.filter(function(e){return e.kind==='compra';}).forEach(function(e){var m=e.desc.match(/(\d+)\s*(bubill|animal|cabeza|novill|vaca|terner)/i);COMPRAS.push({f:e.f,contra:e.desc.trim(),monto:e.m,cab:m?+m[1]:null,pagos:[{f:e.f,m:'Según hoja vieja',v:e.m}],fuente:'Hoja vieja',row:e.row,desc:e.desc.trim()});});
+EGR.filter(function(e){return e.kind==='compra';}).filter(function(e){return !COMPRAS.some(function(h){return h.fuente==='Hacienda'&&e.m>0&&Math.abs(h.monto-e.m)/e.m<0.01&&Math.abs(days(h.f,e.f))<=7;});}).forEach(function(e){var m=e.desc.match(/(\d+)\s*(bubill|animal|cabeza|novill|vaca|terner)/i);COMPRAS.push({f:e.f,contra:e.desc.trim(),monto:e.m,cab:m?+m[1]:null,pagos:[{f:e.f,m:'Según hoja vieja',v:e.m}],fuente:'Hoja vieja',row:e.row,desc:e.desc.trim()});});
 var ING=DATA.ingresos.map(function(i){var x=Object.assign({},i);
   x.kind=/aporte/i.test(x.medio)?'aporte':(/financ/i.test(x.medio)?'financiero':'venta');
   x.cheque=/cheque/i.test(x.medio)&&!/deposit/i.test(x.medio);return x;});
@@ -330,17 +335,21 @@ function showPg(id,el){
 /* ---------- INGRESOS Y TENENCIA ---------- */
 function stockVal(kg){return kg*(+$('p-precio').value||3200)*(1-(+$('p-desb').value||0)/100);}
 function renderTenencia(){
-  var vivos=AN.filter(function(a){return a.vivo&&a.last;});
+  var vivos=AN.filter(function(a){return a.vivoEng&&a.last;});
   var kg=sum(vivos,function(a){return a.last[1];});
   var gd=vivos.map(function(a){return a.g.length?a.g[a.g.length-1].gdp:null;}).filter(function(x){return x!=null;});
   var ultima=vivos.map(function(a){return a.last[0];}).sort().pop();
   $('k-ten').innerHTML=
-   k('Animales vivos',fN(vivos.length),fN(AN.filter(function(a){return a.estado==='Puesto 12';}).length)+' en Puesto 12 · '+fN(AN.filter(function(a){return a.estado==='Aserradero';}).length)+' en Aserradero')+
+   k('Animales de engorde',fN(vivos.length),fN(vivos.filter(function(a){return a.estado==='Puesto 12';}).length)+' en Puesto 12 · '+fN(vivos.filter(function(a){return a.estado==='Aserradero';}).length)+' en Aserradero')+
+   k('Reproductores',fN(AN.filter(function(a){return a.repro&&a.car!=='O 3';}).length),'aparte del engorde (ver tabla abajo)')+
    k('Kg en pie',fN(kg),'según la última pesada de cada uno')+
    k('Peso promedio',fN(kg/vivos.length)+' kg','por animal')+
    k('kg/día (última pesada)',fN(avg(gd),2),'promedio de los vivos')+
    k('Valor estimado',fMM(stockVal(kg)),'a $'+fN(+$('p-precio').value)+'/kg con '+fN(+$('p-desb').value)+'% de desbaste')+
    k('Última pesada',fD(ultima),'hace '+days(ultima,HOY)+' días');
+  var reps=AN.filter(function(a){return a.repro&&a.car!=='O 3';}).sort(function(p,q){return (p.sexo||'').trim()<(q.sexo||'').trim()?-1:1;});
+  var rk=sum(reps,function(a){return a.last?a.last[1]:0;});
+  $('tb-repro').innerHTML=reps.map(function(a){return '<tr class="clk" onclick="irAnimal('+AN.indexOf(a)+')" style="border-left:3px solid '+(LOTECOL[a.color]||'#888')+'"><td><b>'+a.car+'</b></td><td>'+a.color+'</td><td>'+((a.sexo||'').trim()||'-')+'</td><td class="r">'+(a.last?fN(a.last[1]):'-')+'</td><td>'+(a.last?fD(a.last[0]):'-')+'</td><td>'+(a.guia||'<span class="mut">sin guía</span>')+'</td></tr>';}).join('')+'<tr><td colspan="3"><b>Total '+reps.length+' reproductores</b></td><td class="r"><b>'+fN(rk)+'</b></td><td colspan="2" class="mut">valor estimado '+fMM(stockVal(rk))+' (no entra en el resultado del engorde). La "O 3" de la planilla es la 3 repetida y no se cuenta.</td></tr>';
   var campos=['Puesto 12','Aserradero'];
   $('tb-campo').innerHTML=campos.map(function(c){
     var v=vivos.filter(function(a){return a.estado===c;});var kk=sum(v,function(a){return a.last[1];});
@@ -378,7 +387,7 @@ function renderGastos(){
   var d0=G.map(function(g){return g.f;}).sort()[0],d1=G.map(function(g){return g.f;}).sort().pop();
   // cabeza-dias y kg producidos en la ventana de gastos
   var cd=0,kgp=0;
-  AN.forEach(function(a){if(!a.first)return;var ini=a.first[0]>d0?a.first[0]:d0;var fin=a.vivo?d1:(a.last[0]<d1?a.last[0]:d1);if(fin>ini)cd+=days(ini,fin);
+  AN.forEach(function(a){if(!a.first||a.repro)return;var ini=a.first[0]>d0?a.first[0]:d0;var fin=a.vivo?d1:(a.last[0]<d1?a.last[0]:d1);if(fin>ini)cd+=days(ini,fin);
     a.g.forEach(function(x){if(x.f>d0&&x.f<=d1)kgp+=x.delta;});});
   $('k-gas').innerHTML=k('Gastos cargados',fMM(tot),fD(d0)+' al '+fD(d1))+k('Promedio mensual',fMM(tot/ms.length),ms.length+' meses con gastos')+
     k('Costo por cabeza por día',fM(tot/cd),'en el período de los gastos')+k('Costo por kg producido',fM(tot/kgp),fN(kgp)+' kg ganados en el período')+k('Mayor rubro',rs[0],fMM(rub[rs[0]])+' · '+fN(rub[rs[0]]/tot*100)+'%');
@@ -391,7 +400,7 @@ function renderGastos(){
 function stockEn(fin){
   var kg=0;
   AN.forEach(function(a){
-    if(!a.first||a.first[0]>fin)return;
+    if(!a.first||a.repro||a.first[0]>fin)return;
     if(!a.vivo&&a.last[0]<fin)return;
     var w=null;for(var i=0;i<a.pw.length;i++){if(a.pw[i][0]<=fin)w=a.pw[i][1];}
     if(w)kg+=w;
@@ -426,7 +435,7 @@ function renderFlujo(){
   meses.forEach(function(m){var p=m.split('-');var fin=new Date(Date.UTC(+p[0],+p[1],0)).toISOString().slice(0,10);if(fin>HOY)fin=HOY;val[m]=stockVal(stockEn(fin));});
   var act=meses.filter(function(m){return m<=HOYM;});
   var ent={};act.forEach(function(m){ent[m]=0;});
-  AN.forEach(function(a){if(!a.first)return;var mm=mon(a.first[0]);if(mm<='2025-05')return;if(mm in ent)ent[mm]+=stockVal(a.first[1]);});
+  AN.forEach(function(a){if(!a.first||a.repro)return;var mm=mon(a.first[0]);if(mm<='2025-05')return;if(mm in ent)ent[mm]+=stockVal(a.first[1]);});
   var xtra={},eco={},ds={};
   act.forEach(function(m,i){xtra[m]=Math.max(0,ent[m]-comH[m]);ds[m]=(i===0||m<='2025-05')?0:val[m]-val[act[i-1]];eco[m]=ven[m]-comH[m]-xtra[m]-gas[m]+ds[m];});
   var finM={},acu={},run=0;
@@ -612,6 +621,7 @@ var MG=null;
 function calcMG(){
   var ag={};var cam=['Puesto 12','Aserradero','Vendido'];
   AN.forEach(function(a,ai){
+    if(a.repro)return;
     for(var i=1;i<a.pw.length;i++){var n=days(a.pw[i-1][0],a.pw[i][0]);if(n<=0)continue;var g=(a.pw[i][1]-a.pw[i-1][1])/n;
       var c=T(a.pw[i-1][0]);
       for(var j=0;j<n;j++){var d=new Date(c+j*864e5).toISOString().slice(0,10),m=d.slice(0,7);
@@ -636,12 +646,12 @@ function renderGest(){
   var costo=ms.map(function(m,i){var a=Math.max(0,i-win+1),g=0,kk=0;for(var z=a;z<=i;z++){g+=gasM[ms[z]]||0;kk+=gd(ms[z]).kg;}return kk>=600*Math.min(win,2)?g/kk:null;});
   // últimos 90 días
   var lim=new Date(T(HOY)-90*864e5).toISOString().slice(0,10);
-  var u={};AN.forEach(function(a){for(var i=1;i<a.pw.length;i++){if(a.pw[i][0]<=lim)continue;var n=days(a.pw[i-1][0],a.pw[i][0]);if(n<=0)continue;
+  var u={};AN.forEach(function(a){if(a.repro)return;for(var i=1;i<a.pw.length;i++){if(a.pw[i][0]<=lim)continue;var n=days(a.pw[i-1][0],a.pw[i][0]);if(n<=0)continue;
     var d0=a.pw[i-1][0]<lim?lim:a.pw[i-1][0],nn=days(d0,a.pw[i][0]);if(nn<=0)continue;var g=(a.pw[i][1]-a.pw[i-1][1])/n;var c=a.estado;var x=u[c]=u[c]||{kg:0,ad:0};x.kg+=g*nn;x.ad+=nn;}});
   var tk=0,ta=0;Object.keys(u).forEach(function(c){tk+=u[c].kg;ta+=u[c].ad;});
   function ug(c){return u[c]&&u[c].ad?u[c].kg/u[c].ad:null;}
   var gas90=sum(Object.keys(GD).filter(function(f){return f>lim&&f<=HOY;}),function(f){return GD[f];});
-  var viv=AN.filter(function(a){return a.vivo&&a.last;});
+  var viv=AN.filter(function(a){return a.vivoEng&&a.last;});
   function cob(c){var v=viv.filter(function(a){return a.estado===c;});var o=v.filter(function(a){return days(a.last[0],HOY)<=45;}).length;return v.length?fN(o/v.length*100)+'% ('+o+' de '+v.length+')':'-';}
   var gc=function(x){return x==null?'-':fN(x,2);};
   $('g-k').innerHTML=
@@ -717,7 +727,7 @@ function verAnimal(i){
   var u=a.g.length?a.g[a.g.length-1]:null;
   $('an-det').innerHTML='<div class="kpis">'+
     k('Caravana',a.car,'<span class="dot" style="background:'+(LOTECOL[a.color]||'#888')+'"></span>'+a.color+' · '+(a.sexo||'-'))+
-    k('Estado',a.estado,a.guia?'Guía '+a.guia:'sin guía asignada')+
+    k('Estado',a.repro?'Reproductor (Aserradero)':a.estado,a.guia?'Guía '+a.guia:'sin guía asignada')+
     k('Peso inicial',fN(a.first[1])+' kg',fD(a.first[0]))+
     k('Último peso',fN(a.last[1])+' kg',fD(a.last[0])+(a.vivo?' · hace '+days(a.last[0],HOY)+' días':''))+
     k('Ganó en total',(gan>=0?'+':'')+fN(gan)+' kg',fN(dias)+' días entre pesadas')+
@@ -776,13 +786,13 @@ renderTenencia();renderGastos();renderCaja();buscarAnimal();renderAuditoria();
 <div id="keyform" style="position:fixed;inset:0;z-index:70;background:var(--bg);display:none;align-items:center;justify-content:center;padding:20px"><div style="max-width:380px;width:100%;text-align:center"><div style="font-size:42px">&#128003;</div><h2 style="margin:6px 0">Buffalo Dashboard</h2><div id="keymsg" style="color:var(--tx2);font-size:13px;margin-bottom:12px">Ingresá la clave del tablero (se pide una sola vez en este dispositivo).</div><input id="keyin" type="password" autocomplete="off" placeholder="Clave del tablero" style="width:100%;padding:10px;font-size:15px;border:1px solid var(--bd);border-radius:8px;background:var(--bg3);color:var(--tx);box-sizing:border-box"><button id="keybtn" style="margin-top:10px;width:100%;padding:10px;font-size:15px;border:0;border-radius:8px;background:#2f6f3a;color:#fff;cursor:pointer">Entrar</button></div></div>
 <script>
 (function(){
-var URL_='https://script.google.com/macros/s/AKfycbzVjE_JDzEUAue4w3aNPsljTJJ84FwRJuGmcgGG9vzX9lxI8NhqC07JnZWiEtAa16C68Q/exec';
+var URL_='https://script.google.com/macros/s/AKfycbzVjE_JDzEUAue4w3aNPsljTJJ84FwRJuGmcgGG9vzX9lxI8NhqC07JnZWiEtAa16C68Q/exec';var KT='qcVSH0shxpV1P0';
 function g(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function p(k,v){try{if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v);}catch(e){}}
-function bar(t,link){var b=document.getElementById('livebar');b.style.display='block';b.innerHTML=t+(link?' &middot; <a href="#" id="lb1" style="color:inherit;text-decoration:underline">'+link+'</a> &middot; <a href="#" id="lb2" style="color:inherit;text-decoration:underline">cambiar clave</a>':'');
+function bar(t,link){var b=document.getElementById('livebar');b.style.display='block';b.innerHTML=t+(link?' &middot; <a href="#" id="lb1" style="color:inherit;text-decoration:underline">'+link+'</a>':'');
   var a=document.getElementById('lb1'),c=document.getElementById('lb2');
   if(a)a.onclick=function(e){e.preventDefault();refresh(true);};
-  if(c)c.onclick=function(e){e.preventDefault();p('dash_key',null);askKey('');};}
+}
 function run(d){window.__BOOT_DATA=d;var s=document.createElement('script');s.text=document.getElementById('appcode').textContent;document.body.appendChild(s);}
 function sig(d){var x=Object.assign({},d);delete x.actualizado;return JSON.stringify(x);}
 function fetchLive(key){return fetch(URL_+'?action=getDashboard&kt='+encodeURIComponent(key)).then(function(r){return r.json();});}
@@ -794,10 +804,10 @@ function askKey(msg){
 }
 var shown=false;
 function refresh(force){
-  var key=g('dash_key');if(!key){askKey('');return;}
+  var key=KT;
   bar('Actualizando datos…');
   fetchLive(key).then(function(d){
-    if(d&&d.error){p('dash_key',null);p('dash_cache',null);askKey(d.error==='clave'?'La clave no es correcta. Probá de nuevo.':'Error: '+d.error);return;}
+    if(d&&d.error){bar('Error al leer la planilla: '+d.error);return;}
     var old=g('dash_cache'),same=false;
     try{same=old&&sig(JSON.parse(old))===sig(d);}catch(e){}
     p('dash_cache',JSON.stringify(d));
@@ -811,7 +821,7 @@ function refresh(force){
   });
 }
 var c0=g('dash_cache');
-if(c0&&g('dash_key')){try{var d0=JSON.parse(c0);shown=true;run(d0);bar('Datos al '+d0.actualizado+' · actualizando…');}catch(e){p('dash_cache',null);}}
+if(c0){try{var d0=JSON.parse(c0);shown=true;run(d0);bar('Datos al '+d0.actualizado+' · actualizando…');}catch(e){p('dash_cache',null);}}
 refresh(false);
 })();
 </script>
