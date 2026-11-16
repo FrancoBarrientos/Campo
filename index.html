@@ -214,7 +214,9 @@
   .resumen-h{background:#f3f7f1;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.6;margin:10px 0;}
   .resumen-h b{font-weight:800;}
   .resumen-h .tot{font-size:15px;color:var(--verde-oscuro);}
-  nav.tabbar button{font-size:10.5px;}
+  nav.tabbar button{font-size:10px;padding:9px 0 8px;}
+  .saldo-k{display:flex;gap:10px;margin-bottom:12px}.saldo-k div{flex:1;background:#f3f7f1;border-radius:12px;padding:12px;text-align:center}.saldo-k small{display:block;font-size:12px;color:var(--texto-suave)}.saldo-k b{font-size:20px;color:var(--verde-oscuro)}
+  #tabFrame{width:100%;border:0;border-radius:12px;background:#fff;height:calc(100vh - 150px);min-height:480px}
 </style>
 </head>
 <body>
@@ -426,6 +428,36 @@
       <div id="listaAnimalesObs"></div>
     </section>
 
+    <!-- ===================== CAJA ===================== -->
+    <section class="screen" id="screen-caja">
+      <div class="saldo-k">
+        <div><small>Banco</small><b id="kSalBanco">—</b><small id="kSalBancoF"></small></div>
+        <div><small>Efectivo</small><b id="kSalEfvo">—</b><small id="kSalEfvoF"></small></div>
+      </div>
+      <div class="card">
+        <h2>Cargar saldo</h2>
+        <p class="helper" style="margin-top:-4px">Cargá lo que dice el banco (home banking) o lo que hay en la caja. El tablero lo compara con lo que dan las ventas, cobros y pagos.</p>
+        <label>Fecha</label>
+        <input type="date" id="salFecha">
+        <label>Cuenta</label>
+        <select id="salCuenta"><option>Banco</option><option>Efectivo</option></select>
+        <label>Saldo ($)</label>
+        <input type="number" inputmode="decimal" id="salMonto" placeholder="0">
+        <label>Nota (opcional)</label>
+        <input type="text" id="salNota" placeholder="Ej: saldo según home banking">
+        <button class="btn btn-primary" onclick="guardarSaldo()">Guardar saldo</button>
+      </div>
+      <div class="card">
+        <h2>Últimos saldos cargados</h2>
+        <div id="listaSaldos"></div>
+      </div>
+    </section>
+
+    <!-- ===================== TABLERO ===================== -->
+    <section class="screen" id="screen-tablero">
+      <iframe id="tabFrame" title="Tablero de comando"></iframe>
+    </section>
+
   </main>
 
   <button class="fab" id="fabNuevo" onclick="abrirModalNuevoAnimal()">+</button>
@@ -436,6 +468,8 @@
     <button class="tab-btn" data-tab="gastos" onclick="irA('gastos')"><span class="ic">💸</span>Gastos</button>
     <button class="tab-btn" data-tab="ingresos" onclick="irA('ingresos')"><span class="ic">💰</span>Ingresos</button>
     <button class="tab-btn" data-tab="observaciones" onclick="irA('observaciones')"><span class="ic">📝</span>Observ.</button>
+    <button class="tab-btn" data-tab="caja" onclick="irA('caja')"><span class="ic">🏦</span>Caja</button>
+    <button class="tab-btn" data-tab="tablero" onclick="irA('tablero')"><span class="ic">📊</span>Tablero</button>
   </nav>
 
   <!-- Modal: confirmar re-pesaje -->
@@ -825,6 +859,40 @@ let modalAnimalId = null;
 let modalObsAnimalId = null;
 let pendingConfirmId = null;
 
+
+// ==================== CAJA (saldos) ====================
+let SALDOS=[];
+try{ SALDOS=JSON.parse(localStorage.getItem('campo_saldos')||'[]'); }catch(e){}
+function fmtSal(n){ return '$ '+Math.round(n).toLocaleString('es-AR'); }
+function fdmy(iso){ const p=String(iso||'').split('-'); return p.length===3? p[2]+'/'+p[1]+'/'+p[0] : iso; }
+function renderCaja(){
+  const fe=document.getElementById('salFecha'); if(fe && !fe.value) fe.value=todayISO();
+  const ult=c=>SALDOS.filter(x=>x.c===c).sort((a,b)=>String(b.f).localeCompare(String(a.f)))[0];
+  [['Banco','kSalBanco','kSalBancoF'],['Efectivo','kSalEfvo','kSalEfvoF']].forEach(([c,k,f])=>{
+    const u=ult(c); document.getElementById(k).textContent=u?fmtSal(u.s):'—'; document.getElementById(f).textContent=u?('al '+fdmy(u.f)):'sin cargar';
+  });
+  const lst=[...SALDOS].sort((a,b)=>String(b.f).localeCompare(String(a.f))).slice(0,12);
+  document.getElementById('listaSaldos').innerHTML = lst.length ? lst.map(x=>'<div class="guia-item"><div><b>'+escapeHtml(x.c)+'</b> · '+fdmy(x.f)+(x.n?'<div class="helper">'+escapeHtml(x.n)+'</div>':'')+'</div><div class="saldo"><b>'+fmtSal(x.s)+'</b></div></div>').join('') : '<div class="helper">Todavía no cargaste ningún saldo.</div>';
+}
+async function syncSaldos(){
+  try{
+    const r=await fetchConTiempo(WEBAPP_URL+'?action=getSaldos&t='+Date.now()+qk(),{cache:'no-store'},20000);
+    const d=await r.json();
+    if(d&&Array.isArray(d.saldos)){ SALDOS=d.saldos; localStorage.setItem('campo_saldos',JSON.stringify(SALDOS)); renderCaja(); }
+  }catch(e){}
+}
+async function guardarSaldo(){
+  const fecha=document.getElementById('salFecha').value, cuenta=document.getElementById('salCuenta').value;
+  const raw=document.getElementById('salMonto').value, saldo=parseFloat(raw), nota=document.getElementById('salNota').value.trim();
+  if(!fecha||raw===''||isNaN(saldo)){ showToast('Completá fecha y saldo'); return; }
+  const r=await postToServer({action:'saldo',fecha:fecha,cuenta:cuenta,saldo:saldo,nota:nota});
+  if(r&&r.ok){
+    SALDOS.unshift({f:fecha,c:cuenta,s:saldo,n:nota}); localStorage.setItem('campo_saldos',JSON.stringify(SALDOS));
+    document.getElementById('salMonto').value=''; document.getElementById('salNota').value='';
+    renderCaja(); showToast('Saldo guardado ✓');
+  }
+}
+
 // ==================== NAV ====================
 function irA(tab){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -835,12 +903,16 @@ function irA(tab){
     hacienda:['Hacienda','Guías, compras y ventas de animales'],
     gastos:['Gastos del establecimiento','Cargar egresos del dia'],
     ingresos:['Ingresos del establecimiento','Cargar ventas y cobros'],
-    observaciones:['Observaciones','Registra novedades por animal']};
+    observaciones:['Observaciones','Registra novedades por animal'],
+    caja:['Caja y banco','Cargar el saldo del banco y el efectivo'],
+    tablero:['Tablero de comando','Resultados, hacienda y finanzas']};
   document.getElementById('headerTitle').textContent = titles[tab][0];
   document.getElementById('headerSub').textContent = titles[tab][1];
   if(tab==='hacienda') renderHacienda();
   if(tab==='gastos') renderGastos();
   if(tab==='ingresos') renderIngresos();
+  if(tab==='caja'){ renderCaja(); syncSaldos(); }
+  if(tab==='tablero'){ const f=document.getElementById('tabFrame'); if(!f.getAttribute('src')) f.setAttribute('src','tablero.html?emb=1&v='+Date.now()); }
   if(tab==='pesar') renderAnimales();
   if(tab==='observaciones') renderObservaciones();
 }

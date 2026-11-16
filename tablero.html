@@ -83,7 +83,7 @@ tr.tot td{font-weight:700;border-top:2px solid var(--bd)}
     <div class="tab" onclick="showPg('caja',this)">&#127974; Caja y Banco</div>
     <div class="tab" onclick="showPg('auditoria',this)">&#128269; Auditoría</div>
   </div>
-  <button class="tgl" onclick="toggleTheme()" id="tgl">🌙 Oscuro</button><span class="badge">VISTA PREVIA · datos del Excel al 5/11/2026</span>
+  <button class="tgl" id="btnCarga" onclick="cargarDatos()" style="background:#2f6f3a;color:#fff;border-color:#2f6f3a">&#9997;&#65039; Cargar datos</button><button class="tgl" style="margin-left:8px" onclick="toggleTheme()" id="tgl">🌙 Oscuro</button><span class="badge">VISTA PREVIA · datos del Excel al 5/11/2026</span>
 </div>
 <div class="main">
 <details class="alert" id="alertas" open><summary>Datos del Excel que conviene corregir (afectan los números de abajo)</summary><ul id="alertas-ul"></ul></details>
@@ -216,8 +216,9 @@ tr.tot td{font-weight:700;border-top:2px solid var(--bd)}
 
 <!-- CAJA Y BANCO -->
 <div id="pg-caja" class="pg">
-  <div class="note">Los saldos de <b>efectivo</b> y <b>banco</b> y la conciliación aparecen cuando esté activa la Tesorería en la planilla (hojas Tesorería, Cheques y Extracto banco). Esta vista previa muestra lo que ya se puede calcular con tus ventas.</div>
+  <div class="note">Los saldos de <b>banco</b> y <b>efectivo</b> se cargan desde la app (pestaña <b>Caja</b>) y se comparan con lo que dan las ventas, cobros y pagos de la planilla.</div>
   <div class="kpis" id="k-caja"></div>
+  <div id="conc-caja" style="margin-bottom:12px"></div>
   <div class="tc"><div class="tct">Cheques y pagos a cobrar de ventas (desde hoy)</div><div class="tw"><table><thead><tr><th>Cobra el</th><th>Comprador</th><th>Medio</th><th class="r">Importe</th><th class="r">Faltan</th></tr></thead><tbody id="tb-cheq"></tbody></table></div></div>
 </div>
 
@@ -820,15 +821,49 @@ function verAnimal(i){
 }
 
 /* ---------- CAJA Y BANCO ---------- */
+function flujoNetoHasta(d){
+  var cob=0,pag=0,soc=0;
+  HVENTAS.forEach(function(h){h.pagos.forEach(function(p){if(p.f&&p.f<=d)cob+=p.v;});});
+  VEXTRA.forEach(function(i){var cf=(i.cheque&&i.cobro)?i.cobro:i.f;if(cf<=d)cob+=i.m;});
+  FINANC.forEach(function(i){if(i.f<=d)cob+=i.m;});
+  COMPRAS.forEach(function(c){c.pagos.forEach(function(p){if(p.f&&p.f<=d)pag+=p.v;});});
+  GA.forEach(function(e){if(e.f<=d)pag+=e.m;});
+  APORTES.forEach(function(i){if(i.f<=d)soc+=i.m;});RETIROS.forEach(function(e){if(e.f<=d)soc-=e.m;});
+  return {cob:cob,pag:pag,soc:soc,neto:cob-pag+soc};
+}
 function renderCaja(){
   var fut=[];HAC.forEach(function(h){if(h.tipo!=='Venta')return;h.pagos.forEach(function(p){if(p.f&&p.f>HOY)fut.push({f:p.f,c:h.contra||'sin comprador',m:p.m,v:p.v});});});
   fut.sort(function(a,b){return a.f<b.f?-1:1;});
   var sal=sum(HAC.filter(function(h){return h.tipo==='Venta';}),function(h){return h.saldo;});
-  $('k-caja').innerHTML=k('Efectivo en caja','pendiente','se calcula con la Tesorería')+k('Saldo banco','pendiente','se calcula con la Tesorería')+k('A cobrar (cheques futuros)',fMM(sum(fut,function(x){return x.v;})),fut.length+' cobros programados')+k('Saldo de ventas sin fecha',fMM(sal),'venta parcial sin cobros cargados');
+  var T=(DATA.tesoreria||[]).filter(function(x){return x&&x.f&&x.s!=null;});
+  function ult(c){var l=T.filter(function(x){return x.c===c;}).sort(function(a,b){return a.f<b.f?1:-1;});return l[0];}
+  var ub=ult('Banco'),ue=ult('Efectivo');
+  var kb=ub?k('Saldo banco',fM(ub.s),'cargado el '+fD(ub.f)):k('Saldo banco','sin cargar','cargalo desde la app (pestaña Caja)');
+  var ke=ue?k('Efectivo en caja',fM(ue.s),'cargado el '+fD(ue.f)):k('Efectivo en caja','sin cargar','cargalo desde la app (pestaña Caja)');
+  $('k-caja').innerHTML=kb+ke+k('A cobrar (cobros futuros)',fMM(sum(fut,function(x){return x.v;})),fut.length+' cobros programados')+k('Saldo de ventas sin fecha',fMM(sal),'venta parcial sin cobros cargados');
+  // conciliación
+  var h='';
+  if(!T.length){h='<div class="note">Todavía no hay saldos cargados. Cargá el saldo del banco y del efectivo en la pestaña <b>Caja</b> de la app y acá aparece la conciliación con el flujo calculado.</div>';}
+  else{
+    var fechas=T.map(function(x){return x.f;}).sort();var d=fechas[fechas.length-1];
+    var sb=0,se=0;['Banco','Efectivo'].forEach(function(c){var l=T.filter(function(x){return x.c===c&&x.f<=d;}).sort(function(a,b){return a.f<b.f?1:-1;})[0];if(l){if(c==='Banco')sb=l.s;else se=l.s;}});
+    var real=sb+se,F=flujoNetoHasta(d),dif=real-F.neto;
+    h='<div class="tc"><div class="tct">Conciliación al '+fD(d)+'</div><div class="tw"><table><tbody>'+
+     '<tr><td>Cobros registrados (ventas y otros ingresos)</td><td class="r">'+fM(F.cob)+'</td></tr>'+
+     '<tr><td>Pagos registrados (gastos y compras de hacienda)</td><td class="r">−'+fM(F.pag)+'</td></tr>'+
+     '<tr><td>Aportes menos retiros de socios</td><td class="r">'+fM(F.soc)+'</td></tr>'+
+     '<tr class="tot"><td>Resultado de caja calculado (desde mar-2025)</td><td class="r">'+fM(F.neto)+'</td></tr>'+
+     '<tr><td>Saldo real cargado (banco + efectivo)</td><td class="r">'+fM(real)+'</td></tr>'+
+     '<tr class="tot"><td>Diferencia (saldo real − calculado)</td><td class="r '+(Math.abs(dif)<1000?'pos':'neg')+'">'+fM(dif)+'</td></tr>'+
+     '</tbody></table></div></div><div class="note">La diferencia incluye el saldo con el que arrancó el proyecto y todo movimiento que no esté cargado en la planilla (cheques en cartera, depósitos, comisiones bancarias). Si vas cargando el saldo cada semana, la <b>variación</b> de la diferencia te muestra si falta cargar algo.</div>';
+    if(fechas.length>1){var uniq=T.slice().sort(function(a,b){return a.f<b.f?-1:1;});h+='<div class="tc" style="margin-top:12px"><div class="tct">Saldos cargados</div><div class="tw" style="max-height:220px"><table><thead><tr><th>Fecha</th><th>Cuenta</th><th class="r">Saldo</th><th>Nota</th></tr></thead><tbody>'+uniq.slice().reverse().slice(0,30).map(function(x){return '<tr><td>'+fD(x.f)+'</td><td>'+x.c+'</td><td class="r">'+fM(x.s)+'</td><td class="mut">'+String(x.n||'').replace(/</g,'&lt;')+'</td></tr>';}).join('')+'</tbody></table></div></div>';}
+  }
+  $('conc-caja').innerHTML=h;
   $('tb-cheq').innerHTML=fut.map(function(x){return '<tr><td>'+fD(x.f)+'</td><td>'+x.c+'</td><td>'+x.m+'</td><td class="r">'+fM(x.v)+'</td><td class="r">'+days(HOY,x.f)+' días</td></tr>';}).join('')||'<tr><td colspan="5" class="mut">Sin cobros programados</td></tr>';
 }
 
 
+function cargarDatos(){try{if(window.parent!==window&&window.parent.irA){window.parent.irA("pesar");return;}}catch(e){}location.href="./";}
 function toggleTheme(){var d=document.documentElement.getAttribute('data-theme')==='dark';
   document.documentElement.setAttribute('data-theme',d?'light':'dark');$('tgl').textContent=d?'🌙 Oscuro':'☀️ Claro';
   try{localStorage.setItem('tema',d?'light':'dark');}catch(e){}
