@@ -65,6 +65,10 @@ tr.tot td{font-weight:700;border-top:2px solid var(--bd)}
 .mbox h3{font-size:15px;margin-bottom:6px}.mx{position:absolute;right:16px;top:12px;cursor:pointer;color:var(--tx2);font-size:12px}
 .ok{color:var(--good);font-weight:700}.rev{color:var(--warn);font-weight:700}.mal{color:var(--bad);font-weight:700}
 .badge{background:#fff4d6;color:#8a5a00;border-color:#e6c46a}[data-theme=dark] .badge{background:#3b2a05;color:#fbbf24;border-color:#7a5a10}
+
+.big{height:400px!important}
+.kpi-s .go{color:var(--s1);font-weight:600}
+.fb input[type=text]{min-width:120px}
 </style>
 </head>
 <body>
@@ -95,21 +99,26 @@ tr.tot td{font-weight:700;border-top:2px solid var(--bd)}
   <div class="sec">Reproductores (fuera del engorde)</div>
   <div class="tc"><div class="sub" style="padding:0 0 8px">Hembras y toro de cría del Aserradero. Sus kilos no se cuentan como kg ganados, ni en el costo por kg, ni en la valuación de hacienda del resultado. Las crías que nacen pasan al engorde.</div><div class="tw"><table><thead><tr><th>Caravana</th><th>Color</th><th>Sexo</th><th class="r">Último peso (kg)</th><th>Fecha</th><th>Guía</th></tr></thead><tbody id="tb-repro"></tbody></table></div></div>
   <div class="sec">Ventas de hacienda</div>
+  <div class="fb"><label>Período:</label><label>Desde</label><select id="ve-d" onchange="renderVentas()"></select><label>Hasta</label><select id="ve-h" onchange="renderVentas()"></select><span id="ve-q1"></span>
+    <label>Comprador</label><input type="text" id="ve-q" placeholder="nombre" oninput="renderVentas()" style="width:150px">
+    <label>Estado</label><select id="ve-e" onchange="renderVentas()"><option value="">Todas</option><option value="saldo">Con saldo a cobrar</option><option value="cerrada">Cobradas del todo</option></select>
+    <button class="tgl" style="margin-left:6px" onclick="veReset()">Limpiar filtros</button></div>
   <div class="kpis" id="k-ven"></div>
-  <div class="cg">
-    <div class="cc"><div class="cct">Ventas por mes (neto de hacienda, sin IVA)</div><div class="sub">Por fecha de la operación.</div><div class="cw"><canvas id="c-ven"></canvas></div></div>
-    <div class="tc" style="margin:0"><div class="tct">Detalle de ventas</div><div class="tw" style="max-height:290px"><table><thead><tr><th>Fecha</th><th>Comprador</th><th class="r">Cab.</th><th class="r">Kg neto</th><th class="r">Precio</th><th class="r">Monto</th><th class="r">Saldo</th><th>Estado</th></tr></thead><tbody id="tb-ven"></tbody></table></div></div>
-  </div>
+  <div class="cc" style="margin-bottom:14px"><div class="cct">Ventas por mes (neto de hacienda, sin IVA)</div><div class="sub">Por fecha de la operación. Tocá una barra para ver solo ese mes.</div><div class="cw big" style="height:340px"><canvas id="c-ven"></canvas></div></div>
+  <div class="tc" id="ve-det"><div class="tct">Detalle de ventas (según los filtros) · <span id="ve-n"></span></div><div class="tw" style="max-height:420px"><table><thead><tr><th>Fecha</th><th>Comprador</th><th class="r">Cab.</th><th class="r">Kg neto</th><th class="r">Precio</th><th class="r">Monto</th><th class="r">Saldo</th><th>Estado</th></tr></thead><tbody id="tb-ven"></tbody></table></div></div>
 </div>
 
 <!-- GASTOS -->
 <div id="pg-gastos" class="pg">
+  <div class="fb"><label>Período:</label><label>Desde</label><select id="ga-d" onchange="renderGastos()"></select><label>Hasta</label><select id="ga-h" onchange="renderGastos()"></select><span id="ga-q1"></span>
+    <label>Rubro</label><select id="ga-r" onchange="renderGastos()"><option value="">Todos</option></select>
+    <label>Buscar</label><input type="text" id="ga-q" placeholder="detalle o proveedor" oninput="renderGastos()" style="width:170px">
+    <button class="tgl" style="margin-left:6px" onclick="gaReset()">Limpiar filtros</button></div>
   <div class="kpis" id="k-gas"></div>
-  <div class="cg">
-    <div class="cc"><div class="cct">Gastos por mes (sin IVA)</div><div class="cw"><canvas id="c-gmes"></canvas></div></div>
-    <div class="cc"><div class="cct">Por rubro</div><div class="cw"><canvas id="c-grub"></canvas></div></div>
-  </div>
+  <div class="cc" style="margin-bottom:14px"><div class="cct">Gastos por mes (sin IVA)</div><div class="sub">Tocá una barra para ver solo ese mes.</div><div class="cw big" style="height:340px"><canvas id="c-gmes"></canvas></div></div>
+  <div class="cc" style="margin-bottom:14px"><div class="cct">Gastos por rubro</div><div class="sub">Tocá un rubro para ver solo ese.</div><div class="cw" id="w-grub" style="height:340px"><canvas id="c-grub"></canvas></div></div>
   <div class="tc"><div class="tct">Rubro por mes</div><div class="tw"><table id="t-grub"></table></div></div>
+  <div class="tc" id="ga-det"><div class="tct">Detalle de gastos (según los filtros) · <span id="ga-n"></span></div><div class="tw" style="max-height:420px"><table><thead><tr><th>Fecha</th><th>Rubro</th><th>Detalle</th><th>Proveedor</th><th>Estado</th><th class="r">Neto</th></tr></thead><tbody id="tb-gdet"></tbody></table></div></div>
 </div>
 
 <!-- FLUJO -->
@@ -118,14 +127,16 @@ tr.tot td{font-weight:700;border-top:2px solid var(--bd)}
     <label>Valor del stock para el resultado económico:</label>
     <label>Precio $/kg vivo</label><input type="number" id="p-precio" value="3200" style="width:80px" onchange="renderFlujo()">
     <label>Desbaste %</label><input type="number" id="p-desb" value="10" style="width:60px" onchange="renderFlujo()">
-    <span class="mut">(precio de las últimas ventas por kg; lo cambiás vos)</span><span class="mut" style="margin-left:auto">💡 Tocá una barra o un mes de la tabla para ver el detalle</span>
+    <span class="mut">(precio de las últimas ventas por kg; lo cambiás vos)</span>
   </div>
-  <div class="sec2">Económico · devengado (por fecha de la operación)</div><div class="kpis" id="k-eco"></div>
-  <div class="sec2">Financiero · caja (por fecha de cobro y pago)</div><div class="kpis" id="k-fin"></div>
+  <div class="fb"><label>Período:</label><label>Desde</label><select id="fl-d" onchange="renderFlujo()"></select><label>Hasta</label><select id="fl-h" onchange="renderFlujo()"></select><span id="fl-q1"></span>
+    <span class="mut" style="margin-left:auto">💡 Tocá un cuadro, una barra o un mes de la tabla para ver el detalle</span></div>
+  <div class="sec2" id="fl-t1">Económico · devengado (por fecha de la operación)</div><div class="kpis" id="k-eco"></div>
+  <div class="sec2" id="fl-t2">Financiero · caja (por fecha de cobro y pago)</div><div class="kpis" id="k-fin"></div>
   <div class="cc" id="det" style="display:none;padding:0;margin-bottom:14px"></div>
-  <div class="two">
-    <div class="cc"><div class="cct">Económico: ¿qué resultado dio producir? (devengado)</div><div class="sub">Ventas − compras − gastos ± variación del valor de la hacienda. No depende de cuándo se cobra o se paga.</div><div class="cw"><canvas id="c-eco"></canvas></div></div>
-    <div class="cc"><div class="cct">Financiero: ¿cuánta plata entró y salió? (caja)</div><div class="sub">Por fecha de cobro o pago. Lo que está después de hoy son cheques a cobrar.</div><div class="cw"><canvas id="c-fin"></canvas></div></div>
+  <div>
+    <div class="cc" style="margin-bottom:14px"><div class="cct">Económico: ¿qué resultado dio producir? (devengado)</div><div class="sub">Hacia arriba: lo que se vendió. Hacia abajo: lo que se compró y gastó. Violeta: cuánto subió o bajó el valor de la hacienda. La línea negra es el resultado de cada mes. Tocá una barra para ver el detalle, o un nombre de la leyenda para ocultarlo.</div><div class="cw big"><canvas id="c-eco"></canvas></div></div>
+    <div class="cc" style="margin-bottom:14px"><div class="cct">Financiero: ¿cuánta plata entró y salió? (caja)</div><div class="sub">Por fecha de cobro o pago. Hacia arriba entra plata, hacia abajo sale. Lo que está después de hoy son cheques a cobrar (verde claro). Tocá una barra para ver el detalle.</div><div class="cw big"><canvas id="c-fin"></canvas></div></div>
   </div>
   <div class="cg">
     <div class="cc"><div class="cct">Flujo financiero acumulado</div><div class="cw" style="height:210px"><canvas id="c-acu"></canvas></div></div>
@@ -219,7 +230,7 @@ function cssv(n){return getComputedStyle(document.documentElement).getPropertyVa
 var HOY=DATA.hoy;
 var C={s:['#3987e5','#d95926','#199e70','#c98500','#d55181','#2f9e2f','#9085e9','#e66767']};
 var LOTECOL={'Blanco':'#9aa3b2','Terracota':'#d95926','Rojo oscuro':'#b03030','Azul':'#3987e5','Amarillo':'#eab308','Rojo':'#ef4444','Verde':'#2f9e2f','Naranja':'#e69138','Rosa':'#e87ba4'};
-function themeChart(){Chart.defaults.color=cssv('--tx2');Chart.defaults.borderColor=cssv('--bd');}themeChart();Chart.defaults.font.size=11;
+function themeChart(){Chart.defaults.color=cssv('--tx2');Chart.defaults.borderColor=cssv('--bd');}themeChart();Chart.defaults.font.size=12;
 Chart.defaults.maintainAspectRatio=false;Chart.defaults.animation=false;
 var CH={};
 function mk(id,cfg){if(CH[id])CH[id].destroy();CH[id]=new Chart(document.getElementById(id),cfg);}
@@ -278,6 +289,15 @@ var HAC=DATA.hacienda.map(function(h){
 
 /* ---------- Datos de la hoja vieja (cargada a mano) + Hacienda ---------- */
 var HOYM=mon(HOY);
+var MESES_F=[];(function(){for(var y=2025,m=3;!(y===2027&&m>1);){MESES_F.push(y+'-'+(m<10?'0':'')+m);m++;if(m>12){m=1;y++;}}})();
+function fillMes(id){var s=$(id);if(!s||s.options.length)return;MESES_F.forEach(function(m){s.add(new Option(mlab(m),m));});s.selectedIndex=(id.slice(-2)==='-h')?MESES_F.length-1:0;}
+function rangoMes(idd,idh){fillMes(idd);fillMes(idh);var a=$(idd).value,b=$(idh).value;if(a>b){var t=a;a=b;b=t;}return [a,b];}
+function lastDay(m){var p=m.split('-');return new Date(Date.UTC(+p[0],+p[1],0)).toISOString().slice(0,10);}
+function quickRange(idd,idh,kind){fillMes(idd);fillMes(idh);var L=MESES_F.length-1,i=Math.max(0,MESES_F.indexOf(HOYM));var d=MESES_F[0],h=MESES_F[L];
+  if(kind==='y26'){d='2026-01';h='2026-12';}else if(kind==='6'){d=MESES_F[Math.max(0,i-5)];h=MESES_F[i];}else if(kind==='3'){d=MESES_F[Math.max(0,i-2)];h=MESES_F[i];}
+  $(idd).value=d;$(idh).value=h;}
+function quickBtns(idd,idh,fn){return '<span class="seg" style="margin-left:4px"><button onclick="quickRange(\''+idd+'\',\''+idh+'\',\'all\');'+fn+'()">Todo</button><button onclick="quickRange(\''+idd+'\',\''+idh+'\',\'y26\');'+fn+'()">Año 2026</button><button onclick="quickRange(\''+idd+'\',\''+idh+'\',\'6\');'+fn+'()">Últimos 6 meses</button><button onclick="quickRange(\''+idd+'\',\''+idh+'\',\'3\');'+fn+'()">Últimos 3 meses</button></span>';}
+var LBL={id:'lbl',afterDatasetsDraw:function(ch){ch.data.datasets.forEach(function(d,i){if(d.type!=='line'||!d.lbl)return;var meta=ch.getDatasetMeta(i),ctx=ch.ctx;ctx.save();ctx.font='bold 11px sans-serif';ctx.textAlign='center';ctx.fillStyle=cssv('--tx');meta.data.forEach(function(pt,k){var v=d.data[k];if(v==null||Math.abs(v)<1e5)return;ctx.fillText(fMM(v),pt.x,pt.y+(v>=0?-9:17));});ctx.restore();});}};
 var COMPRA_RE=/bubill|animal|cabeza|hacienda|novill|vaca|terner|toro|b[uú]falo/i;
 var EGR=DATA.egresos.map(function(e){var x=Object.assign({},e);x.kind='gasto';x.fix='';
   if(x.c==='Compras'){
@@ -362,38 +382,69 @@ function renderTenencia(){
     var u=v.map(function(a){return a.last[0];}).sort().pop();
     return '<tr><td><span class="dot" style="background:'+(MODO==='Guía'?'#7a8699':(LOTECOL[l]||'#888'))+'"></span>'+l+'</td><td class="r">'+v.length+'</td><td class="r">'+fN(sum(v,function(a){return a.last[1];})/v.length)+'</td><td class="r">'+fN(avg(g),2)+'</td><td class="r">'+fD(u)+'</td></tr>';
   }).join('');
-  // ventas
-  var V=HAC.filter(function(h){return h.tipo==='Venta';}).sort(function(a,b){return a.f<b.f?1:-1;});
+  renderVentas();
+}
+var VE_ESTADO=null;
+function veReset(){fillMes('ve-d');fillMes('ve-h');$('ve-d').selectedIndex=0;$('ve-h').selectedIndex=MESES_F.length-1;$('ve-q').value='';$('ve-e').value='';renderVentas();}
+function veMes(m){$('ve-d').value=m;$('ve-h').value=m;renderVentas();veIr();}
+function veSaldo(){$('ve-e').value='saldo';renderVentas();veIr();}
+function veIr(){$('ve-det').scrollIntoView({behavior:'smooth',block:'start'});}
+function renderVentas(){
+  if(!$('ve-q1').innerHTML)$('ve-q1').innerHTML=quickBtns('ve-d','ve-h','renderVentas');
+  var rg=rangoMes('ve-d','ve-h'),q=($('ve-q').value||'').toLowerCase().trim(),es=$('ve-e').value;
+  var V=HAC.filter(function(h){return h.tipo==='Venta';}).filter(function(h){var m=mon(h.f);return m>=rg[0]&&m<=rg[1]&&(!q||(h.contra||'').toLowerCase().indexOf(q)>=0)&&(!es||(es==='saldo'?h.saldo>0:!(h.saldo>0)));}).sort(function(a,b){return a.f<b.f?1:-1;});
   var tot=sum(V,function(h){return h.monto;}),cob=sum(V,function(h){return h.total-h.saldo;}),sal=sum(V,function(h){return h.saldo;});
   var cabs=sum(V,function(h){return h.cabezas||0;});
-  $('k-ven').innerHTML=k('Vendido (neto)',fMM(tot),V.length+' operaciones')+k('Cobrado',fMM(cob),'de lo facturado')+k('Saldo a cobrar',fMM(sal),'ventas con saldo pendiente')+k('Cabezas con dato',fN(cabs),'varias ventas no tienen cantidad cargada');
-  $('tb-ven').innerHTML=V.map(function(h){
+  $('k-ven').innerHTML=ks('Vendido (neto)',fMM(tot),V.length+' operaciones',"veIr()")+ks('Cobrado',fMM(cob),'de lo facturado')+ks('Saldo a cobrar',fMM(sal),'ventas con saldo pendiente',"veSaldo()")+ks('Cabezas con dato',fN(cabs),'varias ventas no tienen cantidad cargada');
+  $('ve-n').textContent=V.length+' ventas · '+fMM(tot);
+  $('tb-ven').innerHTML=V.length?V.map(function(h){
     var pr=h.porCabeza?fM(h.precio)+'/cab':(h.precio?fM(h.precio)+'/kg':'-');
     var kgn=h.porCabeza?'-':fN(h.kg*(1-(h.desb||0)));
     return '<tr><td>'+fD(h.f)+'</td><td>'+(h.contra||'<span class="mut">sin comprador</span>')+'</td><td class="r">'+(h.cabezas?fN(h.cabezas):'<span class="mut">-</span>')+'</td><td class="r">'+kgn+'</td><td class="r">'+pr+'</td><td class="r">'+fM(h.monto)+'</td><td class="r '+(h.saldo>0?'neg':'')+'">'+(h.saldo?fM(h.saldo):'')+'</td><td>'+h.estado+'</td></tr>';
-  }).join('');
-  var m={};V.forEach(function(h){m[mon(h.f)]=(m[mon(h.f)]||0)+h.monto;});
-  var ks=Object.keys(m).sort();
-  mk('c-ven',{type:'bar',data:{labels:ks.map(mlab),datasets:[{label:'Ventas',data:ks.map(function(x){return m[x];}),backgroundColor:C.s[0],borderRadius:4}]},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fM(c.raw);}}}},scales:{y:{ticks:{callback:function(v){return fMM(v);}}}}}});
+  }).join('')+'<tr class="tot"><td></td><td>Total</td><td class="r">'+fN(cabs)+'</td><td></td><td></td><td class="r">'+fM(tot)+'</td><td class="r">'+fM(sal)+'</td><td></td></tr>':'<tr><td colspan="8" class="mut">No hay ventas con estos filtros</td></tr>';
+  var ms=MESES_F.filter(function(m){return m>=rg[0]&&m<=rg[1]&&m<=HOYM;}),mm={};
+  ms.forEach(function(m){mm[m]=0;});V.forEach(function(h){if(mon(h.f) in mm)mm[mon(h.f)]+=h.monto;});
+  mk('c-ven',{type:'bar',data:{labels:ms.map(mlab),datasets:[{label:'Ventas',data:ms.map(function(x){return mm[x];}),backgroundColor:C.s[2],borderRadius:4,maxBarThickness:46}]},
+    options:{onClick:function(e,els){if(els.length)veMes(ms[els[0].index]);},onHover:hov,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fM(c.raw);}}}},scales:{y:{ticks:{callback:function(v){return fMM(v);}}}}}});
 }
 function k(l,v,s){return '<div class="kpi"><div class="kpi-l">'+l+'</div><div class="kpi-v">'+v+'</div><div class="kpi-s">'+(s||'')+'</div></div>';}
 
 /* ---------- GASTOS ---------- */
+function fillRub(){var s=$('ga-r');if(s.options.length>1)return;var set={};DATA.gastos.forEach(function(g){set[g.c]=(set[g.c]||0)+g.neto;});Object.keys(set).sort(function(a,b){return set[b]-set[a];}).forEach(function(c){s.add(new Option(c,c));});}
+function gaReset(){fillMes('ga-d');fillMes('ga-h');fillRub();$('ga-d').selectedIndex=0;$('ga-h').selectedIndex=MESES_F.length-1;$('ga-r').value='';$('ga-q').value='';renderGastos();}
+function gaMes(m){$('ga-d').value=m;$('ga-h').value=m;renderGastos();gaIr();}
+function gaRubI(i){var r=(window._gaRs||[])[i];if(r==null)return;$('ga-r').value=r;renderGastos();gaIr();}
+function gaIr(){$('ga-det').scrollIntoView({behavior:'smooth',block:'start'});}
 function renderGastos(){
-  var G=DATA.gastos;var tot=sum(G,function(g){return g.neto;});
-  var meses={},rub={},cruz={};
+  if(!$('ga-q1').innerHTML)$('ga-q1').innerHTML=quickBtns('ga-d','ga-h','renderGastos');
+  var rg=rangoMes('ga-d','ga-h');fillRub();var fr=$('ga-r').value,fq=($('ga-q').value||'').toLowerCase().trim();
+  var G=DATA.gastos.filter(function(g){var m=mon(g.f);return m>=rg[0]&&m<=rg[1]&&(!fr||g.c===fr)&&(!fq||((g.desc||'')+' '+(g.prov||'')+' '+g.c).toLowerCase().indexOf(fq)>=0);});
+  var tot=sum(G,function(g){return g.neto;});
+  var msR=MESES_F.filter(function(m){return m>=rg[0]&&m<=rg[1]&&m<=HOYM;});
+  var meses={},rub={},cruz={};msR.forEach(function(m){meses[m]=0;});
   G.forEach(function(g){var m=mon(g.f);meses[m]=(meses[m]||0)+g.neto;rub[g.c]=(rub[g.c]||0)+g.neto;cruz[g.c]=cruz[g.c]||{};cruz[g.c][m]=(cruz[g.c][m]||0)+g.neto;});
-  var ms=Object.keys(meses).sort(),rs=Object.keys(rub).sort(function(a,b){return rub[b]-rub[a];});
-  var d0=G.map(function(g){return g.f;}).sort()[0],d1=G.map(function(g){return g.f;}).sort().pop();
-  // cabeza-dias y kg producidos en la ventana de gastos
+  var ms=Object.keys(meses).sort(),rs=Object.keys(rub).sort(function(a,b){return rub[b]-rub[a];});window._gaRs=rs;
+  var d0=rg[0]+'-01',d1=lastDay(rg[1]);if(d1>HOY)d1=HOY;
+  // cabeza-dias y kg producidos en el período elegido
   var cd=0,kgp=0;
   AN.forEach(function(a){if(!a.first||a.repro)return;var ini=a.first[0]>d0?a.first[0]:d0;var fin=a.vivo?d1:(a.last[0]<d1?a.last[0]:d1);if(fin>ini)cd+=days(ini,fin);
     a.g.forEach(function(x){if(x.f>d0&&x.f<=d1)kgp+=x.delta;});});
-  $('k-gas').innerHTML=k('Gastos cargados',fMM(tot),fD(d0)+' al '+fD(d1))+k('Promedio mensual',fMM(tot/ms.length),ms.length+' meses con gastos')+
-    k('Costo por cabeza por día',fM(tot/cd),'en el período de los gastos')+k('Costo por kg producido',fM(tot/kgp),fN(kgp)+' kg ganados en el período')+k('Mayor rubro',rs[0],fMM(rub[rs[0]])+' · '+fN(rub[rs[0]]/tot*100)+'%');
-  mk('c-gmes',{type:'bar',data:{labels:ms.map(mlab),datasets:[{label:'Gastos',data:ms.map(function(m){return meses[m];}),backgroundColor:C.s[1],borderRadius:4}]},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fM(c.raw);}}}},scales:{y:{ticks:{callback:function(v){return fMM(v);}}}}}});
-  mk('c-grub',{type:'bar',data:{labels:rs,datasets:[{label:'Gastos',data:rs.map(function(r){return rub[r];}),backgroundColor:C.s[0],borderRadius:4}]},options:{indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fM(c.raw);}}}},scales:{x:{ticks:{callback:function(v){return fMM(v);}}}}}});
-  $('t-grub').innerHTML='<thead><tr><th>Rubro</th>'+ms.map(function(m){return '<th class="r">'+mlab(m)+'</th>';}).join('')+'<th class="r">Total</th></tr></thead><tbody>'+rs.map(function(r){return '<tr><td>'+r+'</td>'+ms.map(function(m){return '<td class="r">'+(cruz[r][m]?fN(cruz[r][m]/1000)+'k':'<span class="mut">-</span>')+'</td>';}).join('')+'<td class="r"><b>'+fMM(rub[r])+'</b></td></tr>';}).join('')+'</tbody>';
+  var nm=Math.max(1,ms.filter(function(m){return meses[m]>0;}).length);
+  $('k-gas').innerHTML=ks('Gastos del período',fMM(tot),G.length+' gastos · '+mlab(rg[0])+' a '+mlab(rg[1])+' · tocá para ver el detalle',"gaIr()")+
+    ks('Promedio mensual',fMM(tot/nm),nm+' meses con gastos')+
+    ks('Costo por cabeza por día',cd>0?fM(tot/cd):'-','en el período elegido')+
+    ks('Costo por kg producido',kgp>0?fM(tot/kgp):'-',fN(kgp)+' kg ganados en el período')+
+    ks('Mayor rubro',rs[0]||'-',rs[0]?fMM(rub[rs[0]])+' · '+fN(rub[rs[0]]/tot*100)+'% · tocá para filtrar':'sin gastos con estos filtros',rs[0]?"gaRubI(0)":null);
+  $('ga-n').textContent=G.length+' gastos · '+fMM(tot);
+  mk('c-gmes',{type:'bar',data:{labels:ms.map(mlab),datasets:[{label:'Gastos',data:ms.map(function(m){return meses[m];}),backgroundColor:C.s[1],borderRadius:4,maxBarThickness:46}]},
+    options:{onClick:function(e,els){if(els.length)gaMes(ms[els[0].index]);},onHover:hov,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fM(c.raw);}}}},scales:{y:{ticks:{callback:function(v){return fMM(v);}}}}}});
+  $('w-grub').style.height=Math.max(300,rs.length*34+40)+'px';
+  mk('c-grub',{type:'bar',data:{labels:rs,datasets:[{label:'Gastos',data:rs.map(function(r){return rub[r];}),backgroundColor:C.s[0],borderRadius:4}]},
+    options:{indexAxis:'y',onClick:function(e,els){if(els.length)gaRubI(els[0].index);},onHover:hov,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fM(c.raw);}}}},scales:{x:{ticks:{callback:function(v){return fMM(v);}}}}}});
+  var msT=ms.filter(function(m){return meses[m]>0;});
+  $('t-grub').innerHTML=rs.length?'<thead><tr><th>Rubro</th>'+msT.map(function(m){return '<th class="r">'+mlab(m)+'</th>';}).join('')+'<th class="r">Total</th></tr></thead><tbody>'+rs.map(function(r){return '<tr><td>'+r+'</td>'+msT.map(function(m){return '<td class="r">'+(cruz[r][m]?fN(cruz[r][m]/1000)+'k':'<span class="mut">-</span>')+'</td>';}).join('')+'<td class="r"><b>'+fMM(rub[r])+'</b></td></tr>';}).join('')+'</tbody>':'<tbody><tr><td class="mut">Sin gastos con estos filtros</td></tr></tbody>';
+  var L=G.slice().sort(function(a,b){return a.f<b.f?1:-1;});
+  $('tb-gdet').innerHTML=L.length?L.map(function(g){return '<tr><td>'+fD(g.f)+'</td><td>'+g.c+'</td><td style="white-space:normal">'+String(g.desc||'').replace(/</g,'&lt;')+'</td><td>'+(g.prov||'<span class="mut">-</span>')+'</td><td>'+(g.est||'')+'</td><td class="r">'+fM(g.neto)+'</td></tr>';}).join('')+'<tr class="tot"><td></td><td>Total</td><td></td><td></td><td></td><td class="r">'+fM(tot)+'</td></tr>':'<tr><td colspan="6" class="mut">No hay gastos con estos filtros</td></tr>';
 }
 
 /* ---------- FLUJO ---------- */
@@ -434,55 +485,61 @@ function renderFlujo(){
   var val={};
   meses.forEach(function(m){var p=m.split('-');var fin=new Date(Date.UTC(+p[0],+p[1],0)).toISOString().slice(0,10);if(fin>HOY)fin=HOY;val[m]=stockVal(stockEn(fin));});
   var act=meses.filter(function(m){return m<=HOYM;});
+  if(!$('fl-q1').innerHTML)$('fl-q1').innerHTML=quickBtns('fl-d','fl-h','renderFlujo');
+  var rg=rangoMes('fl-d','fl-h'),FD=rg[0],FH=rg[1];
+  var selM=meses.filter(function(m){return m>=FD&&m<=FH;}),selA=act.filter(function(m){return m>=FD&&m<=FH;});
   var ent={};act.forEach(function(m){ent[m]=0;});
   AN.forEach(function(a){if(!a.first||a.repro)return;var mm=mon(a.first[0]);if(mm<='2025-05')return;if(mm in ent)ent[mm]+=stockVal(a.first[1]);});
   var xtra={},eco={},ds={};
   act.forEach(function(m,i){xtra[m]=Math.max(0,ent[m]-comH[m]);ds[m]=(i===0||m<='2025-05')?0:val[m]-val[act[i-1]];eco[m]=ven[m]-comH[m]-xtra[m]-gas[m]+ds[m];});
   var finM={},acu={},run=0;
   meses.forEach(function(m){finM[m]=cobR[m]+cobP[m]-pagH[m]-pagG[m]+apo[m]-ret[m];run+=finM[m];acu[m]=run;});
-  var S=function(o,l){return sum(l||act,function(m){return o[m];});};
+  var S=function(o,l){return sum(l||selA,function(m){return o[m];});};
   var tV=S(ven),tCH=S(comH),tX=S(xtra),tG=S(gas),tDS=S(ds),tEco=S(eco);
-  var tCR=S(cobR,meses),tCP=S(cobP,meses),tPG=S(pagG,meses),tPH=S(pagH,meses),tAp=S(apo,meses),tRe=S(ret,meses);
+  var tCR=S(cobR,selM),tCP=S(cobP,selM),tPG=S(pagG,selM),tPH=S(pagH,selM),tAp=S(apo,selM),tRe=S(ret,selM);
   var finOp=tCR-tPG-tPH,finTot=finOp+tAp-tRe;
   var cartera=CHEQ.filter(function(c){return c.vto&&c.vto>HOY;});
-  FL={meses:meses,IT:IT};
+  var rows={};meses.forEach(function(m){rows[m]={ven:ven[m],comH:comH[m],xtra:xtra[m]||0,gas:gas[m],ds:ds[m]||0,eco:eco[m]||0,cob:cobR[m]+cobP[m],pagG:pagG[m],pagH:pagH[m],soc:apo[m]-ret[m],fin:finM[m],fut:m>HOYM};});
+  FL={meses:meses,IT:IT,rows:rows,FD:FD,FH:FH,selM:selM,selA:selA};
+  var per=' · '+mlab(FD)+' a '+mlab(FH);
+  $('fl-t1').textContent='Económico · devengado (por fecha de la operación)'+per;$('fl-t2').textContent='Financiero · caja (por fecha de cobro y pago)'+per;
   $('k-eco').innerHTML=
-    ks('Ventas',fMM(tV),'por fecha de operación')+
-    ks('Compras de hacienda',fMM(tCH+tX),fMM(tCH)+' cargadas'+(tX?' + '+fMM(tX)+' estimadas':''),null,'#c98500')+
-    ks('Gastos',fMM(tG),'hoja vieja, todos los rubros')+
-    ks('Variación valor hacienda',fMM(tDS),'engorde y precio, estimado')+
-    ks('Resultado económico',fMM(tEco),'ventas − compras − gastos ± hacienda',null,tEco>=0?'#199e70':'#e66767');
+    ks('Ventas',fMM(tV),'por fecha de operación',"openKpi('ventas')")+
+    ks('Compras de hacienda',fMM(tCH+tX),fMM(tCH)+' cargadas'+(tX?' + '+fMM(tX)+' estimadas':''),"openKpi('compras')",'#c98500')+
+    ks('Gastos',fMM(tG),'hoja vieja, todos los rubros',"openKpi('gastos')")+
+    ks('Variación valor hacienda',fMM(tDS),'engorde y precio, estimado',"openKpi('resumen')")+
+    ks('Resultado económico',fMM(tEco),'ventas − compras − gastos ± hacienda',"openKpi('resumen')",tEco>=0?'#199e70':'#e66767');
   $('k-fin').innerHTML=
-    ks('Cobros hasta hoy',fMM(tCR),'plata que entró')+
-    ks('Pagos de gastos',fMM(tPG),'plata que salió')+
-    ks('Pagos de hacienda',fMM(tPH),'compra de animales',null,'#c98500')+
-    ks('Aportes de socios',fMM(tAp),tAp?'':'ninguno cargado')+
-    ks('Retiros de socios',fMM(tRe),tRe?'':'ninguno cargado')+
-    ks('Resultado financiero',fMM(finTot),'cobros − pagos ± socios',null,finTot>=0?'#199e70':'#e66767')+
+    ks('Cobros hasta hoy',fMM(tCR),'plata que entró',"openKpi('cobros')")+
+    ks('Pagos de gastos',fMM(tPG),'plata que salió',"openKpi('pagosG')")+
+    ks('Pagos de hacienda',fMM(tPH),'compra de animales',"openKpi('pagosH')",'#c98500')+
+    ks('Aportes de socios',fMM(tAp),tAp?'':'ninguno cargado',"openKpi('socios')")+
+    ks('Retiros de socios',fMM(tRe),tRe?'':'ninguno cargado',"openKpi('socios')")+
+    ks('Resultado financiero',fMM(finTot),'cobros − pagos ± socios',"openKpi('resumen')",finTot>=0?'#199e70':'#e66767')+
     ks('Cheques por cobrar',fMM(sum(cartera,function(c){return c.imp;})),cartera.length+' cheques · tocá para ver','openCheques()','#3987e5');
-  var lab=meses.map(mlab);
+  var lab=selM.map(mlab);
   var tabEco=['ventas','compras','compras','gastos',null,'ventas'];
-  mk('c-eco',{type:'bar',data:{labels:act.map(mlab),datasets:[
-    {label:'Ventas',data:act.map(function(m){return ven[m];}),backgroundColor:C.s[2],stack:'e',borderRadius:3},
-    {label:'Compras de hacienda (cargadas)',data:act.map(function(m){return -comH[m];}),backgroundColor:C.s[3],stack:'e',borderRadius:3},
-    {label:'Compras de hacienda (estimadas)',data:act.map(function(m){return -xtra[m];}),backgroundColor:'rgba(201,133,0,.35)',borderColor:C.s[3],borderWidth:1,stack:'e',borderRadius:3},
-    {label:'Gastos',data:act.map(function(m){return -gas[m];}),backgroundColor:C.s[1],stack:'e',borderRadius:3},
-    {label:'Variación valor hacienda',data:act.map(function(m){return ds[m];}),backgroundColor:C.s[6],stack:'e',borderRadius:3},
-    {type:'line',label:'Resultado del mes',data:act.map(function(m){return eco[m];}),borderColor:cssv('--tx'),backgroundColor:cssv('--tx'),borderWidth:2,pointRadius:4,pointHoverRadius:7,stack:'res',tension:.15}]},
-    options:{onClick:function(e,els){if(els.length)openDetalle(act[els[0].index],tabEco[els[0].datasetIndex]||'ventas');},onHover:hov,
-      plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+fM(c.raw);}}}},scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:function(v){return fMM(v);}}}}}});
+  mk('c-eco',{type:'bar',plugins:[LBL],data:{labels:selA.map(mlab),datasets:[
+    {label:'Ventas',data:selA.map(function(m){return ven[m];}),backgroundColor:C.s[2],stack:'e',borderRadius:3,maxBarThickness:48},
+    {label:'Compras de hacienda (cargadas)',data:selA.map(function(m){return -comH[m];}),backgroundColor:C.s[3],stack:'e',borderRadius:3,maxBarThickness:48},
+    {label:'Compras de hacienda (estimadas)',data:selA.map(function(m){return -xtra[m];}),backgroundColor:'rgba(201,133,0,.35)',borderColor:C.s[3],borderWidth:1,stack:'e',borderRadius:3,maxBarThickness:48},
+    {label:'Gastos',data:selA.map(function(m){return -gas[m];}),backgroundColor:C.s[1],stack:'e',borderRadius:3,maxBarThickness:48},
+    {label:'Variación valor hacienda',data:selA.map(function(m){return ds[m];}),backgroundColor:C.s[6],stack:'e',borderRadius:3,maxBarThickness:48},
+    {type:'line',lbl:true,label:'Resultado del mes',data:selA.map(function(m){return eco[m];}),borderColor:cssv('--tx'),backgroundColor:cssv('--tx'),borderWidth:2,pointRadius:4,pointHoverRadius:7,stack:'res',tension:.15}]},
+    options:{onClick:function(e,els){if(els.length)openDetalle(selA[els[0].index],tabEco[els[0].datasetIndex]||'ventas');},onHover:hov,
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:12}}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+fM(c.raw);}}}},scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:function(v){return fMM(v);}}}}}});
   var tabFin=['cobros','cobros','pagosG','pagosH','socios','socios'];
   mk('c-fin',{type:'bar',data:{labels:lab,datasets:[
-    {label:'Cobros',data:meses.map(function(m){return cobR[m];}),backgroundColor:C.s[2],borderRadius:3,stack:'a'},
-    {label:'Cobros programados (cheques)',data:meses.map(function(m){return cobP[m];}),backgroundColor:'rgba(25,158,112,.35)',borderColor:C.s[2],borderWidth:1,borderRadius:3,stack:'a'},
-    {label:'Pagos de gastos',data:meses.map(function(m){return -pagG[m];}),backgroundColor:C.s[1],borderRadius:3,stack:'a'},
-    {label:'Pagos de hacienda',data:meses.map(function(m){return -pagH[m];}),backgroundColor:C.s[3],borderRadius:3,stack:'a'},
-    {label:'Aportes de socios',data:meses.map(function(m){return apo[m];}),backgroundColor:C.s[0],borderRadius:3,stack:'a'},
-    {label:'Retiros de socios',data:meses.map(function(m){return -ret[m];}),backgroundColor:C.s[4],borderRadius:3,stack:'a'}]},
-    options:{onClick:function(e,els){if(els.length)openDetalle(meses[els[0].index],tabFin[els[0].datasetIndex]);},onHover:hov,
-      plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+fM(Math.abs(c.raw));}}}},scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:function(v){return fMM(v);}}}}}});
-  mk('c-acu',{type:'line',data:{labels:lab,datasets:[{label:'Acumulado',data:meses.map(function(m){return acu[m];}),borderColor:C.s[0],backgroundColor:'rgba(57,135,229,.15)',fill:true,tension:.2,pointRadius:4,pointHoverRadius:7,segment:{borderDash:function(c){return meses[c.p1DataIndex]>HOYM?[5,4]:undefined;}}}]},
-    options:{onClick:function(e,els){if(els.length)openDetalle(meses[els[0].index],'cobros');},onHover:hov,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fM(c.raw);}}}},scales:{y:{ticks:{callback:function(v){return fMM(v);}}}}}});
+    {label:'Cobros',data:selM.map(function(m){return cobR[m];}),backgroundColor:C.s[2],borderRadius:3,maxBarThickness:48,stack:'a'},
+    {label:'Cobros programados (cheques)',data:selM.map(function(m){return cobP[m];}),backgroundColor:'rgba(25,158,112,.35)',borderColor:C.s[2],borderWidth:1,borderRadius:3,maxBarThickness:48,stack:'a'},
+    {label:'Pagos de gastos',data:selM.map(function(m){return -pagG[m];}),backgroundColor:C.s[1],borderRadius:3,maxBarThickness:48,stack:'a'},
+    {label:'Pagos de hacienda',data:selM.map(function(m){return -pagH[m];}),backgroundColor:C.s[3],borderRadius:3,maxBarThickness:48,stack:'a'},
+    {label:'Aportes de socios',data:selM.map(function(m){return apo[m];}),backgroundColor:C.s[0],borderRadius:3,maxBarThickness:48,stack:'a'},
+    {label:'Retiros de socios',data:selM.map(function(m){return -ret[m];}),backgroundColor:C.s[4],borderRadius:3,maxBarThickness:48,stack:'a'}]},
+    options:{onClick:function(e,els){if(els.length)openDetalle(selM[els[0].index],tabFin[els[0].datasetIndex]);},onHover:hov,
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:12}}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+fM(Math.abs(c.raw));}}}},scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:function(v){return fMM(v);}}}}}});
+  mk('c-acu',{type:'line',data:{labels:lab,datasets:[{label:'Acumulado',data:selM.map(function(m){return acu[m];}),borderColor:C.s[0],backgroundColor:'rgba(57,135,229,.15)',fill:true,tension:.2,pointRadius:4,pointHoverRadius:7,segment:{borderDash:function(c){return selM[c.p1DataIndex]>HOYM?[5,4]:undefined;}}}]},
+    options:{onClick:function(e,els){if(els.length)openDetalle(selM[els[0].index],'cobros');},onHover:hov,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fM(c.raw);}}}},scales:{y:{ticks:{callback:function(v){return fMM(v);}}}}}});
   var row=function(l,v,b,sg){return '<tr><td>'+(b?'<b>'+l+'</b>':l)+'</td><td class="r '+cls(v)+'">'+(b?'<b>'+fM(v)+'</b>':fM(v))+'</td></tr>';};
   var vNoCob=tV-tCR;
   $('t-puente').innerHTML='<tbody>'+row('Resultado económico (estimado)',tEco,true)+
@@ -495,27 +552,50 @@ function renderFlujo(){
     row('más: aportes de socios',tAp)+row('menos: retiros de socios',-tRe)+
     row('= Variación de caja',finTot,true)+'</tbody>';
   var th='<thead><tr><th>Mes</th><th class="r">Ventas</th><th class="r">Compras hacienda</th><th class="r">Compras estim.</th><th class="r">Gastos</th><th class="r">Δ valor hacienda</th><th class="r">Económico</th><th class="r">Cobros</th><th class="r">Pagos gastos</th><th class="r">Pagos hacienda</th><th class="r">Socios (+/−)</th><th class="r">Financiero</th><th class="r">Acumulado</th></tr></thead>';
-  var body=meses.map(function(m){var fut=m>HOYM,e=fut?'':null;
+  var body=selM.map(function(m){var fut=m>HOYM,e=fut?'':null;
     return '<tr class="clk" onclick="openDetalle(\''+m+'\')"'+(fut?' style="opacity:.65"':'')+'><td>'+mlab(m)+(fut?' <span class="chip">futuro</span>':'')+'</td><td class="r">'+(fut?'':fN(ven[m]))+'</td><td class="r">'+(fut?'':fN(comH[m]))+'</td><td class="r mut">'+(fut?'':fN(xtra[m]))+'</td><td class="r">'+(fut?'':fN(gas[m]))+'</td><td class="r">'+(fut?'':fN(ds[m]))+'</td><td class="r '+(fut?'':cls(eco[m]))+'"><b>'+(fut?'':fN(eco[m]))+'</b></td><td class="r">'+fN(cobR[m]+cobP[m])+'</td><td class="r">'+fN(pagG[m])+'</td><td class="r">'+fN(pagH[m])+'</td><td class="r">'+fN(apo[m]-ret[m])+'</td><td class="r '+cls(finM[m])+'"><b>'+fN(finM[m])+'</b></td><td class="r">'+fN(acu[m])+'</td></tr>';}).join('');
-  var tot='<tr class="tot"><td>TOTAL</td><td class="r">'+fN(tV)+'</td><td class="r">'+fN(tCH)+'</td><td class="r">'+fN(tX)+'</td><td class="r">'+fN(tG)+'</td><td class="r">'+fN(tDS)+'</td><td class="r '+cls(tEco)+'">'+fN(tEco)+'</td><td class="r">'+fN(tCR+tCP)+'</td><td class="r">'+fN(tPG)+'</td><td class="r">'+fN(tPH)+'</td><td class="r">'+fN(tAp-tRe)+'</td><td class="r '+cls(finTot+tCP)+'">'+fN(finTot+tCP)+'</td><td class="r">'+fN(run)+'</td></tr>';
+  var tot='<tr class="tot"><td>TOTAL</td><td class="r">'+fN(tV)+'</td><td class="r">'+fN(tCH)+'</td><td class="r">'+fN(tX)+'</td><td class="r">'+fN(tG)+'</td><td class="r">'+fN(tDS)+'</td><td class="r '+cls(tEco)+'">'+fN(tEco)+'</td><td class="r">'+fN(tCR+tCP)+'</td><td class="r">'+fN(tPG)+'</td><td class="r">'+fN(tPH)+'</td><td class="r">'+fN(tAp-tRe)+'</td><td class="r '+cls(finTot+tCP)+'">'+fN(finTot+tCP)+'</td><td class="r">'+fN(selM.length?acu[selM[selM.length-1]]:0)+'</td></tr>';
   $('t-mes').innerHTML=th+'<tbody>'+body+tot+'</tbody>';
-  if(window._detMes)openDetalle(window._detMes,window._detTab,true);
+  if(window._detOpen)openDetalle(window._detMes,window._detTab,true);
 }
-function ks(l,v,s,click,col){return '<div class="kpi'+(click?' clk':'')+'"'+(click?' onclick="'+click+'"':'')+'><div class="kpi-l">'+l+'</div><div class="kpi-v"'+(col?' style="color:'+col+'"':'')+'>'+v+'</div><div class="kpi-s">'+(s||'')+'</div></div>';}
+function ks(l,v,s,click,col){return '<div class="kpi'+(click?' clk':'')+'"'+(click?' onclick="'+click+'"':'')+'><div class="kpi-l">'+l+'</div><div class="kpi-v"'+(col?' style="color:'+col+'"':'')+'>'+v+'</div><div class="kpi-s">'+(s||'')+(click&&!/tocá/.test(s||'')?' <span class="go">· ver detalle ›</span>':'')+'</div></div>';}
 function hov(e,els){if(e&&e.native&&e.native.target)e.native.target.style.cursor=els.length?'pointer':'default';}
 var DET_TABS=[['ventas','Ventas'],['compras','Compras de hacienda'],['gastos','Gastos'],['cobros','Cobros'],['pagosG','Pagos de gastos'],['pagosH','Pagos de hacienda'],['socios','Socios']];
+function detItems(m,tab,sinq){
+  var q=sinq?'':(window._detQ||'').toLowerCase();
+  return (FL.IT[tab]||[]).filter(function(x){return (m?x.m===m:(x.m>=FL.FD&&x.m<=FL.FH))&&(!q||(x.t+' '+x.s).toLowerCase().indexOf(q)>=0);}).sort(function(a,b){return a.f<b.f?-1:1;});
+}
+function detBody(){
+  var m=window._detMes,tab=window._detTab,box=$('det-body');if(!box||!FL)return;
+  if(tab==='resumen'){
+    var ms=m?[m]:FL.selM,R=FL.rows,T={ven:0,comp:0,gas:0,ds:0,eco:0,cob:0,pg:0,ph:0,fin:0};
+    var body=ms.map(function(x){var r=R[x];if(r.fut){return '<tr class="clk" style="opacity:.65" onclick="openDetalle(\''+x+'\',\'cobros\')"><td>'+mlab(x)+' <span class="chip">futuro</span></td><td colspan="5" class="mut">todavía no pasó</td><td class="r">'+fN(r.cob)+'</td><td class="r">'+fN(r.pagG)+'</td><td class="r">'+fN(r.pagH)+'</td><td class="r '+cls(r.fin)+'">'+fN(r.fin)+'</td></tr>';}
+      T.ven+=r.ven;T.comp+=r.comH+r.xtra;T.gas+=r.gas;T.ds+=r.ds;T.eco+=r.eco;T.cob+=r.cob;T.pg+=r.pagG;T.ph+=r.pagH;T.fin+=r.fin;
+      return '<tr class="clk" onclick="openDetalle(\''+x+'\',\'ventas\')"><td>'+mlab(x)+'</td><td class="r">'+fN(r.ven)+'</td><td class="r">'+fN(r.comH+r.xtra)+'</td><td class="r">'+fN(r.gas)+'</td><td class="r">'+fN(r.ds)+'</td><td class="r '+cls(r.eco)+'"><b>'+fN(r.eco)+'</b></td><td class="r">'+fN(r.cob)+'</td><td class="r">'+fN(r.pagG)+'</td><td class="r">'+fN(r.pagH)+'</td><td class="r '+cls(r.fin)+'">'+fN(r.fin)+'</td></tr>';}).join('');
+    box.innerHTML='<table><thead><tr><th>Mes</th><th class="r">Ventas</th><th class="r">Compras hacienda</th><th class="r">Gastos</th><th class="r">Δ valor hacienda</th><th class="r">Resultado económico</th><th class="r">Cobros</th><th class="r">Pagos gastos</th><th class="r">Pagos hacienda</th><th class="r">Resultado financiero</th></tr></thead><tbody>'+body+(m?'':'<tr class="tot"><td>Total</td><td class="r">'+fN(T.ven)+'</td><td class="r">'+fN(T.comp)+'</td><td class="r">'+fN(T.gas)+'</td><td class="r">'+fN(T.ds)+'</td><td class="r '+cls(T.eco)+'">'+fN(T.eco)+'</td><td class="r">'+fN(T.cob)+'</td><td class="r">'+fN(T.pg)+'</td><td class="r">'+fN(T.ph)+'</td><td class="r '+cls(T.fin)+'">'+fN(T.fin)+'</td></tr>')+'</tbody></table>';
+    return;
+  }
+  var l=detItems(m,tab);
+  box.innerHTML='<table><thead><tr><th>Fecha</th><th>Concepto</th><th class="r">Importe</th><th>Dónde está</th></tr></thead><tbody>'+
+    (l.length?l.map(function(x){return '<tr><td>'+fD(x.f)+'</td><td style="white-space:normal">'+x.t.replace(/</g,'&lt;')+'</td><td class="r">'+fM(x.v)+'</td><td class="mut">'+x.s+'</td></tr>';}).join('')+'<tr class="tot"><td></td><td>Total ('+l.length+')</td><td class="r">'+fM(sum(l,function(x){return x.v;}))+'</td><td></td></tr>':'<tr><td colspan="4" class="mut">No hay nada con este período y estos filtros</td></tr>')+'</tbody></table>';
+}
+function detQ(v){window._detQ=v;detBody();}
+function openKpi(tab){window._detQ='';openDetalle(null,tab);}
 function openDetalle(m,tab,keep){
-  if(!FL)return;tab=tab||window._detTab||'ventas';window._detMes=m;window._detTab=tab;
-  var IT=FL.IT,card=$('det');card.style.display='block';
-  var html='<div class="tct">Detalle de '+mlab(m)+' <span class="mut" style="text-transform:none">· tocá una barra, un mes de la tabla o una solapa</span><span style="float:right;cursor:pointer" onclick="cerrarDetalle()">✕ cerrar</span></div><div style="padding:10px 13px"><div class="seg">';
-  DET_TABS.forEach(function(t){var l=IT[t[0]].filter(function(x){return x.m===m;});html+='<button class="'+(t[0]===tab?'on':'')+'" onclick="openDetalle(\''+m+'\',\''+t[0]+'\')">'+t[1]+' ('+l.length+')</button>';});
-  var l=IT[tab].filter(function(x){return x.m===m;}).sort(function(a,b){return a.f<b.f?-1:1;});
-  html+='</div><div class="tw" style="max-height:300px;margin-top:8px"><table><thead><tr><th>Fecha</th><th>Concepto</th><th class="r">Importe</th><th>Dónde está</th></tr></thead><tbody>'+
-    (l.length?l.map(function(x){return '<tr><td>'+fD(x.f)+'</td><td style="white-space:normal">'+x.t.replace(/</g,'&lt;')+'</td><td class="r">'+fM(x.v)+'</td><td class="mut">'+x.s+'</td></tr>';}).join('')+'<tr class="tot"><td></td><td>Total</td><td class="r">'+fM(sum(l,function(x){return x.v;}))+'</td><td></td></tr>':'<tr><td colspan="4" class="mut">Nada en este mes</td></tr>')+'</tbody></table></div></div>';
-  card.innerHTML=html;
+  if(!FL)return;
+  tab=tab||((m&&window._detTab&&window._detTab!=='resumen')?window._detTab:(m?'ventas':'resumen'));
+  window._detMes=m||null;window._detTab=tab;window._detOpen=true;
+  var card=$('det');card.style.display='block';
+  var per=m?mlab(m):mlab(FL.FD)+' a '+mlab(FL.FH);
+  var mj=m?"'"+m+"'":'null';
+  var html='<div class="tct">Detalle · '+per+' <span class="mut" style="text-transform:none">· tocá una solapa, una barra o un mes de la tabla</span><span style="float:right;cursor:pointer" onclick="cerrarDetalle()">✕ cerrar</span></div><div style="padding:10px 13px"><div class="seg">';
+  [['resumen','Resumen mes a mes']].concat(DET_TABS).forEach(function(t){var n=t[0]==='resumen'?'':' ('+detItems(m,t[0],true).length+')';html+='<button class="'+(t[0]===tab?'on':'')+'" onclick="openDetalle('+mj+',\''+t[0]+'\')">'+t[1]+n+'</button>';});
+  if(m)html+='<button onclick="openDetalle(null,\''+tab+'\')" style="margin-left:auto">Ver todo el período</button>';
+  html+='</div>'+(tab==='resumen'?'':'<div style="margin:8px 0"><input type="text" id="det-q" placeholder="Buscar en el detalle (comprador, proveedor, rubro…)" value="'+(window._detQ||'').replace(/"/g,'&quot;')+'" oninput="detQ(this.value)" style="width:100%;max-width:380px"></div>')+'<div class="tw" style="max-height:340px;margin-top:8px" id="det-body"></div></div>';
+  card.innerHTML=html;detBody();
   if(!keep)card.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-function cerrarDetalle(){$('det').style.display='none';window._detMes=null;}
+function cerrarDetalle(){$('det').style.display='none';window._detMes=null;window._detOpen=false;}
 /* ---------- CHEQUES ---------- */
 function openCheques(){
   var prox=CHEQ.filter(function(c){return c.vto&&c.vto>HOY;}),pas=CHEQ.filter(function(c){return c.vto&&c.vto<=HOY;}),sin=CHEQ.filter(function(c){return !c.vto;});
