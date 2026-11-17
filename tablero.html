@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Buffalo Dashboard - Vista previa</title>
+<script>if(window.innerWidth<760)document.addEventListener('DOMContentLoaded',function(){var d=document.getElementById('alertas');if(d)d.removeAttribute('open');});if(/[?&]emb=1/.test(location.search))document.documentElement.className+=' emb';</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 :root{--bg:#f4f6fa;--bg2:#ffffff;--bg3:#eef1f7;--bd:#d9dfeb;--tx:#1b2433;--tx2:#4a566b;--tx3:#7a8699;
@@ -69,15 +70,42 @@ tr.tot td{font-weight:700;border-top:2px solid var(--bd)}
 .big{height:400px!important}
 .kpi-s .go{color:var(--s1);font-weight:600}
 .fb input[type=text]{min-width:120px}
+
+.hdr-t{margin-right:auto}
+.tabs{order:3;flex:1 1 100%;flex-wrap:wrap;overflow:visible;border-top:1px solid var(--bd);margin-top:2px}
+.tab{height:42px}
+.emb .hdr-t,.emb #btnCarga,.emb .badge,.emb #tgl{display:none}
+@media (max-width:760px){
+ .hdr{padding:0 8px;gap:2px;min-height:0;align-items:center}
+ .hdr-t{font-size:14px;margin:0 6px 0 0;flex:1}
+ .tabs{order:3;flex:1 1 100%;width:100%;overflow:visible;flex-wrap:wrap;border-top:1px solid var(--bd);margin:4px 0 0;padding:2px 0}
+ .tab{height:40px;padding:0 10px;font-size:13px;flex:1 1 auto;justify-content:center;border-bottom-width:3px}
+ .tab .lg{display:none}
+ .badge{display:none}
+ .tgl{padding:6px 10px;font-size:12px}
+ .main{padding:10px}
+ .cg{grid-template-columns:1fr}
+ .kpis{grid-template-columns:repeat(2,1fr);gap:7px}
+ .kpi{padding:9px 10px}.kpi-v{font-size:17px}
+ .fb{gap:6px;padding:8px}
+ .fb select,.fb input[type=text],.fb input[type=number]{font-size:14px;padding:7px}
+ .big{height:300px!important}
+ .cw{height:260px}
+ table{font-size:12px}
+ .alert{font-size:12px}
+ #livebar{left:8px;right:8px;bottom:6px;text-align:center}
+ .emb .hdr{padding:0 4px}
+ .emb .tabs{border-top:0;margin:0}
+}
 </style>
 </head>
 <body>
 <div class="hdr">
   <div class="hdr-t">&#128003; Buffalo Dashboard</div>
   <div class="tabs">
-    <div class="tab on" onclick="showPg('ingresos',this)">&#128176; Ingresos y tenencia</div>
+    <div class="tab on" onclick="showPg('ingresos',this)">&#128176; Ingresos <span class="lg">y tenencia</span></div>
     <div class="tab" onclick="showPg('gastos',this)">&#128203; Gastos</div>
-    <div class="tab" onclick="showPg('flujo',this)">&#128202; Flujo: económico y financiero</div>
+    <div class="tab" onclick="showPg('flujo',this)">&#128202; Flujo<span class="lg">: económico y financiero</span></div>
     <div class="tab" onclick="showPg('pesajes',this)">&#9878; Pesajes</div>
     <div class="tab" onclick="showPg('animal',this)">&#128269; Por animal</div>
     <div class="tab" onclick="showPg('caja',this)">&#127974; Caja y Banco</div>
@@ -112,7 +140,7 @@ tr.tot td{font-weight:700;border-top:2px solid var(--bd)}
 <div id="pg-gastos" class="pg">
   <div class="fb"><label>Período:</label><label>Desde</label><select id="ga-d" onchange="renderGastos()"></select><label>Hasta</label><select id="ga-h" onchange="renderGastos()"></select><span id="ga-q1"></span>
     <label>Rubro</label><select id="ga-r" onchange="renderGastos()"><option value="">Todos</option></select>
-    <label>Buscar</label><input type="text" id="ga-q" placeholder="detalle o proveedor" oninput="renderGastos()" style="width:170px">
+    <label>Buscar</label><input type="text" id="ga-q" placeholder="detalle o proveedor" oninput="renderGastos()" style="width:170px"><label><input type="checkbox" id="ga-rep" checked onchange="renderGastos()"> Alimento repartido en los días que dura cada compra</label>
     <button class="tgl" style="margin-left:6px" onclick="gaReset()">Limpiar filtros</button></div>
   <div class="kpis" id="k-gas"></div>
   <div class="cc" style="margin-bottom:14px"><div class="cct">Gastos por mes (sin IVA)</div><div class="sub">Tocá una barra para ver solo ese mes.</div><div class="cw big" style="height:340px"><canvas id="c-gmes"></canvas></div></div>
@@ -125,8 +153,8 @@ tr.tot td{font-weight:700;border-top:2px solid var(--bd)}
 <div id="pg-flujo" class="pg">
   <div class="fb">
     <label>Valor del stock para el resultado económico:</label>
-    <label>Precio $/kg vivo</label><input type="number" id="p-precio" value="3200" style="width:80px" onchange="renderFlujo()">
-    <label>Desbaste %</label><input type="number" id="p-desb" value="10" style="width:60px" onchange="renderFlujo()">
+    <label>Precio $/kg vivo</label><input type="number" id="p-precio" value="3200" style="width:80px" onchange="guardarParam();renderFlujo()">
+    <label>Desbaste %</label><input type="number" id="p-desb" value="10" style="width:60px" onchange="guardarParam();renderFlujo()">
     <span class="mut">(precio de las últimas ventas por kg; lo cambiás vos)</span>
   </div>
   <div class="fb"><label>Período:</label><label>Desde</label><select id="fl-d" onchange="renderFlujo()"></select><label>Hasta</label><select id="fl-h" onchange="renderFlujo()"></select><span id="fl-q1"></span>
@@ -165,11 +193,11 @@ tr.tot td{font-weight:700;border-top:2px solid var(--bd)}
   <div class="fb">
     <label>Campo:</label><select id="pf-c" onchange="renderPesajes()"><option value="">Todos los vivos</option><option>Puesto 12</option><option>Aserradero</option><option value="Vendido">Ya vendidos</option><option value="*">Todos (incluye vendidos)</option></select>
     <label>Agrupar lote por:</label><select id="pf-m" onchange="MODO=this.value;$('t-modo').value=MODO;$('pf-l').length=1;renderPesajes()"><option>Color</option><option>Guía</option></select><label>Lote:</label><select id="pf-l" onchange="renderPesajes()"><option value="">Todos</option></select>
-    <label>Mínimo de animales por pesada:</label><input type="number" id="pf-n" value="5" style="width:60px" onchange="renderPesajes()">
+    <label>Mínimo de animales por pesada:</label><input type="number" id="pf-n" value="5" style="width:60px" onchange="renderPesajes()"><label style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="pf-ni" checked onchange="renderPesajes()"> Sin animales recién ingresados (en el gráfico de peso por lote)</label>
   </div>
   <div class="kpis" id="k-pes"></div>
   <div class="cg">
-    <div class="cc"><div class="cct">Peso promedio por lote en el tiempo</div><div class="sub">Cada línea es un lote (color de caravana o guía, según elijas arriba). Se ve cuándo cada lote engordó, se estancó o bajó.</div><div class="cw" style="height:300px"><canvas id="c-plote"></canvas></div></div>
+    <div class="cc"><div class="cct">Peso promedio por lote en el tiempo</div><div class="sub">Cada línea es un lote (color de caravana o guía, según elijas arriba). Es el promedio de los animales que se pesaron ese día: si entran animales nuevos (más livianos) o se pesa solo una parte del lote, el promedio se mueve sin que nadie haya adelgazado. Pasá el dedo o el mouse por un punto para ver cuántos animales se pesaron y cuántos eran recién ingresados.</div><div class="cw" style="height:300px"><canvas id="c-plote"></canvas></div></div>
     <div class="cc"><div class="cct">Ganancia diaria promedio en cada pesada (kg/animal/día)</div><div class="sub">Compara cada animal con su pesada anterior. Rojo: menos de 0,5 · Verde: 0,75 o más.</div><div class="cw" style="height:300px"><canvas id="c-gdp"></canvas></div></div>
   </div>
   <div class="tc"><div class="tct">Cada pesada: días que pasaron y cuánto cambió el peso</div><div class="tw"><table><thead><tr><th>Fecha</th><th class="r">Días desde la anterior</th><th class="r">Animales</th><th class="r">Kg prom.</th><th class="r">Δ kg prom.</th><th class="r">kg/día prom.</th><th class="r">Bajaron</th><th class="r">% que bajó</th></tr></thead><tbody id="tb-ev"></tbody></table></div></div>
@@ -222,11 +250,13 @@ tr.tot td{font-weight:700;border-top:2px solid var(--bd)}
   <div class="tc"><div class="tct">Cheques y pagos a cobrar de ventas (desde hoy)</div><div class="tw"><table><thead><tr><th>Cobra el</th><th>Comprador</th><th>Medio</th><th class="r">Importe</th><th class="r">Faltan</th></tr></thead><tbody id="tb-cheq"></tbody></table></div></div>
 </div>
 
-<div id="pg-auditoria" class="pg"><div class="note">Controles automáticos sobre las planillas. Cada uno dice <b>dónde</b> está el dato a corregir. Cuando lo corrijas en la planilla, al actualizar el tablero desaparece el aviso.</div><div class="kpis" id="k-aud"></div><div class="tc"><div class="tct">Controles</div><div class="tw" style="max-height:none"><table id="t-aud"></table></div></div></div>
+<div id="pg-auditoria" class="pg"><div class="note">Controles automáticos sobre las planillas. Cada uno dice <b>dónde</b> está el dato a corregir. Cuando lo corrijas en la planilla, al actualizar el tablero desaparece el aviso.</div><div class="kpis" id="k-aud"></div><div class="tc"><div class="tct">Cruce de hacienda: animales que entraron y salieron según las pesadas vs. compras y ventas cargadas</div><div class="note" style="margin:0;border-radius:0" id="n-cruce"></div><div class="tw" style="max-height:none"><table id="t-cruce"></table></div></div><div class="tc"><div class="tct">Controles</div><div class="tw" style="max-height:none"><table id="t-aud"></table></div></div></div>
 </div>
 <div id="modal" onclick="if(event.target===this)closeModal()"><div class="mbox"><span class="mx" onclick="closeModal()">✕ cerrar</span><div id="modal-body"></div></div></div>
 <script type="text/plain" id="appcode">
 var DATA=window.__BOOT_DATA;
+function guardarParam(){try{localStorage.setItem('dash_desb',document.getElementById('p-desb').value);localStorage.setItem('dash_precio',document.getElementById('p-precio').value);}catch(e){}}
+(function(){try{var d=localStorage.getItem('dash_desb'),p=localStorage.getItem('dash_precio');if(d!==null&&d!=='')document.getElementById('p-desb').value=d;if(p!==null&&p!=='')document.getElementById('p-precio').value=p;}catch(e){}})();
 function cssv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
 var HOY=DATA.hoy;
 var C={s:['#3987e5','#d95926','#199e70','#c98500','#d55181','#2f9e2f','#9085e9','#e66767']};
@@ -251,7 +281,7 @@ function cls(n){return n>0?'pos':(n<0?'neg':'');}
 
 /* ---------- Limpieza de datos ---------- */
 var ALERTS=[];
-var REPRO_KEYS=['5|Azul','9|Azul','11|Azul','13|Azul','16|Azul','22|Azul','11|Amarillo','3|Blanco','O 3|Blanco','21|Blanco','26|Terracota'];
+var REPRO_KEYS=['5|Azul','9|Azul','11|Azul','13|Azul','16|Azul','22|Azul','11|Amarillo','3|Blanco','O 3|Blanco','21|Blanco','26|Terracota','KZ 613 A 012-9|Amarillo'];
 var AN=DATA.animals.map(function(a){
   var ok=[],raros=0;
   a.w.forEach(function(x){if(x[1]<100||x[1]>650){raros++;}else ok.push(x);});
@@ -362,15 +392,15 @@ function renderTenencia(){
   var ultima=vivos.map(function(a){return a.last[0];}).sort().pop();
   $('k-ten').innerHTML=
    k('Animales de engorde',fN(vivos.length),fN(vivos.filter(function(a){return a.estado==='Puesto 12';}).length)+' en Puesto 12 · '+fN(vivos.filter(function(a){return a.estado==='Aserradero';}).length)+' en Aserradero')+
-   k('Reproductores',fN(AN.filter(function(a){return a.repro&&a.car!=='O 3';}).length),'aparte del engorde (ver tabla abajo)')+
+   k('Reproductores',fN(AN.filter(function(a){return a.repro;}).length),'aparte del engorde (ver tabla abajo)')+
    k('Kg en pie',fN(kg),'según la última pesada de cada uno')+
    k('Peso promedio',fN(kg/vivos.length)+' kg','por animal')+
    k('kg/día (última pesada)',fN(avg(gd),2),'promedio de los vivos')+
    k('Valor estimado',fMM(stockVal(kg)),'a $'+fN(+$('p-precio').value)+'/kg con '+fN(+$('p-desb').value)+'% de desbaste')+
    k('Última pesada',fD(ultima),'hace '+days(ultima,HOY)+' días');
-  var reps=AN.filter(function(a){return a.repro&&a.car!=='O 3';}).sort(function(p,q){return (p.sexo||'').trim()<(q.sexo||'').trim()?-1:1;});
+  var reps=AN.filter(function(a){return a.repro;}).sort(function(p,q){return (p.sexo||'').trim()<(q.sexo||'').trim()?-1:1;});
   var rk=sum(reps,function(a){return a.last?a.last[1]:0;});
-  $('tb-repro').innerHTML=reps.map(function(a){return '<tr class="clk" onclick="irAnimal('+AN.indexOf(a)+')" style="border-left:3px solid '+(LOTECOL[a.color]||'#888')+'"><td><b>'+a.car+'</b></td><td>'+a.color+'</td><td>'+((a.sexo||'').trim()||'-')+'</td><td class="r">'+(a.last?fN(a.last[1]):'-')+'</td><td>'+(a.last?fD(a.last[0]):'-')+'</td><td>'+(a.guia||'<span class="mut">sin guía</span>')+'</td></tr>';}).join('')+'<tr><td colspan="3"><b>Total '+reps.length+' reproductores</b></td><td class="r"><b>'+fN(rk)+'</b></td><td colspan="2" class="mut">valor estimado '+fMM(stockVal(rk))+' (no entra en el resultado del engorde). La "O 3" de la planilla es la 3 repetida y no se cuenta.</td></tr>';
+  $('tb-repro').innerHTML=reps.map(function(a){return '<tr class="clk" onclick="irAnimal('+AN.indexOf(a)+')" style="border-left:3px solid '+(LOTECOL[a.color]||'#888')+'"><td><b>'+a.car+'</b></td><td>'+a.color+'</td><td>'+((a.sexo||'').trim()||'-')+'</td><td class="r">'+(a.last?fN(a.last[1]):'-')+'</td><td>'+(a.last?fD(a.last[0]):'-')+'</td><td>'+(a.guia||'<span class="mut">sin guía</span>')+'</td></tr>';}).join('')+'<tr><td colspan="3"><b>Total '+reps.length+' reproductores</b></td><td class="r"><b>'+fN(rk)+'</b></td><td colspan="2" class="mut">valor estimado '+fMM(stockVal(rk))+' (no entra en el resultado del engorde). La "O 3" y la "3" son dos animales distintos y se cuentan los dos.</td></tr>';
   var campos=['Puesto 12','Aserradero'];
   $('tb-campo').innerHTML=campos.map(function(c){
     var v=vivos.filter(function(a){return a.estado===c;});var kk=sum(v,function(a){return a.last[1];});
@@ -420,10 +450,18 @@ function renderGastos(){
   if(!$('ga-q1').innerHTML)$('ga-q1').innerHTML=quickBtns('ga-d','ga-h','renderGastos');
   var rg=rangoMes('ga-d','ga-h');fillRub();var fr=$('ga-r').value,fq=($('ga-q').value||'').toLowerCase().trim();
   var G=DATA.gastos.filter(function(g){var m=mon(g.f);return m>=rg[0]&&m<=rg[1]&&(!fr||g.c===fr)&&(!fq||((g.desc||'')+' '+(g.prov||'')+' '+g.c).toLowerCase().indexOf(fq)>=0);});
-  var tot=sum(G,function(g){return g.neto;});
+  // Prorrateo del alimento: cada compra se reparte día por día hasta la compra siguiente (la última, según la mediana entre compras)
+  var rp=$('ga-rep').checked&&!fq&&(!fr||fr==='Alimentos'),AM={};
+  if(rp){var al=DATA.gastos.filter(function(g){return g.c==='Alimentos';}).sort(function(a,b){return a.f<b.f?-1:1;});var fch=[];al.forEach(function(e){if(fch.indexOf(e.f)<0)fch.push(e.f);});
+    var gp=[];for(var q=1;q<fch.length;q++)gp.push(days(fch[q-1],fch[q]));gp.sort(function(a,b){return a-b;});var med=gp.length?gp[Math.floor(gp.length/2)]:60;
+    al.forEach(function(e){var qi=fch.indexOf(e.f),nx=qi+1<fch.length?days(e.f,fch[qi+1]):med;if(nx<1)nx=1;
+      for(var z=0;z<nx;z++){var dd=new Date(T(e.f)+z*864e5).toISOString().slice(0,10);if(dd<=HOY){var mm=mon(dd);if(mm>=rg[0]&&mm<=rg[1])AM[mm]=(AM[mm]||0)+e.neto/nx;}}});}
+  var Gc=rp?G.filter(function(g){return g.c!=='Alimentos';}):G;
+  var tot=sum(Gc,function(g){return g.neto;})+sum(Object.keys(AM),function(m){return AM[m];});
   var msR=MESES_F.filter(function(m){return m>=rg[0]&&m<=rg[1]&&m<=HOYM;});
   var meses={},rub={},cruz={};msR.forEach(function(m){meses[m]=0;});
-  G.forEach(function(g){var m=mon(g.f);meses[m]=(meses[m]||0)+g.neto;rub[g.c]=(rub[g.c]||0)+g.neto;cruz[g.c]=cruz[g.c]||{};cruz[g.c][m]=(cruz[g.c][m]||0)+g.neto;});
+  Gc.forEach(function(g){var m=mon(g.f);meses[m]=(meses[m]||0)+g.neto;rub[g.c]=(rub[g.c]||0)+g.neto;cruz[g.c]=cruz[g.c]||{};cruz[g.c][m]=(cruz[g.c][m]||0)+g.neto;});
+  Object.keys(AM).forEach(function(m){meses[m]=(meses[m]||0)+AM[m];rub['Alimentos']=(rub['Alimentos']||0)+AM[m];cruz['Alimentos']=cruz['Alimentos']||{};cruz['Alimentos'][m]=(cruz['Alimentos'][m]||0)+AM[m];});
   var ms=Object.keys(meses).sort(),rs=Object.keys(rub).sort(function(a,b){return rub[b]-rub[a];});window._gaRs=rs;
   var d0=rg[0]+'-01',d1=lastDay(rg[1]);if(d1>HOY)d1=HOY;
   // cabeza-dias y kg producidos en el período elegido
@@ -431,9 +469,9 @@ function renderGastos(){
   AN.forEach(function(a){if(!a.first||a.repro)return;var ini=a.first[0]>d0?a.first[0]:d0;var fin=a.vivo?d1:(a.last[0]<d1?a.last[0]:d1);if(fin>ini)cd+=days(ini,fin);
     a.g.forEach(function(x){if(x.f>d0&&x.f<=d1)kgp+=x.delta;});});
   var nm=Math.max(1,ms.filter(function(m){return meses[m]>0;}).length);
-  $('k-gas').innerHTML=ks('Gastos del período',fMM(tot),G.length+' gastos · '+mlab(rg[0])+' a '+mlab(rg[1])+' · tocá para ver el detalle',"gaIr()")+
+  $('k-gas').innerHTML=ks('Gastos del período',fMM(tot),G.length+' gastos'+(rp?' (alimento repartido)':'')+' · '+mlab(rg[0])+' a '+mlab(rg[1])+' · tocá para ver el detalle',"gaIr()")+
     ks('Promedio mensual',fMM(tot/nm),nm+' meses con gastos')+
-    ks('Costo por cabeza por día',cd>0?fM(tot/cd):'-','en el período elegido')+
+    ks('Costo por cabeza por día',cd>0?fM(tot/cd):'-',rp?'en el período elegido (alimento repartido)':'en el período elegido')+
     ks('Costo por kg producido',kgp>0?fM(tot/kgp):'-',fN(kgp)+' kg ganados en el período')+
     ks('Mayor rubro',rs[0]||'-',rs[0]?fMM(rub[rs[0]])+' · '+fN(rub[rs[0]]/tot*100)+'% · tocá para filtrar':'sin gastos con estos filtros',rs[0]?"gaRubI(0)":null);
   $('ga-n').textContent=G.length+' gastos · '+fMM(tot);
@@ -640,10 +678,10 @@ function renderPesajes(){
     return '<tr><td>'+fD(r.f)+'</td><td class="r">'+(r.dias==null?'-':r.dias)+'</td><td class="r">'+r.n+'</td><td class="r">'+fN(r.kg)+'</td><td class="r '+cls(r.dl)+'">'+(r.dl==null?'-':(r.dl>0?'+':'')+fN(r.dl,1))+'</td><td class="r '+c+'">'+(r.gd==null?'-':fN(r.gd,2))+'</td><td class="r">'+(r.cmp?r.bajo+' de '+r.cmp:'-')+'</td><td class="r '+(r.cmp&&r.bajo/r.cmp>.3?'neg':'')+'">'+(r.cmp?fN(r.bajo/r.cmp*100)+'%':'-')+'</td></tr>';}).join('');
   mk('c-gdp',{type:'bar',data:{labels:rows.map(function(r){return fD(r.f);}),datasets:[{label:'kg/día',data:rows.map(function(r){return r.gd;}),backgroundColor:rows.map(function(r){return r.gd==null?'#556':(r.gd<0.5?C.s[7]:(r.gd>=0.75?C.s[2]:C.s[3]));}),borderRadius:3}]},options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fN(c.raw,2)+' kg/día · '+rows[c.dataIndex].dias+' días desde la anterior';}}}},scales:{y:{ticks:{callback:function(v){return fN(v,1);}}}}}});
   // peso por lote
-  var porL={};set.forEach(function(a){var kk=gk(a);porL[kk]=porL[kk]||{};a.pw.forEach(function(x){(porL[kk][x[0]]=porL[kk][x[0]]||[]).push(x[1]);});});
+  var porL={},metaL={},sinNu=$('pf-ni').checked;set.forEach(function(a){var kk=gk(a);porL[kk]=porL[kk]||{};metaL[kk]=metaL[kk]||{};a.pw.forEach(function(x,ix){var m=(metaL[kk][x[0]]=metaL[kk][x[0]]||{n:0,nu:0});m.n++;if(ix===0){m.nu++;if(sinNu&&a.pw.length>1)return;}(porL[kk][x[0]]=porL[kk][x[0]]||[]).push(x[1]);});});
   var allF=Object.keys(ev).sort();
   var ls=Object.keys(porL).filter(function(l){return sum(Object.keys(porL[l]),function(f){return porL[l][f].length;})>=minN*2;}).sort(function(a,b){return Object.keys(porL[b]).length-Object.keys(porL[a]).length;}).slice(0,8);
-  mk('c-plote',{type:'line',data:{labels:allF.map(fD),datasets:ls.map(function(l,li){return {label:l,data:allF.map(function(f){var v=porL[l][f];return v&&v.length>=Math.min(3,minN)?avg(v):null;}),borderColor:gcol(l,li),backgroundColor:gcol(l,li),tension:.2,pointRadius:3,spanGaps:true,borderWidth:2};})},options:{plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{mode:'index',intersect:false,callbacks:{label:function(c){return c.dataset.label+': '+fN(c.raw)+' kg';}}}},interaction:{mode:'index',intersect:false},scales:{y:{title:{display:true,text:'kg promedio'}}}}});
+  mk('c-plote',{type:'line',data:{labels:allF.map(fD),datasets:ls.map(function(l,li){return {label:l,data:allF.map(function(f){var v=porL[l][f];return v&&v.length>=Math.min(3,minN)?avg(v):null;}),borderColor:gcol(l,li),backgroundColor:gcol(l,li),tension:.2,pointRadius:3,spanGaps:true,borderWidth:2};})},options:{plugins:{legend:{position:'bottom',labels:{boxWidth:10}},tooltip:{mode:'index',intersect:false,callbacks:{label:function(c){var m=(metaL[c.dataset.label]||{})[allF[c.dataIndex]]||{n:0,nu:0};return c.dataset.label+': '+fN(c.raw)+' kg · '+m.n+' pesados'+(m.nu?' ('+m.nu+' recién ingresados'+(sinNu?', no incluidos':'')+')':'');}}}},interaction:{mode:'index',intersect:false},scales:{y:{title:{display:true,text:'kg promedio'}}}}});
   // bajaron y sin pesar
   var baj=set.filter(function(a){return a.vivo&&a.g.length&&a.g[a.g.length-1].delta<0;}).map(function(a){return {a:a,g:a.g[a.g.length-1]};}).sort(function(x,y){return x.g.delta-y.g.delta;});
   $('tb-baja').innerHTML=baj.length?baj.map(function(x){return '<tr><td>'+x.a.car+' <span class="mut">'+x.a.color+'</span></td><td>'+x.a.estado+'</td><td class="r">'+fN(x.g.prev)+'</td><td class="r">'+fN(x.g.now)+'</td><td class="r neg">'+fN(x.g.delta)+'</td><td class="r neg">'+fN(x.g.gdp,2)+'</td></tr>';}).join(''):'<tr><td colspan="6" class="mut">Ninguno</td></tr>';
@@ -870,7 +908,20 @@ function toggleTheme(){var d=document.documentElement.getAttribute('data-theme')
   themeChart();renderTenencia();renderGastos();renderFlujo();var on=document.querySelector('.pg.on').id;if(on==='pg-pesajes')renderPesajes();}
 try{if(localStorage.getItem('tema')==='dark'){document.documentElement.setAttribute('data-theme','dark');$('tgl').textContent='☀️ Claro';themeChart();}}catch(e){}
 /* ---------- AUDITORÍA ---------- */
+function renderCruce(){
+  var M={};function g(m){return M[m]=M[m]||{ent:0,cc:0,mc:0,sal:0,vc:0,mv:0};}
+  AN.forEach(function(a){if(a.first)g(mon(a.first[0])).ent++;if(a.estado==='Vendido'&&a.last)g(mon(a.last[0])).sal++;});
+  COMPRAS.forEach(function(c){var r=g(mon(c.f));r.cc+=c.cab||0;r.mc+=c.monto||0;});
+  HVENTAS.forEach(function(h){var r=g(mon(h.f));r.vc+=h.cabezas||0;r.mv+=h.monto||0;});
+  VEXTRA.forEach(function(i){g(mon(i.f)).mv+=i.m||0;});
+  var ms=Object.keys(M).sort(),T={ent:0,cc:0,mc:0,sal:0,vc:0,mv:0};
+  ms.forEach(function(m){for(var k in T)T[k]+=M[m][k];});
+  $('t-cruce').innerHTML='<thead><tr><th>Mes</th><th class="r">Animales que aparecen por 1ª vez en las pesadas</th><th class="r">Compras cargadas (cabezas)</th><th class="r">Monto compras</th><th class="r">Animales vendidos (mes de su última pesada)</th><th class="r">Ventas cargadas (cabezas)</th><th class="r">Monto ventas y cobros</th></tr></thead><tbody>'+ms.map(function(m){var r=M[m];var d1=r.ent&&!r.cc,d2=r.sal&&!r.vc;return '<tr><td>'+mlab(m)+'</td><td class="r">'+(r.ent||'')+'</td><td class="r '+(d1?'neg':'')+'">'+(r.cc||(d1?'falta':''))+'</td><td class="r">'+(r.mc?fMM(r.mc):'')+'</td><td class="r">'+(r.sal||'')+'</td><td class="r '+(d2?'neg':'')+'">'+(r.vc||(d2?'falta':''))+'</td><td class="r">'+(r.mv?fMM(r.mv):'')+'</td></tr>';}).join('')+'<tr class="tot"><td>Total</td><td class="r">'+T.ent+'</td><td class="r">'+T.cc+'</td><td class="r">'+fMM(T.mc)+'</td><td class="r">'+T.sal+'</td><td class="r">'+T.vc+'</td><td class="r">'+fMM(T.mv)+'</td></tr></tbody>';
+  $('n-cruce').innerHTML='Según las pesadas entraron <b>'+T.ent+'</b> animales y hay compras cargadas por <b>'+T.cc+'</b> cabezas: <b>'+(T.ent>T.cc?'faltan cargar compras de unos '+(T.ent-T.cc)+' animales':'las compras cubren los ingresos')+'</b>. Salieron <b>'+T.sal+'</b> animales vendidos y hay ventas cargadas con cantidad por <b>'+T.vc+'</b> cabezas (varias ventas no tienen la cantidad cargada, por eso la diferencia puede ser menor). El mes de la primera pesada puede ser posterior al de la compra: mirá el total y las filas en rojo.';
+}
+
 function renderAuditoria(){
+  renderCruce();
   var R=[];
   function add(n,items,donde,det,sev){R.push({n:n,c:items.length,donde:donde,det:det,sev:sev||'rev',items:items});}
   var h28=HAC.filter(function(h){return h.fcorr;});
